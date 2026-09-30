@@ -657,6 +657,8 @@ def render_create_resume_flow():
                 data["experience_entries"].append({
                     "experience_type": "Full-Time",
                     "custom_experience_type": "",
+                    "work_arrangement": "On-site",
+                    "custom_work_arrangement": "",
                     "company": "",
                     "position": "",
                     "location": "",
@@ -669,6 +671,13 @@ def render_create_resume_flow():
                 st.rerun()
         else:
             del_exp_indices = []
+            work_arr_options = [
+                "On-site",
+                "Remote",
+                "Hybrid",
+                "Write Your Own"
+            ]
+
             for idx, exp_ent in enumerate(data["experience_entries"]):
                 exp_pos_disp = exp_ent.get("position", "").strip() or "Work Experience Entry"
                 with st.container():
@@ -681,6 +690,13 @@ def render_create_resume_flow():
 
                     c1, c2 = st.columns(2)
                     with c1:
+                        exp_ent["position"] = st.text_input(
+                            "Position or Job Title:",
+                            value=exp_ent.get("position", ""),
+                            placeholder="e.g. Software Engineer, Data Analyst",
+                            key=f"exp_pos_{idx}"
+                        )
+
                         current_type = exp_ent.get("experience_type", "Full-Time")
                         if current_type not in exp_type_options:
                             type_idx = exp_type_options.index("Write Your Own")
@@ -693,7 +709,8 @@ def render_create_resume_flow():
                             "Experience Type:",
                             options=exp_type_options,
                             index=type_idx,
-                            key=f"exp_type_sel_{idx}"
+                            key=f"exp_type_sel_{idx}",
+                            help="Employment nature (Internship, Full-Time, Part-Time, Contract, Placement, etc.)"
                         )
                         exp_ent["experience_type"] = selected_type
 
@@ -707,13 +724,6 @@ def render_create_resume_flow():
                         else:
                             exp_ent["custom_experience_type"] = ""
 
-                        exp_ent["position"] = st.text_input(
-                            "Position or Job Title:",
-                            value=exp_ent.get("position", ""),
-                            placeholder="e.g. Software Engineer, Data Analyst",
-                            key=f"exp_pos_{idx}"
-                        )
-
                     with c2:
                         exp_ent["company"] = st.text_input(
                             "Company Name:",
@@ -722,11 +732,38 @@ def render_create_resume_flow():
                             key=f"exp_comp_{idx}"
                         )
                         exp_ent["location"] = st.text_input(
-                            "Location (Optional):",
+                            "Location (Where work was based, optional):",
                             value=exp_ent.get("location", ""),
-                            placeholder="e.g. Bengaluru, India / Remote",
+                            placeholder="e.g. Bengaluru, India / San Francisco, CA",
                             key=f"exp_loc_{idx}"
                         )
+
+                        current_arr = exp_ent.get("work_arrangement", "On-site")
+                        if current_arr not in work_arr_options:
+                            arr_idx = work_arr_options.index("Write Your Own")
+                            if not exp_ent.get("custom_work_arrangement"):
+                                exp_ent["custom_work_arrangement"] = current_arr
+                        else:
+                            arr_idx = work_arr_options.index(current_arr)
+
+                        selected_arr = st.selectbox(
+                            "Work Arrangement:",
+                            options=work_arr_options,
+                            index=arr_idx,
+                            key=f"exp_arr_sel_{idx}",
+                            help="Describes how the work was performed (On-site, Remote, Hybrid, or custom)"
+                        )
+                        exp_ent["work_arrangement"] = selected_arr
+
+                        if selected_arr == "Write Your Own":
+                            exp_ent["custom_work_arrangement"] = st.text_input(
+                                "Write Your Own Work Arrangement:",
+                                value=exp_ent.get("custom_work_arrangement", ""),
+                                placeholder="e.g. Client-site, Field-based, Rotational",
+                                key=f"exp_custom_arr_{idx}"
+                            )
+                        else:
+                            exp_ent["custom_work_arrangement"] = ""
 
                     # Status and Dynamic Date Fields
                     st.markdown("<span style='font-size: 0.88rem; font-weight: 600; color: #4A5568;'>Status & Dates:</span>", unsafe_allow_html=True)
@@ -791,6 +828,8 @@ def render_create_resume_flow():
                 data["experience_entries"].append({
                     "experience_type": "Full-Time",
                     "custom_experience_type": "",
+                    "work_arrangement": "On-site",
+                    "custom_work_arrangement": "",
                     "company": "",
                     "position": "",
                     "location": "",

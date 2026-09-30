@@ -318,6 +318,8 @@ class TestResumeBuilder(unittest.TestCase):
             {
                 "experience_type": "Internship",
                 "custom_experience_type": "",
+                "work_arrangement": "Hybrid",
+                "custom_work_arrangement": "",
                 "company": "Google",
                 "position": "software engineering intern",
                 "location": "Mountain View, CA",
@@ -330,6 +332,8 @@ class TestResumeBuilder(unittest.TestCase):
             {
                 "experience_type": "Write Your Own",
                 "custom_experience_type": "Graduate Research Fellow",
+                "work_arrangement": "Write Your Own",
+                "custom_work_arrangement": "Client-site (Mon-Wed)",
                 "company": "MIT CSAIL",
                 "position": "Research Assistant",
                 "location": "Cambridge, MA",
@@ -343,8 +347,9 @@ class TestResumeBuilder(unittest.TestCase):
 
         # 1. Test enhance
         enhanced_exp = ResumeBuilderModel.enhance_experience_entries(exp_entries)
-        # Check custom type preserved exactly as entered by user
+        # Check custom type and custom work arrangement preserved exactly as entered by user
         self.assertEqual(enhanced_exp[1]["custom_experience_type"], "Graduate Research Fellow")
+        self.assertEqual(enhanced_exp[1]["custom_work_arrangement"], "Client-site (Mon-Wed)")
         # Check position capitalized
         self.assertEqual(enhanced_exp[0]["position"], "Software engineering intern")
         # Check weak verbs enhanced
@@ -359,9 +364,9 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("• Software engineering intern (Internship)", compiled)
         self.assertIn("• Research Assistant (Graduate Research Fellow)", compiled)
 
-        # Metadata line checks
-        self.assertIn("Google | Mountain View, CA | Jun 2024 - Present", compiled)
-        self.assertIn("MIT CSAIL | Cambridge, MA | Sep 2022 - May 2024", compiled)
+        # Metadata line checks: Location, Work Arrangement, and Dates kept completely separate
+        self.assertIn("Google | Mountain View, CA | Hybrid | Jun 2024 - Present", compiled)
+        self.assertIn("MIT CSAIL | Cambridge, MA | Client-site (Mon-Wed) | Sep 2022 - May 2024", compiled)
 
         # No internal labels
         self.assertNotIn("Experience 1", compiled)

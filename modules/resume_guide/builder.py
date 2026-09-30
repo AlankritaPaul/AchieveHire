@@ -641,6 +641,12 @@ class ResumeBuilderModel:
             else:
                 exp_type = exp_type_raw
 
+            arr_raw = entry.get("work_arrangement", "").strip()
+            if arr_raw == "Write Your Own":
+                arrangement = entry.get("custom_work_arrangement", "").strip()
+            else:
+                arrangement = arr_raw
+
             company = entry.get("company", "").strip()
             position = entry.get("position", "").strip()
             location = entry.get("location", "").strip()
@@ -650,7 +656,7 @@ class ResumeBuilderModel:
             description = entry.get("description", "").strip()
             responsibilities = entry.get("responsibilities", "").strip()
 
-            if not any([exp_type, company, position, location, start_date, end_date, description, responsibilities]):
+            if not any([exp_type, arrangement, company, position, location, start_date, end_date, description, responsibilities]):
                 continue
 
             # Title line: Position (Experience Type)
@@ -667,12 +673,14 @@ class ResumeBuilderModel:
             else:
                 continue
 
-            # Metadata line: Company Name | Location | Dates
+            # Metadata line: Company Name | Location | Work Arrangement | Dates
             meta = []
             if company and not title_line.startswith(f"• {company}"):
                 meta.append(company)
             if location:
                 meta.append(location)
+            if arrangement:
+                meta.append(arrangement)
 
             # Dynamic date formatting based on status
             if status == "Currently Ongoing":
