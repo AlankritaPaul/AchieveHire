@@ -530,31 +530,13 @@ def render_create_resume_flow():
             })
             st.rerun()
 
-        # Compile into realistic preview
+        # Automatically compile structured education and qualifications for the resume
         compiled_edu = ResumeBuilderModel.compile_education_and_qualifications(
             data.get("education_entries", []),
             data.get("qualification_entries", [])
         )
-        if compiled_edu and (not data.get("education") or data.get("education") != compiled_edu):
+        if compiled_edu:
             data["education"] = compiled_edu
-
-        st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
-        st.markdown("#### 📄 Formatted Education and Qualifications Preview (As it will appear on your resume):")
-        data["education"] = st.text_area(
-            "Live Compiled Education and Qualifications Preview (Editable):",
-            value=data.get("education", ""),
-            height=160,
-            key="builder_edu_preview_input"
-        )
-
-        st.markdown(
-            """
-            <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Realistic Resume Structure:</strong> Information is organized under the main heading 'Education and Qualifications' with separate subsections for Education and Qualifications. Status-based dates, CGPA, and optional grades are displayed only when provided. No internal form labels appear on your resume.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
