@@ -1,0 +1,31 @@
+Elena Rostova
+San Francisco, CA | elena.rostova@email.com | +1-555-0144 | github.com/erostova | linkedin.com/in/erostova
+
+PROFESSIONAL SUMMARY
+Senior Software Developer with 5+ years of experience engineering high-throughput distributed systems and cloud microservices. Specialized in Python, C++, REST APIs, unit testing, and system design, delivering measurable performance gains and 99.99% availability at scale.
+
+WORK EXPERIENCE
+Software Developer | ScaleCloud Systems | Aug 2021 - Present
+• Architected and deployed scalable asynchronous microservices in Python and C++, reducing p99 API latency by 42%.
+• Engineered automated CI/CD pipelines and unit testing suites, increasing test coverage from 68% to 94% across 12 services.
+• Optimized PostgreSQL and Redis query caching architectures, supporting over 2.5 million daily active requests.
+• Spearheaded cross-functional migration to containerized infrastructure, reducing compute overhead by 28%.
+
+Software Engineer | Apex Dynamics | Jun 2019 - Jul 2021
+• Developed high-performance event-driven data ingestion pipeline handling 100k+ events/sec using Python and SQL.
+• Collaborated across engineering teams to redesign core REST APIs, improving overall client response times by 35%.
+
+TECHNICAL PROJECTS
+Distributed Task Orchestrator | Python, Docker, Redis, REST API
+• Engineered distributed job scheduling engine managing parallel task executions with fault-tolerant recovery.
+• Deployed live benchmark dashboard monitoring queue health and throughput at github.com/erostova/orchestrator.
+
+TECHNICAL SKILLS
+• Programming Languages: Python, C++, Java, SQL, Go
+• Frameworks & Libraries: FastAPI, Django, Spring Boot
+• Databases & Cloud: PostgreSQL, Redis, Docker, AWS
+• Core Competencies: Data Structures, Algorithms, System Design, REST APIs, Unit Testing, Git
+
+EDUCATION
+B.S. in Computer Science | University of California, Berkeley | 2019
+Honors & Dean's List
