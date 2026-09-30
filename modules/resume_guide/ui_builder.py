@@ -671,12 +671,6 @@ def render_create_resume_flow():
                 st.rerun()
         else:
             del_exp_indices = []
-            work_arr_options = [
-                "On-site",
-                "Remote",
-                "Hybrid",
-                "Write Your Own"
-            ]
 
             for idx, exp_ent in enumerate(data["experience_entries"]):
                 exp_pos_disp = exp_ent.get("position", "").strip() or "Work Experience Entry"
@@ -738,32 +732,43 @@ def render_create_resume_flow():
                             key=f"exp_loc_{idx}"
                         )
 
-                        current_arr = exp_ent.get("work_arrangement", "On-site")
-                        if current_arr not in work_arr_options:
-                            arr_idx = work_arr_options.index("Write Your Own")
-                            if not exp_ent.get("custom_work_arrangement"):
-                                exp_ent["custom_work_arrangement"] = current_arr
-                        else:
-                            arr_idx = work_arr_options.index(current_arr)
+                        # Work Arrangement: single input with quick suggested buttons
+                        st.markdown("<span style='font-size: 0.88rem; font-weight: 500; color: #2D3748;'>Work Arrangement:</span> <span style='font-size: 0.78rem; color: #718096;'>(Choose or type your own)</span>", unsafe_allow_html=True)
+                        b1, b2, b3 = st.columns(3)
+                        with b1:
+                            if st.button("📍 On-site", key=f"btn_arr_onsite_{idx}", use_container_width=True):
+                                exp_ent["work_arrangement"] = "On-site"
+                                exp_ent["custom_work_arrangement"] = "On-site"
+                                st.session_state[f"exp_arr_input_{idx}"] = "On-site"
+                                st.rerun()
+                        with b2:
+                            if st.button("🌐 Remote", key=f"btn_arr_remote_{idx}", use_container_width=True):
+                                exp_ent["work_arrangement"] = "Remote"
+                                exp_ent["custom_work_arrangement"] = "Remote"
+                                st.session_state[f"exp_arr_input_{idx}"] = "Remote"
+                                st.rerun()
+                        with b3:
+                            if st.button("🏢 Hybrid", key=f"btn_arr_hybrid_{idx}", use_container_width=True):
+                                exp_ent["work_arrangement"] = "Hybrid"
+                                exp_ent["custom_work_arrangement"] = "Hybrid"
+                                st.session_state[f"exp_arr_input_{idx}"] = "Hybrid"
+                                st.rerun()
 
-                        selected_arr = st.selectbox(
-                            "Work Arrangement:",
-                            options=work_arr_options,
-                            index=arr_idx,
-                            key=f"exp_arr_sel_{idx}",
-                            help="Describes how the work was performed (On-site, Remote, Hybrid, or custom)"
+                        arr_val = exp_ent.get("work_arrangement", "")
+                        if arr_val == "Write Your Own":
+                            arr_val = exp_ent.get("custom_work_arrangement", "")
+                        if not arr_val:
+                            arr_val = "On-site"
+
+                        new_arr = st.text_input(
+                            "Work Arrangement Input:",
+                            value=arr_val,
+                            placeholder="e.g. On-site, Remote, Hybrid, field work...",
+                            key=f"exp_arr_input_{idx}",
+                            label_visibility="collapsed"
                         )
-                        exp_ent["work_arrangement"] = selected_arr
-
-                        if selected_arr == "Write Your Own":
-                            exp_ent["custom_work_arrangement"] = st.text_input(
-                                "Write Your Own Work Arrangement:",
-                                value=exp_ent.get("custom_work_arrangement", ""),
-                                placeholder="e.g. Client-site, Field-based, Rotational",
-                                key=f"exp_custom_arr_{idx}"
-                            )
-                        else:
-                            exp_ent["custom_work_arrangement"] = ""
+                        exp_ent["work_arrangement"] = new_arr
+                        exp_ent["custom_work_arrangement"] = new_arr
 
                     # Status and Dynamic Date Fields
                     st.markdown("<span style='font-size: 0.88rem; font-weight: 600; color: #4A5568;'>Status & Dates:</span>", unsafe_allow_html=True)
