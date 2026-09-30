@@ -251,7 +251,7 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
                 {f'<div style="margin-bottom: 10px;">{photo_tag}</div>' if photo_tag else ''}
                 <h1 style="font-size: 1.8rem; margin: 0; color: #1A202C; letter-spacing: 1px;">{full_name.upper()}</h1>
                 <p style="font-size: 0.9rem; color: #4A5568; margin-top: 4px;">{contact_line}</p>
-                {f'<p style="font-size: 0.9rem; color: #2C3E50; font-weight: bold; margin-top: 2px;">Target: {data.get("job_role", "")} &bull; {data.get("company", "")}</p>' if data.get("job_role") else ''}
+                {f'<p style="font-size: 0.9rem; color: #2C3E50; font-weight: bold; margin-top: 2px;">{data.get("job_role", "")} &bull; {data.get("company", "")}</p>' if data.get("job_role") else ''}
             </div>
         """
     elif template_name == "Modern":
@@ -260,7 +260,7 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
             <div style="background: linear-gradient(135deg, #2B6CB0, #1A365D); color: white; padding: 22px 26px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700;">{full_name}</h1>
-                    {f'<div style="font-size: 1rem; opacity: 0.95; font-weight: 500; margin-top: 2px;">Target: {data.get("job_role", "")} &bull; {data.get("company", "")}</div>' if data.get("job_role") else ''}
+                    {f'<div style="font-size: 1rem; opacity: 0.95; font-weight: 500; margin-top: 2px;">{data.get("job_role", "")} &bull; {data.get("company", "")}</div>' if data.get("job_role") else ''}
                     <div style="font-size: 0.85rem; opacity: 0.85; margin-top: 6px;">{contact_line}</div>
                 </div>
                 {f'<div>{photo_tag}</div>' if photo_tag else ''}
@@ -418,7 +418,7 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
     if data.get("email"): contact_parts.append(data["email"])
     if data.get("phone"): contact_parts.append(data["phone"])
     if data.get("location"): contact_parts.append(data["location"])
-    if data.get("job_role"): contact_parts.append(f"Target: {data['job_role']}")
+    if data.get("job_role"): contact_parts.append(f"{data['job_role']} - {data.get('company', '')}" if data.get('company') else data['job_role'])
     elements.append(Paragraph(" &bull; ".join(contact_parts), contact_style))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=accent_color, spaceAfter=8))
 

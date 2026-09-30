@@ -1,6 +1,7 @@
 """
-Page-wise UI flow for Resume Analysis in AscendCareer Resume Guide.
-Replaces single-page A,B,C,D headers with clean, dedicated page-by-page steps.
+Page-wise UI flow for Resume Analysis.
+Each selection has its own dedicated page.
+No 'target', 'path', or 'active' labels.
 """
 
 import streamlit as st
@@ -11,138 +12,151 @@ from modules.resume_guide.optimizer import ResumeOptimizer
 from modules.resume_guide.exporter import export_resume_to_pdf, export_resume_to_docx
 
 def render_resume_analysis_flow():
-    """Render the step-by-step page-wise flow for reviewing an existing resume."""
+    """Render the step-by-step page-wise flow for Resume Analysis."""
     if "analysis_step" not in st.session_state:
         st.session_state.analysis_step = 1
 
-    # Breadcrumb / Step Indicator
     steps = [
-        "1. Target Role & Company",
-        "2. Job Description",
-        "3. Upload & Review",
-        "4. Analysis & Results"
+        "1. Select Job Role",
+        "2. Select Company",
+        "3. Job Description",
+        "4. Upload Resume",
+        "5. Resume Match Analysis"
     ]
     
+    current_step = st.session_state.analysis_step
+
     st.markdown("""
-        <div style="background-color: #EDF2F7; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div><strong style="color: #2B6CB0;">Path:</strong> Resume Analysis</div>
-            <div style="font-size: 0.9rem; color: #4A5568;">Step %d of 4: <strong>%s</strong></div>
+        <div style="background-color: #EDF2F7; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;">
+            <span style="font-size: 0.95rem; color: #2D3748; font-weight: 600;">Resume Analysis — Step %d of 5: %s</span>
         </div>
-    """ % (st.session_state.analysis_step, steps[st.session_state.analysis_step - 1]), unsafe_allow_html=True)
+    """ % (current_step, steps[current_step - 1]), unsafe_allow_html=True)
 
-    # PAGE 1: TARGET ROLE & COMPANY
-    if st.session_state.analysis_step == 1:
-        st.markdown("### Step 1: Target Position & Company")
-        st.caption("Specify your target job role and company so the analysis can evaluate alignment accurately.")
+    # PAGE 1: SELECT JOB ROLE
+    if current_step == 1:
+        st.markdown("### Select Job Role")
+        st.caption("Choose from the suggested job roles or enter your own.")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("#### Target Job Role")
-            role_choice = st.radio(
-                "Select method to specify Job Role:",
-                options=["Select a Job Role", "Write Your Job Role"],
-                key="analysis_role_mode"
+        role_choice = st.radio(
+            "Select option:",
+            options=["Select a Job Role", "Write Your Job Role"],
+            key="analysis_role_mode"
+        )
+        if role_choice == "Select a Job Role":
+            selected_role = st.selectbox(
+                "Suggested Job Roles (Searchable):",
+                options=SUGGESTED_JOB_ROLES,
+                key="analysis_role_select"
             )
-            if role_choice == "Select a Job Role":
-                target_role = st.selectbox(
-                    "Suggested Job Roles (Searchable):",
-                    options=SUGGESTED_JOB_ROLES,
-                    key="analysis_role_select"
-                )
-            else:
-                target_role = st.text_input(
-                    "Write Your Job Role:",
-                    placeholder="e.g. Distributed Systems Engineer",
-                    key="analysis_role_custom"
-                )
-            st.session_state.active_job_role = target_role.strip() if target_role and target_role.strip() else "Software Developer"
-            st.info(f"Active Job Role: **{st.session_state.active_job_role}**")
-
-        with col2:
-            st.markdown("#### Target Company")
-            comp_choice = st.radio(
-                "Select method to specify Target Company:",
-                options=["Select a Company", "Write Your Company"],
-                key="analysis_comp_mode"
+            st.session_state.selected_job_role = selected_role
+        else:
+            custom_role = st.text_input(
+                "Write Your Job Role:",
+                value=st.session_state.get("selected_job_role", ""),
+                placeholder="e.g. Distributed Systems Engineer",
+                key="analysis_role_custom"
             )
-            if comp_choice == "Select a Company":
-                target_comp = st.selectbox(
-                    "Suggested Companies / Types (Searchable):",
-                    options=SUGGESTED_COMPANIES,
-                    key="analysis_comp_select"
-                )
-            else:
-                target_comp = st.text_input(
-                    "Write Your Company:",
-                    placeholder="e.g. Google, Microsoft, Local Tech Corp",
-                    key="analysis_comp_custom"
-                )
-            st.session_state.active_company = target_comp.strip() if target_comp and target_comp.strip() else "General Tech Company"
-            st.info(f"Active Target Company: **{st.session_state.active_company}**")
+            st.session_state.selected_job_role = custom_role.strip() if custom_role.strip() else "Software Developer"
+
+        st.info(f"Selected Job Role: **{st.session_state.selected_job_role}**")
 
         st.markdown("")
-        if st.button("Continue to Job Description →", type="primary", use_container_width=True):
+        if st.button("Continue to Select Company →", type="primary", use_container_width=True):
             st.session_state.analysis_step = 2
             st.rerun()
 
-    # PAGE 2: JOB DESCRIPTION
-    elif st.session_state.analysis_step == 2:
-        st.markdown("### Step 2: Job Description (Optional / Recommended)")
-        st.caption("If you have the actual job description, paste it below. If you don't have one, you can proceed without it.")
+    # PAGE 2: SELECT COMPANY
+    elif current_step == 2:
+        st.markdown("### Select Company")
+        st.caption("Choose from the suggested companies or enter your own.")
 
-        current_jd = st.session_state.get("active_jd", "") or ""
-        jd_input = st.text_area(
-            "Paste Target Job Description (Optional):",
-            value=current_jd,
-            height=200,
-            placeholder="Paste responsibilities, required qualifications, and technologies here...",
-            key="analysis_jd_textarea"
+        comp_choice = st.radio(
+            "Select option:",
+            options=["Select a Company", "Write Your Company"],
+            key="analysis_comp_mode"
         )
-        st.session_state.active_jd = jd_input.strip() if jd_input.strip() else None
-
-        if st.session_state.active_jd:
-            st.success("✅ Job Description provided. Resume will be analyzed against this specific posting.")
+        if comp_choice == "Select a Company":
+            selected_comp = st.selectbox(
+                "Suggested Companies / Types (Searchable):",
+                options=SUGGESTED_COMPANIES,
+                key="analysis_comp_select"
+            )
+            st.session_state.selected_company = selected_comp
         else:
-            st.info("ℹ️ No Job Description provided. Resume will be analyzed against general standards for " + st.session_state.get("active_job_role", "this role") + ".")
+            custom_comp = st.text_input(
+                "Write Your Company:",
+                value=st.session_state.get("selected_company", ""),
+                placeholder="e.g. Google, Microsoft, Local Tech Corp",
+                key="analysis_comp_custom"
+            )
+            st.session_state.selected_company = custom_comp.strip() if custom_comp.strip() else "General Tech Company"
+
+        st.info(f"Selected Company: **{st.session_state.selected_company}**")
 
         col_back, col_next = st.columns(2)
         with col_back:
-            if st.button("← Back to Role & Company", use_container_width=True):
+            if st.button("← Back to Select Job Role", use_container_width=True):
                 st.session_state.analysis_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Continue to Resume Upload →", type="primary", use_container_width=True):
+            if st.button("Continue to Job Description →", type="primary", use_container_width=True):
                 st.session_state.analysis_step = 3
                 st.rerun()
 
-    # PAGE 3: UPLOAD RESUME & REVIEW
-    elif st.session_state.analysis_step == 3:
-        st.markdown("### Step 3: Upload Resume")
-        st.caption("Upload your current resume file to begin the match analysis.")
+    # PAGE 3: JOB DESCRIPTION
+    elif current_step == 3:
+        st.markdown("### Job Description (Optional / Recommended)")
+        st.caption("Provide a specific job description if you have one. If provided, the resume will be analyzed against it. If not provided, no job description analysis will be claimed.")
+
+        current_jd = st.session_state.get("selected_jd", "") or ""
+        jd_input = st.text_area(
+            "Job Description (Optional):",
+            value=current_jd,
+            height=200,
+            placeholder="Paste responsibilities, required qualifications, and key technologies from the job posting...",
+            key="analysis_jd_textarea"
+        )
+        st.session_state.selected_jd = jd_input.strip() if jd_input.strip() else None
+
+        if st.session_state.selected_jd:
+            st.success("Job Description provided. The resume will be analyzed against this job description.")
+        else:
+            st.info(f"No Job Description provided. The resume will be analyzed based on the selected job role ({st.session_state.get('selected_job_role', 'Software Developer')}) and company ({st.session_state.get('selected_company', 'General Tech Company')}).")
+
+        col_back, col_next = st.columns(2)
+        with col_back:
+            if st.button("← Back to Select Company", use_container_width=True):
+                st.session_state.analysis_step = 2
+                st.rerun()
+        with col_next:
+            if st.button("Continue to Upload Resume →", type="primary", use_container_width=True):
+                st.session_state.analysis_step = 4
+                st.rerun()
+
+    # PAGE 4: UPLOAD RESUME
+    elif current_step == 4:
+        st.markdown("### Upload Resume")
+        st.caption("Upload your resume file (.pdf, .docx, or .txt) to begin the review.")
 
         uploaded_file = st.file_uploader(
-            "Upload your resume file (.pdf, .docx, .txt):",
+            "Upload your resume:",
             type=["pdf", "docx", "txt", "md"],
             key="analysis_uploader_page"
         )
 
-        st.markdown("""
+        st.markdown(f"""
             <div style="background: #F7FAFC; padding: 12px; border-radius: 6px; border: 1px solid #E2E8F0; margin: 15px 0;">
-                <strong>Evaluation Summary:</strong><br>
-                • <strong>Target Role:</strong> {role}<br>
-                • <strong>Target Company:</strong> {comp}<br>
-                • <strong>Job Description:</strong> {jd_status}
+                <strong>Review Configuration:</strong><br>
+                • <strong>Selected Job Role:</strong> {st.session_state.get('selected_job_role', 'Software Developer')}<br>
+                • <strong>Selected Company:</strong> {st.session_state.get('selected_company', 'General Tech Company')}<br>
+                • <strong>Job Description:</strong> {'Provided' if st.session_state.get('selected_jd') else 'None provided'}
             </div>
-        """.format(
-            role=st.session_state.get("active_job_role", "Software Developer"),
-            comp=st.session_state.get("active_company", "General Tech Company"),
-            jd_status="Provided (" + str(len(st.session_state.active_jd.split())) + " words)" if st.session_state.get("active_jd") else "None provided"
-        ), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
         col_back, col_submit = st.columns(2)
         with col_back:
             if st.button("← Back to Job Description", use_container_width=True):
-                st.session_state.analysis_step = 2
+                st.session_state.analysis_step = 3
                 st.rerun()
 
         with col_submit:
@@ -150,10 +164,10 @@ def render_resume_analysis_flow():
 
         if submit_btn:
             if not uploaded_file:
-                st.error("Please upload a resume file to proceed.")
+                st.error("Please upload a resume file before submitting.")
                 return
 
-            with st.spinner("Analyzing resume against target criteria..."):
+            with st.spinner("Analyzing resume against selected criteria..."):
                 raw_text = extract_text_from_file(uploaded_file)
                 if not raw_text.strip():
                     st.error("Could not extract readable text from document. Please ensure it is not password protected.")
@@ -161,9 +175,9 @@ def render_resume_analysis_flow():
 
                 sections = parse_resume_sections(raw_text)
                 analyzer = ResumeAnalyzer(
-                    job_role=st.session_state.active_job_role,
-                    company=st.session_state.active_company,
-                    job_description=st.session_state.active_jd
+                    job_role=st.session_state.selected_job_role,
+                    company=st.session_state.selected_company,
+                    job_description=st.session_state.selected_jd
                 )
                 analysis = analyzer.analyze(raw_text, sections)
 
@@ -176,19 +190,19 @@ def render_resume_analysis_flow():
                 st.session_state.improvements_list = []
                 st.session_state.user_decisions = {}
                 st.session_state.final_resume_generated = False
-                st.session_state.analysis_step = 4
+                st.session_state.analysis_step = 5
                 st.rerun()
 
-    # PAGE 4: RESULTS, SUGGESTIONS & IMPROVEMENTS
-    elif st.session_state.analysis_step == 4:
+    # PAGE 5: RESUME MATCH ANALYSIS
+    elif current_step == 5:
         if not st.session_state.get("analysis_result"):
-            st.session_state.analysis_step = 3
+            st.session_state.analysis_step = 4
             st.rerun()
             return
 
         res = st.session_state.analysis_result
-        st.markdown("### Step 4: Resume Match Analysis")
-        st.caption(f"Evaluated against **{res['job_role']}** at **{res['company']}**" + (" with Job Description" if res['has_jd'] else " (No JD provided)"))
+        st.markdown("## Resume Match Analysis")
+        st.caption(f"Evaluated for **{res['job_role']}** at **{res['company']}**" + (" with Job Description" if res['has_jd'] else " (No Job Description provided)"))
 
         # Metrics row
         if res["has_jd"]:
@@ -245,24 +259,24 @@ def render_resume_analysis_flow():
         st.markdown("---")
         if res["is_well_aligned"]:
             st.success("### “Your resume is well-aligned with this job role and effectively highlights the skills and experience required.”")
-            st.info("No unnecessary improvements are required. Your resume meets the criteria for this position.")
+            st.info("No unnecessary improvement message should be shown when the resume does not require meaningful changes.")
         else:
             st.warning("### “Your resume needs some improvements to better match this job role.”")
             if res["high_level_areas"]:
-                st.markdown("**Recommended Improvement Focus Areas:**")
+                st.markdown("**Relevant Improvement Areas:**")
                 for area in res["high_level_areas"]:
                     st.markdown(f"- **{area}**")
 
             col_b1, col_b2 = st.columns(2)
             with col_b1:
-                if st.button("🔍 View Suggestions", use_container_width=True):
+                if st.button("View Suggestions", use_container_width=True):
                     st.session_state.show_suggestions = True
             with col_b2:
-                if st.button("✨ Improve Resume", type="primary", use_container_width=True):
+                if st.button("Improve Resume", type="primary", use_container_width=True):
                     optimizer = ResumeOptimizer(
                         job_role=res["job_role"],
                         company=res["company"],
-                        job_description=st.session_state.active_jd
+                        job_description=st.session_state.selected_jd
                     )
                     improvements = optimizer.generate_improvements(
                         st.session_state.parsed_sections,
@@ -274,7 +288,7 @@ def render_resume_analysis_flow():
         # View Suggestions
         if st.session_state.get("show_suggestions") and res["suggestions"]:
             st.markdown("---")
-            st.markdown("### 💡 Tailored Resume Suggestions")
+            st.markdown("### Suggestions")
             for idx, sugg in enumerate(res["suggestions"], 1):
                 with st.container():
                     st.markdown(f"**{idx}. {sugg['title']}** `[{sugg['category']}]`")
@@ -284,8 +298,8 @@ def render_resume_analysis_flow():
         # Improve Resume Before / After
         if st.session_state.get("show_improvements") and st.session_state.get("improvements_list"):
             st.markdown("---")
-            st.markdown("### ⚡ Resume Improvement Review")
-            st.caption("Choose whether to Accept, Edit, or Keep Original for each changed section. Factual accuracy is strictly preserved.")
+            st.markdown("### Before / After Improvement")
+            st.caption("For each changed section, review the changes. Choose Accept, Edit, or Keep Original.")
 
             for item in st.session_state.improvements_list:
                 sec_key = item["section_key"]
@@ -312,7 +326,7 @@ def render_resume_analysis_flow():
                         st.markdown(f'<div class="diff-after">{item["after"]}</div>', unsafe_allow_html=True)
 
                     choice = st.radio(
-                        f"Action for {sec_title}:",
+                        f"Choose option for {sec_title}:",
                         options=["✅ Accept", "✎ Edit", "↩ Keep Original"],
                         key=f"analysis_decision_{sec_key}",
                         horizontal=True
@@ -346,12 +360,12 @@ def render_resume_analysis_flow():
         if st.session_state.get("final_resume_generated") and st.session_state.get("final_resume_text"):
             st.markdown("---")
             st.markdown("## Final Updated Resume")
-            if st.session_state.active_jd:
+            if st.session_state.selected_jd:
                 st.success("### “Your resume has been updated based on your selected job role, company, and job description.”")
             else:
                 st.success("### “Your resume has been updated based on your selected job role and company.”")
 
-            prev_tab, raw_tab = st.tabs(["Preview Updated Resume", "Raw Plain Text"])
+            prev_tab, raw_tab = st.tabs(["Preview Updated Resume", "Raw Formatted Text"])
             with prev_tab:
                 st.markdown(f"""
                     <div style="background-color: #FFFFFF; border: 2px solid #E2E8F0; padding: 2rem; border-radius: 8px;">
@@ -362,16 +376,16 @@ def render_resume_analysis_flow():
                 st.text_area("Updated Content:", value=st.session_state.final_resume_text, height=300)
 
             st.markdown("#### Download Resume")
-            pdf_bytes = export_resume_to_pdf(st.session_state.final_resume_text, f"{st.session_state.active_job_role} Resume")
+            pdf_bytes = export_resume_to_pdf(st.session_state.final_resume_text, f"{st.session_state.selected_job_role} Resume")
             docx_bytes = export_resume_to_docx(st.session_state.final_resume_text)
 
             col_d1, col_d2, col_d3 = st.columns(3)
             with col_d1:
-                st.download_button("📥 Download PDF", data=pdf_bytes, file_name="AscendCareer_Updated_Resume.pdf", mime="application/pdf", use_container_width=True)
+                st.download_button("📥 Download PDF Resume", data=pdf_bytes, file_name="AscendCareer_Updated_Resume.pdf", mime="application/pdf", use_container_width=True)
             with col_d2:
                 st.download_button("📥 Download Word (.docx)", data=docx_bytes, file_name="AscendCareer_Updated_Resume.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
             with col_d3:
-                st.download_button("📥 Download Text (.txt)", data=st.session_state.final_resume_text, file_name="AscendCareer_Updated_Resume.txt", mime="text/plain", use_container_width=True)
+                st.download_button("📥 Download Plain Text (.txt)", data=st.session_state.final_resume_text, file_name="AscendCareer_Updated_Resume.txt", mime="text/plain", use_container_width=True)
 
         st.markdown("")
         if st.button("← Upload Another Resume / Start Over", use_container_width=True):

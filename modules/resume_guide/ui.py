@@ -1,9 +1,9 @@
 """
 Main Resume Guide router for AscendCareer.
-Provides the two primary user paths:
-1. 'I Have a Resume' -> Continue to Resume Analysis
-2. 'I Don't Have a Resume' -> Continue to Create Resume
-Users can switch between paths at any time.
+Presents a dedicated landing page where the user chooses between:
+1. Resume Analysis
+2. Create Resume
+No 'I have / not have' text, no 'path', no 'active' badges.
 """
 
 import streamlit as st
@@ -11,70 +11,70 @@ from modules.resume_guide.ui_analysis import render_resume_analysis_flow
 from modules.resume_guide.ui_builder import render_create_resume_flow
 
 def render_resume_guide():
-    """Render the top-level Resume Guide section with two paths."""
+    """Render the top-level Resume Guide section."""
+    if "resume_guide_mode" not in st.session_state:
+        st.session_state.resume_guide_mode = None
+
+    # Top Header
     st.markdown("""
-        <style>
-        .guide-main-header {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #1A365D;
-            margin-bottom: 0.2rem;
-        }
-        .guide-sub-header {
-            font-size: 1.05rem;
-            color: #4A5568;
-            margin-bottom: 1.5rem;
-        }
-        .path-selector-card {
-            border: 2px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 18px;
-            background: #FFFFFF;
-            transition: all 0.2s ease-in-out;
-        }
-        .path-selector-card:hover {
-            border-color: #3182CE;
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.1);
-        }
-        </style>
+        <div style="margin-bottom: 1.5rem;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: #1A365D; margin: 0;">Resume Guide</h1>
+            <p style="font-size: 1.05rem; color: #4A5568; margin-top: 4px;">Choose an option to begin preparing your resume.</p>
+        </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="guide-main-header">📄 Resume Guide</div>', unsafe_allow_html=True)
-    st.markdown('<div class="guide-sub-header">Select your path to either evaluate your existing resume or craft a targeted, high-impact resume from scratch.</div>', unsafe_allow_html=True)
+    # LANDING PAGE: Choose between Resume Analysis and Create Resume
+    if st.session_state.resume_guide_mode is None:
+        st.markdown("### Choose an Option")
+        
+        col1, col2 = st.columns(2)
 
-    if "resume_path_choice" not in st.session_state:
-        st.session_state.resume_path_choice = "I Have a Resume"
-
-    # Top Path Switcher / Radio buttons
-    col_path, col_status = st.columns([3, 1])
-    with col_path:
-        path_selected = st.radio(
-            "Choose your starting point:",
-            options=["I Have a Resume", "I Don't Have a Resume"],
-            index=0 if st.session_state.resume_path_choice == "I Have a Resume" else 1,
-            horizontal=True,
-            key="guide_path_radio"
-        )
-        st.session_state.resume_path_choice = path_selected
-
-    with col_status:
-        if path_selected == "I Have a Resume":
+        with col1:
             st.markdown("""
-                <div style="background: #EBF8FF; border-left: 3px solid #3182CE; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; color: #2B6CB0; margin-top: 15px;">
-                    <strong>Active:</strong> Resume Analysis
+                <div style="border: 2px solid #CBD5E0; border-radius: 10px; padding: 24px; background: #FFFFFF; height: 190px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0; color: #2B6CB0; font-size: 1.35rem;">Resume Analysis</h3>
+                        <p style="color: #4A5568; font-size: 0.95rem; margin-top: 8px;">Upload your current resume to evaluate its alignment with your selected job role, company, and optional job description.</p>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-        else:
+            st.markdown("")
+            if st.button("Open Resume Analysis →", type="primary", use_container_width=True, key="btn_choose_analysis"):
+                st.session_state.resume_guide_mode = "Resume Analysis"
+                st.session_state.analysis_step = 1
+                st.rerun()
+
+        with col2:
             st.markdown("""
-                <div style="background: #F0FFF4; border-left: 3px solid #38A169; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; color: #22543D; margin-top: 15px;">
-                    <strong>Active:</strong> Create Resume
+                <div style="border: 2px solid #CBD5E0; border-radius: 10px; padding: 24px; background: #FFFFFF; height: 190px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0; color: #2F855A; font-size: 1.35rem;">Create Resume</h3>
+                        <p style="color: #4A5568; font-size: 0.95rem; margin-top: 8px;">Build a professional, tailored resume from scratch with customized templates, photo options, and mandatory declaration.</p>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
+            st.markdown("")
+            if st.button("Open Create Resume →", type="primary", use_container_width=True, key="btn_choose_create"):
+                st.session_state.resume_guide_mode = "Create Resume"
+                st.session_state.builder_step = 1
+                st.rerun()
 
-    st.markdown("---")
-
-    # Route based on user selection
-    if st.session_state.resume_path_choice == "I Have a Resume":
+    # SUB-FLOW: Resume Analysis
+    elif st.session_state.resume_guide_mode == "Resume Analysis":
+        col_nav, col_space = st.columns([1, 4])
+        with col_nav:
+            if st.button("← Back to Options", key="btn_back_to_home_from_analysis"):
+                st.session_state.resume_guide_mode = None
+                st.rerun()
+        st.markdown("---")
         render_resume_analysis_flow()
-    else:
+
+    # SUB-FLOW: Create Resume
+    elif st.session_state.resume_guide_mode == "Create Resume":
+        col_nav, col_space = st.columns([1, 4])
+        with col_nav:
+            if st.button("← Back to Options", key="btn_back_to_home_from_builder"):
+                st.session_state.resume_guide_mode = None
+                st.rerun()
+        st.markdown("---")
         render_create_resume_flow()

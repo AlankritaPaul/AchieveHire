@@ -130,7 +130,7 @@ class ResumeBuilderModel:
             parts.append(" | ".join(contact))
 
         if data.get("job_role"):
-            parts.append(f"Target Role: {data['job_role']} | Target Organization: {data.get('company', '')}")
+            parts.append(f"{data['job_role']} - {data.get('company', '')}" if data.get('company') else data['job_role'])
 
         parts.append("-" * 60)
 
