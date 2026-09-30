@@ -1,7 +1,9 @@
 """
 Page-wise UI flow for Resume Analysis.
 Each selection has its own dedicated page.
-No 'target', 'path', or 'active' labels.
+Bottom navigation consistently provides:
+- Left side below: Back clickable option
+- Right side below: Next clickable option
 """
 
 import streamlit as st
@@ -60,10 +62,16 @@ def render_resume_analysis_flow():
 
         st.info(f"Selected Job Role: **{st.session_state.selected_job_role}**")
 
-        st.markdown("")
-        if st.button("Continue to Select Company →", type="primary", use_container_width=True):
-            st.session_state.analysis_step = 2
-            st.rerun()
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_nav_back_step1", use_container_width=True):
+                st.session_state.resume_guide_mode = None
+                st.rerun()
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_nav_next_step1", use_container_width=True):
+                st.session_state.analysis_step = 2
+                st.rerun()
 
     # PAGE 2: SELECT COMPANY
     elif current_step == 2:
@@ -93,13 +101,14 @@ def render_resume_analysis_flow():
 
         st.info(f"Selected Company: **{st.session_state.selected_company}**")
 
-        col_back, col_next = st.columns(2)
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back to Select Job Role", use_container_width=True):
+            if st.button("← Back", key="btn_nav_back_step2", use_container_width=True):
                 st.session_state.analysis_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Continue to Job Description →", type="primary", use_container_width=True):
+            if st.button("Next →", type="primary", key="btn_nav_next_step2", use_container_width=True):
                 st.session_state.analysis_step = 3
                 st.rerun()
 
@@ -123,13 +132,14 @@ def render_resume_analysis_flow():
         else:
             st.info(f"No Job Description provided. The resume will be analyzed based on the selected job role ({st.session_state.get('selected_job_role', 'Software Developer')}) and company ({st.session_state.get('selected_company', 'General Tech Company')}).")
 
-        col_back, col_next = st.columns(2)
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back to Select Company", use_container_width=True):
+            if st.button("← Back", key="btn_nav_back_step3", use_container_width=True):
                 st.session_state.analysis_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Continue to Upload Resume →", type="primary", use_container_width=True):
+            if st.button("Next →", type="primary", key="btn_nav_next_step3", use_container_width=True):
                 st.session_state.analysis_step = 4
                 st.rerun()
 
@@ -153,14 +163,15 @@ def render_resume_analysis_flow():
             </div>
         """, unsafe_allow_html=True)
 
-        col_back, col_submit = st.columns(2)
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back to Job Description", use_container_width=True):
+            if st.button("← Back", key="btn_nav_back_step4", use_container_width=True):
                 st.session_state.analysis_step = 3
                 st.rerun()
 
-        with col_submit:
-            submit_btn = st.button("Submit Resume for Review", type="primary", use_container_width=True)
+        with col_next:
+            submit_btn = st.button("Next: Submit Resume for Review →", type="primary", key="btn_nav_next_step4", use_container_width=True)
 
         if submit_btn:
             if not uploaded_file:
@@ -387,8 +398,14 @@ def render_resume_analysis_flow():
             with col_d3:
                 st.download_button("📥 Download Plain Text (.txt)", data=st.session_state.final_resume_text, file_name="AscendCareer_Updated_Resume.txt", mime="text/plain", use_container_width=True)
 
-        st.markdown("")
-        if st.button("← Upload Another Resume / Start Over", use_container_width=True):
-            st.session_state.analysis_step = 1
-            st.session_state.analysis_complete = False
-            st.rerun()
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back to Upload", key="btn_nav_back_step5", use_container_width=True):
+                st.session_state.analysis_step = 4
+                st.rerun()
+        with col_next:
+            if st.button("Start Over", key="btn_nav_next_step5", use_container_width=True):
+                st.session_state.analysis_step = 1
+                st.session_state.analysis_complete = False
+                st.rerun()

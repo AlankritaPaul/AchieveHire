@@ -1,7 +1,9 @@
 """
 Page-wise UI flow for 'Create Resume' in AscendCareer Resume Guide.
 Each selection has its own dedicated page.
-No 'target', 'path', or 'active' labels.
+Bottom navigation consistently provides:
+- Left side below: Back clickable option
+- Right side below: Next clickable option
 """
 
 import streamlit as st
@@ -89,10 +91,16 @@ def render_create_resume_flow():
 
         st.info(f"Selected Job Role: **{data['job_role']}**")
 
-        st.markdown("")
-        if st.button("Continue to Select Company →", type="primary", use_container_width=True):
-            st.session_state.builder_step = 2
-            st.rerun()
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_1", use_container_width=True):
+                st.session_state.resume_guide_mode = None
+                st.rerun()
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_1", use_container_width=True):
+                st.session_state.builder_step = 2
+                st.rerun()
 
     # -------------------------------------------------------------
     # STEP 2: SELECT COMPANY
@@ -124,13 +132,14 @@ def render_create_resume_flow():
 
         st.info(f"Selected Company: **{data['company']}**")
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Select Job Role", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_2", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Job Description →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_2", use_container_width=True):
                 st.session_state.builder_step = 3
                 st.rerun()
 
@@ -155,13 +164,14 @@ def render_create_resume_flow():
         else:
             st.info(f"No Job Description provided. The resume will be tailored according to the selected job role ({data.get('job_role', 'Software Developer')}) and company ({data.get('company', 'General Tech Company')}).")
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Select Company", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_3", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Personal Information →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_3", use_container_width=True):
                 st.session_state.builder_step = 4
                 st.rerun()
 
@@ -197,13 +207,14 @@ def render_create_resume_flow():
                     data["photo_b64"] = ""
                     st.rerun()
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Job Description", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_4", use_container_width=True):
                 st.session_state.builder_step = 3
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Education →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_4", use_container_width=True):
                 st.session_state.builder_step = 5
                 st.rerun()
 
@@ -222,13 +233,14 @@ def render_create_resume_flow():
             key="builder_edu_input"
         )
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Personal Details", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_5", use_container_width=True):
                 st.session_state.builder_step = 4
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Skills →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
                 st.session_state.builder_step = 6
                 st.rerun()
 
@@ -247,13 +259,14 @@ def render_create_resume_flow():
             key="builder_skills_input"
         )
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Education", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_6", use_container_width=True):
                 st.session_state.builder_step = 5
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Work Experience →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_6", use_container_width=True):
                 st.session_state.builder_step = 7
                 st.rerun()
 
@@ -272,13 +285,14 @@ def render_create_resume_flow():
             key="builder_exp_input"
         )
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Skills", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
                 st.session_state.builder_step = 6
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Projects →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
                 st.session_state.builder_step = 8
                 st.rerun()
 
@@ -297,13 +311,14 @@ def render_create_resume_flow():
             key="builder_proj_input"
         )
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Work Experience", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_8", use_container_width=True):
                 st.session_state.builder_step = 7
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Additional Information →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_8", use_container_width=True):
                 st.session_state.builder_step = 9
                 st.rerun()
 
@@ -348,13 +363,14 @@ def render_create_resume_flow():
                         data["custom_sections"].pop(idx)
                         st.rerun()
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Projects", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_9", use_container_width=True):
                 st.session_state.builder_step = 8
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Declaration & Signature →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_9", use_container_width=True):
                 st.session_state.builder_step = 10
                 st.rerun()
 
@@ -386,13 +402,14 @@ def render_create_resume_flow():
             if not data["sig_val"]:
                 st.caption("Will render as: `Signature: ____________________`")
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Additional Info", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_10", use_container_width=True):
                 st.session_state.builder_step = 9
                 st.rerun()
-        with col_n:
-            if st.button("Continue to Template Selection →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_10", use_container_width=True):
                 st.session_state.builder_step = 11
                 st.rerun()
 
@@ -410,9 +427,7 @@ def render_create_resume_flow():
             col_target = tpl_cols[i % 3]
             with col_target:
                 st.markdown(f"#### {tpl_info['name']}")
-                # 1. Template Preview / Picture
                 st.markdown(tpl_info["preview_svg"], unsafe_allow_html=True)
-                # 2. Template Name clearly visible
                 st.caption(tpl_info["description"])
 
                 is_selected = (current_tpl == tpl_key)
@@ -424,13 +439,14 @@ def render_create_resume_flow():
         st.markdown("---")
         st.info(f"Selected Template: **{data.get('template_name', 'Modern')}**")
 
-        col_b, col_n = st.columns(2)
-        with col_b:
-            if st.button("← Back to Declaration & Signature", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_11", use_container_width=True):
                 st.session_state.builder_step = 10
                 st.rerun()
-        with col_n:
-            if st.button("Create Resume & Preview →", type="primary", use_container_width=True):
+        with col_next:
+            if st.button("Next: Create & Preview Resume →", type="primary", key="btn_bld_next_11", use_container_width=True):
                 tailored = ResumeBuilderModel.tailor_content(data)
                 st.session_state.builder_data.update(tailored)
                 st.session_state.builder_step = 12
@@ -466,6 +482,18 @@ def render_create_resume_flow():
             photo_b64=st.session_state.builder_photo_b64
         )
         st.markdown(html_preview, unsafe_allow_html=True)
+
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_12", use_container_width=True):
+                st.session_state.builder_step = 11
+                st.rerun()
+        with col_next:
+            if st.button("Next: Finalize & Download →", type="primary", key="btn_bld_next_12", use_container_width=True):
+                st.session_state.builder_accepted = True
+                st.session_state.builder_step = 13
+                st.rerun()
 
     # -------------------------------------------------------------
     # STEP 13: FINAL RESUME & DOWNLOADS
@@ -509,14 +537,14 @@ def render_create_resume_flow():
                 use_container_width=True
             )
 
-        st.markdown("---")
-        col_end1, col_end2 = st.columns(2)
-        with col_end1:
-            if st.button("✎ Edit Resume", use_container_width=True):
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back to Edit", key="btn_bld_back_13", use_container_width=True):
                 st.session_state.builder_step = 4
                 st.rerun()
-        with col_end2:
-            if st.button("🎨 Change Template", use_container_width=True):
+        with col_next:
+            if st.button("Switch Template", key="btn_bld_next_13", use_container_width=True):
                 st.session_state.builder_step = 11
                 st.rerun()
 
