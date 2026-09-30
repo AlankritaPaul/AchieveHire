@@ -315,29 +315,44 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
             </div>
         """
 
-    return f"""
-    <div style="font-family: {font_family}; background: #FFFFFF; color: #2D3748; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 850px; margin: 0 auto; line-height: 1.5;">
-        <style>
-            .resume-sec {{ margin-bottom: 18px; }}
-            .sec-title {{
-                font-weight: 700;
-                font-size: 1.02rem;
-                color: {accent};
-                border-bottom: 1.5px solid {accent}40;
-                padding-bottom: 3px;
-                margin-bottom: 8px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }}
-            .sec-content {{
-                font-size: 0.92rem;
-                color: #2D3748;
-            }}
-        </style>
-        {header_html}
-        {all_sections}
-    </div>
-    """
+    raw_html = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {{
+    margin: 0;
+    padding: 20px 10px;
+    background-color: #F8FAFC;
+    font-family: {font_family};
+    display: flex;
+    justify-content: center;
+}}
+.resume-paper {{
+    background: #FFFFFF;
+    color: #2D3748;
+    padding: 36px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid #E2E8F0;
+    max-width: 820px;
+    width: 100%;
+    box-sizing: border-box;
+    line-height: 1.55;
+}}
+.resume-sec {{ margin-bottom: 20px; }}
+.sec-title {{ font-weight: 700; font-size: 1.05rem; color: {accent}; border-bottom: 2px solid {accent}40; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }}
+.sec-content {{ font-size: 0.94rem; color: #2D3748; line-height: 1.6; }}
+</style>
+</head>
+<body>
+<div class="resume-paper">
+{header_html}
+{all_sections}
+</div>
+</body>
+</html>"""
+    return "\n".join([line.strip() for line in raw_html.split("\n") if line.strip()])
 
 def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Modern") -> bytes:
     """Generate high-quality PDF specifically adhering to the selected template styling."""

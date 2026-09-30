@@ -7,6 +7,7 @@ Bottom navigation consistently provides:
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import base64
 from typing import Dict, Any, List
 from modules.constants import SUGGESTED_JOB_ROLES, SUGGESTED_COMPANIES
@@ -338,30 +339,69 @@ def render_create_resume_flow():
         )
 
         st.markdown("#### Add Other Information")
-        st.caption("Add any other section with your own appropriate section title.")
+        st.caption("You are not restricted to predefined sections. You can add as many custom sections as you want.")
 
-        with st.expander("➕ Add Other Information Section", expanded=False):
-            new_title = st.text_input("Section Title:", placeholder="e.g. Leadership / Positions of Responsibility, Languages, Hobbies")
-            new_content = st.text_area("Section Content:", placeholder="Enter details...")
-            if st.button("Add Section"):
-                if new_title.strip() and new_content.strip():
-                    data["custom_sections"].append({
-                        "title": new_title.strip(),
-                        "content": new_content.strip()
-                    })
-                    st.success(f"Added section: {new_title}")
-                    st.rerun()
+        if "custom_sections" not in data or not isinstance(data["custom_sections"], list):
+            data["custom_sections"] = []
 
-        if data.get("custom_sections"):
-            st.markdown("**Added Custom Sections:**")
+        # Render all active custom sections with directly editable inputs
+        indices_to_remove = []
+        if data["custom_sections"]:
+            st.markdown("##### Your Custom Sections:")
             for idx, sec in enumerate(data["custom_sections"]):
-                c_title, c_del = st.columns([4, 1])
-                with c_title:
-                    st.markdown(f"**{sec['title']}**\n{sec['content']}")
-                with c_del:
-                    if st.button(f"🗑️ Remove", key=f"del_custom_{idx}"):
-                        data["custom_sections"].pop(idx)
-                        st.rerun()
+                with st.container():
+                    col_t, col_del = st.columns([5, 1])
+                    with col_t:
+                        sec_title = st.text_input(
+                            f"Section Title #{idx + 1}:",
+                            value=sec.get("title", ""),
+                            placeholder="e.g. Leadership, Languages, Publications",
+                            key=f"cs_title_{idx}"
+                        )
+                    with col_del:
+                        st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
+                        if st.button("🗑️ Remove", key=f"cs_del_{idx}", use_container_width=True):
+                            indices_to_remove.append(idx)
+
+                    sec_content = st.text_area(
+                        f"Section Content #{idx + 1}:",
+                        value=sec.get("content", ""),
+                        placeholder="Enter description, bullet points, or details...",
+                        height=100,
+                        key=f"cs_content_{idx}"
+                    )
+                    sec["title"] = sec_title
+                    sec["content"] = sec_content
+                    st.markdown("<hr style='margin: 8px 0; border: none; border-top: 1px dashed #E2E8F0;'/>", unsafe_allow_html=True)
+
+        if indices_to_remove:
+            for idx in sorted(indices_to_remove, reverse=True):
+                data["custom_sections"].pop(idx)
+            st.rerun()
+
+        # Dynamic Add Section Controls (Allows adding multiple sections easily)
+        st.markdown("##### ➕ Add Another Section:")
+        col_a1, col_a2, col_a3, col_a4, col_a5 = st.columns(5)
+        with col_a1:
+            if st.button("➕ Custom Section", key="btn_add_blank_sec", use_container_width=True):
+                data["custom_sections"].append({"title": "", "content": ""})
+                st.rerun()
+        with col_a2:
+            if st.button("+ Leadership", key="btn_add_lead_sec", use_container_width=True):
+                data["custom_sections"].append({"title": "Leadership & Positions of Responsibility", "content": ""})
+                st.rerun()
+        with col_a3:
+            if st.button("+ Languages", key="btn_add_lang_sec", use_container_width=True):
+                data["custom_sections"].append({"title": "Languages", "content": ""})
+                st.rerun()
+        with col_a4:
+            if st.button("+ Hobbies", key="btn_add_hobb_sec", use_container_width=True):
+                data["custom_sections"].append({"title": "Hobbies & Interests", "content": ""})
+                st.rerun()
+        with col_a5:
+            if st.button("+ Volunteering", key="btn_add_vol_sec", use_container_width=True):
+                data["custom_sections"].append({"title": "Volunteer Experience", "content": ""})
+                st.rerun()
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -481,7 +521,7 @@ def render_create_resume_flow():
             template_name=data.get("template_name", "Modern"),
             photo_b64=st.session_state.builder_photo_b64
         )
-        st.markdown(html_preview, unsafe_allow_html=True)
+        components.html(html_preview, height=950, scrolling=True)
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -555,4 +595,4 @@ def render_create_resume_flow():
                 template_name=data.get("template_name", "Modern"),
                 photo_b64=st.session_state.builder_photo_b64
             )
-            st.markdown(html_preview, unsafe_allow_html=True)
+            components.html(html_preview, height=950, scrolling=True)
