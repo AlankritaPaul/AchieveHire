@@ -32,12 +32,29 @@ def init_builder_state():
         st.session_state.builder_photo_b64 = ""
     if "builder_sig_b64" not in st.session_state:
         st.session_state.builder_sig_b64 = ""
-    if "education_entries" not in st.session_state.builder_data or not st.session_state.builder_data.get("education_entries"):
+    if (
+        "education_entries" not in st.session_state.builder_data
+        or not st.session_state.builder_data.get("education_entries")
+        or "status" not in st.session_state.builder_data["education_entries"][0]
+    ):
         st.session_state.builder_data["education_entries"] = [
-            {"level": "college", "degree": "", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
-            {"level": "12th", "degree": "Class XII (Higher Secondary)", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
-            {"level": "10th", "degree": "Class X (Secondary)", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
+            {
+                "degree": "",
+                "field_of_study": "",
+                "institution": "",
+                "board_univ": "",
+                "location": "",
+                "status": "Completed",
+                "start_year": "",
+                "end_year": "",
+                "expected_grad_year": "",
+                "cgpa": "",
+                "percentage": "",
+                "grade": ""
+            }
         ]
+    if "qualification_entries" not in st.session_state.builder_data or not isinstance(st.session_state.builder_data.get("qualification_entries"), list):
+        st.session_state.builder_data["qualification_entries"] = []
     if "builder_accepted" not in st.session_state:
         st.session_state.builder_accepted = False
 
@@ -51,7 +68,7 @@ def render_create_resume_flow():
         "2. Select Company",
         "3. Job Description",
         "4. Personal & Photo",
-        "5. Education",
+        "5. Education and Qualifications",
         "6. Skills",
         "7. Work Experience",
         "8. Projects",
@@ -271,133 +288,269 @@ def render_create_resume_flow():
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 5: EDUCATION & QUALIFICATIONS
+    # -------------------------------------------------------------
+    # STEP 5: EDUCATION AND QUALIFICATIONS
     # -------------------------------------------------------------
     elif current_step == 5:
         col_e_head, col_e_btn = st.columns([3, 1])
         with col_e_head:
-            st.markdown("### Education & Qualifications")
-            st.caption("Provide space for each education qualification (College/University, Class 12, Class 10, marks, etc.) as on realistic resumes.")
+            st.markdown("### Education and Qualifications")
+            st.caption("Provide your formal education and any additional professional qualifications.")
         with col_e_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
-            if st.button("✨ Enhance Writing", key="btn_enhance_edu_top", use_container_width=True, help="Standardize degrees, streams, boards, and grades professionally without altering facts"):
+            if st.button("✨ Enhance Writing", key="btn_enhance_edu_top", use_container_width=True, help="Standardize degrees, specializations, and qualifications professionally without altering facts"):
                 if data.get("education_entries"):
                     data["education_entries"] = ResumeBuilderModel.enhance_education_entries(data["education_entries"])
-                    compiled = ResumeBuilderModel.compile_education_entries(data["education_entries"])
-                    if compiled:
-                        data["education"] = compiled
-                    st.success("✅ Enhanced all qualifications with professional keywords!")
-                    st.rerun()
-                elif data.get("education", "").strip():
-                    data["education"] = ResumeBuilderModel.enhance_qualifications(data["education"])
-                    st.success("✅ Enhanced education text with professional terminology!")
-                    st.rerun()
+                if data.get("qualification_entries"):
+                    data["qualification_entries"] = ResumeBuilderModel.enhance_qualification_entries(data["qualification_entries"])
+                compiled = ResumeBuilderModel.compile_education_and_qualifications(
+                    data.get("education_entries", []),
+                    data.get("qualification_entries", [])
+                )
+                if compiled:
+                    data["education"] = compiled
+                st.success("✅ Enhanced all education and qualifications with professional keywords!")
+                st.rerun()
 
-        if "education_entries" not in data or not data["education_entries"]:
+        # Subsection 1: Education
+        st.markdown("<hr style='margin: 14px 0; border: none; border-top: 1px solid #E2E8F0;'/>", unsafe_allow_html=True)
+        st.markdown("#### Education")
+        st.caption("Add your formal educational qualifications. Each entry supports independent status, dates, and academic details.")
+
+        if "education_entries" not in data or not isinstance(data.get("education_entries"), list) or not data["education_entries"]:
             data["education_entries"] = [
-                {"level": "college", "degree": "", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
-                {"level": "12th", "degree": "Class XII (Higher Secondary)", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
-                {"level": "10th", "degree": "Class X (Secondary)", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""},
+                {
+                    "degree": "",
+                    "field_of_study": "",
+                    "institution": "",
+                    "board_univ": "",
+                    "location": "",
+                    "status": "Completed",
+                    "start_year": "",
+                    "end_year": "",
+                    "expected_grad_year": "",
+                    "cgpa": "",
+                    "percentage": "",
+                    "grade": ""
+                }
             ]
 
-        # 1. College / University
-        ent_0 = data["education_entries"][0]
-        st.markdown("#### 🎓 1. University / College (Degree / Graduation)")
-        with st.container():
-            c1, c2 = st.columns(2)
-            with c1:
-                ent_0["degree"] = st.text_input("Degree / Qualification:", value=ent_0.get("degree", ""), placeholder="e.g. B.Tech, B.Sc, BCA, B.E., B.Com", key="edu_0_deg")
-                ent_0["stream"] = st.text_input("Stream / Specialization / Major:", value=ent_0.get("stream", ""), placeholder="e.g. Computer Science & Engineering", key="edu_0_str")
-                ent_0["institution"] = st.text_input("College / Institute Name:", value=ent_0.get("institution", ""), placeholder="e.g. Delhi Technological University", key="edu_0_inst")
-            with c2:
-                ent_0["board_univ"] = st.text_input("University / Affiliation (Optional):", value=ent_0.get("board_univ", ""), placeholder="e.g. State Technical University", key="edu_0_univ")
-                ent_0["year"] = st.text_input("Duration / Year of Passing:", value=ent_0.get("year", ""), placeholder="e.g. 2020 - 2024", key="edu_0_yr")
-                ent_0["grade"] = st.text_input("CGPA / Marks / Percentage:", value=ent_0.get("grade", ""), placeholder="e.g. 8.6 CGPA or 85%", key="edu_0_grd")
-
-        st.markdown("<hr style='margin: 14px 0; border: none; border-top: 1px solid #E2E8F0;'/>", unsafe_allow_html=True)
-
-        # 2. Class 12 / Higher Secondary
-        ent_1 = data["education_entries"][1]
-        st.markdown("#### 🏫 2. Class 12 / Higher Secondary (12th Pass)")
-        with st.container():
-            c1, c2 = st.columns(2)
-            with c1:
-                ent_1["degree"] = st.text_input("Qualification Title:", value=ent_1.get("degree", "Higher Secondary Certificate (Class XII)"), placeholder="e.g. Higher Secondary Certificate (Class XII)", key="edu_1_deg")
-                ent_1["stream"] = st.text_input("Stream / Subjects:", value=ent_1.get("stream", ""), placeholder="e.g. Science (PCM), Commerce, Arts", key="edu_1_str")
-                ent_1["institution"] = st.text_input("School / Junior College Name:", value=ent_1.get("institution", ""), placeholder="e.g. Delhi Public School", key="edu_1_inst")
-            with c2:
-                ent_1["board_univ"] = st.text_input("Board / Council:", value=ent_1.get("board_univ", ""), placeholder="e.g. CBSE Board, ICSE, State Board", key="edu_1_brd")
-                ent_1["year"] = st.text_input("Year of Passing:", value=ent_1.get("year", ""), placeholder="e.g. 2020", key="edu_1_yr")
-                ent_1["grade"] = st.text_input("Marks / Percentage / Score:", value=ent_1.get("grade", ""), placeholder="e.g. 92.4%", key="edu_1_grd")
-
-        st.markdown("<hr style='margin: 14px 0; border: none; border-top: 1px solid #E2E8F0;'/>", unsafe_allow_html=True)
-
-        # 3. Class 10 / Secondary
-        ent_2 = data["education_entries"][2]
-        st.markdown("#### 🎒 3. Class 10 / Secondary (10th Pass)")
-        with st.container():
-            c1, c2 = st.columns(2)
-            with c1:
-                ent_2["degree"] = st.text_input("Qualification Title:", value=ent_2.get("degree", "Secondary School Certificate (Class X)"), placeholder="e.g. Secondary School Certificate (Class X)", key="edu_2_deg")
-                ent_2["institution"] = st.text_input("School Name:", value=ent_2.get("institution", ""), placeholder="e.g. Delhi Public School", key="edu_2_inst")
-            with c2:
-                ent_2["board_univ"] = st.text_input("Board / Council:", value=ent_2.get("board_univ", ""), placeholder="e.g. CBSE Board, ICSE, State Board", key="edu_2_brd")
-                ent_2["year"] = st.text_input("Year of Passing:", value=ent_2.get("year", ""), placeholder="e.g. 2018", key="edu_2_yr")
-                ent_2["grade"] = st.text_input("Marks / Percentage / CGPA:", value=ent_2.get("grade", ""), placeholder="e.g. 94.6%", key="edu_2_grd")
-
-        # 4. Dynamic Extra Qualifications
         del_edu_indices = []
-        if len(data["education_entries"]) > 3:
-            st.markdown("<hr style='margin: 14px 0; border: none; border-top: 1px solid #E2E8F0;'/>", unsafe_allow_html=True)
-            st.markdown("#### 📚 Additional Qualifications (Post-Graduation / Diploma / Others)")
-            for extra_i, extra_ent in enumerate(data["education_entries"][3:], start=3):
+        for idx, entry in enumerate(data["education_entries"]):
+            entry_title = entry.get("degree", "").strip() or "Education Entry"
+            with st.container():
                 col_eh, col_ed = st.columns([5, 1])
                 with col_eh:
-                    st.markdown(f"**Qualification #{extra_i + 1}**")
+                    st.markdown(f"**🎓 {entry_title}**")
                 with col_ed:
-                    if st.button("🗑️ Remove", key=f"btn_del_extra_edu_{extra_i}"):
-                        del_edu_indices.append(extra_i)
+                    if len(data["education_entries"]) > 1:
+                        if st.button("🗑️ Remove", key=f"btn_del_edu_{idx}"):
+                            del_edu_indices.append(idx)
+
                 c1, c2 = st.columns(2)
                 with c1:
-                    extra_ent["degree"] = st.text_input("Degree / Course:", value=extra_ent.get("degree", ""), placeholder="e.g. M.Tech, MBA, Diploma", key=f"edu_{extra_i}_deg")
-                    extra_ent["stream"] = st.text_input("Stream / Branch:", value=extra_ent.get("stream", ""), placeholder="e.g. Data Science, Finance", key=f"edu_{extra_i}_str")
-                    extra_ent["institution"] = st.text_input("Institute / University:", value=extra_ent.get("institution", ""), placeholder="e.g. University Name", key=f"edu_{extra_i}_inst")
+                    entry["degree"] = st.text_input(
+                        "Degree or Qualification:",
+                        value=entry.get("degree", ""),
+                        placeholder="e.g. Bachelor of Technology / Class XII",
+                        key=f"edu_deg_{idx}"
+                    )
+                    entry["field_of_study"] = st.text_input(
+                        "Field of Study or Specialization:",
+                        value=entry.get("field_of_study", entry.get("stream", "")),
+                        placeholder="e.g. Computer Science & Engineering / Science",
+                        key=f"edu_field_{idx}"
+                    )
+                    entry["institution"] = st.text_input(
+                        "Institution Name:",
+                        value=entry.get("institution", ""),
+                        placeholder="e.g. Delhi Technological University / High School",
+                        key=f"edu_inst_{idx}"
+                    )
                 with c2:
-                    extra_ent["board_univ"] = st.text_input("Board / Affiliation:", value=extra_ent.get("board_univ", ""), placeholder="e.g. Board or University", key=f"edu_{extra_i}_brd")
-                    extra_ent["year"] = st.text_input("Year / Duration:", value=extra_ent.get("year", ""), placeholder="e.g. 2024 - 2026", key=f"edu_{extra_i}_yr")
-                    extra_ent["grade"] = st.text_input("Grade / Marks / CGPA:", value=extra_ent.get("grade", ""), placeholder="e.g. 9.0 CGPA", key=f"edu_{extra_i}_grd")
-                st.markdown("<hr style='margin: 8px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
+                    entry["board_univ"] = st.text_input(
+                        "University or Board (Optional):",
+                        value=entry.get("board_univ", ""),
+                        placeholder="e.g. CBSE / State Board / University Name",
+                        key=f"edu_board_{idx}"
+                    )
+                    entry["location"] = st.text_input(
+                        "Location (Optional):",
+                        value=entry.get("location", ""),
+                        placeholder="e.g. New Delhi, India",
+                        key=f"edu_loc_{idx}"
+                    )
+                    
+                    status_val = entry.get("status", "Completed")
+                    status_idx = 0 if status_val == "Completed" else 1
+                    entry["status"] = st.radio(
+                        "Status:",
+                        options=["Completed", "Currently Pursuing"],
+                        index=status_idx,
+                        key=f"edu_status_{idx}",
+                        horizontal=True
+                    )
+
+                # Dynamic Date Fields based on Status
+                cd1, cd2 = st.columns(2)
+                with cd1:
+                    entry["start_year"] = st.text_input(
+                        "Start Year:",
+                        value=entry.get("start_year", ""),
+                        placeholder="e.g. 2020",
+                        key=f"edu_syr_{idx}"
+                    )
+                with cd2:
+                    if entry["status"] == "Completed":
+                        entry["end_year"] = st.text_input(
+                            "End Year:",
+                            value=entry.get("end_year", ""),
+                            placeholder="e.g. 2024",
+                            key=f"edu_eyr_{idx}"
+                        )
+                        entry["expected_grad_year"] = ""
+                    else:  # Currently Pursuing
+                        entry["expected_grad_year"] = st.text_input(
+                            "Expected Graduation Year:",
+                            value=entry.get("expected_grad_year", ""),
+                            placeholder="e.g. 2026",
+                            key=f"edu_expyr_{idx}"
+                        )
+                        entry["end_year"] = ""
+
+                # Academic Results
+                st.markdown("<span style='font-size: 0.85rem; font-weight: 600; color: #4A5568;'>Academic Results:</span>", unsafe_allow_html=True)
+                ca1, ca2, ca3 = st.columns(3)
+                with ca1:
+                    entry["cgpa"] = st.text_input(
+                        "CGPA (if applicable):",
+                        value=entry.get("cgpa", ""),
+                        placeholder="e.g. 8.7",
+                        key=f"edu_cgpa_{idx}"
+                    )
+                with ca2:
+                    entry["percentage"] = st.text_input(
+                        "Percentage (Optional):",
+                        value=entry.get("percentage", ""),
+                        placeholder="e.g. 88.5%",
+                        key=f"edu_pct_{idx}"
+                    )
+                with ca3:
+                    entry["grade"] = st.text_input(
+                        "Grade (Optional):",
+                        value=entry.get("grade", ""),
+                        placeholder="e.g. A+",
+                        key=f"edu_grd_{idx}"
+                    )
+
+                st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px dashed #E2E8F0;'/>", unsafe_allow_html=True)
 
         if del_edu_indices:
             for di in sorted(del_edu_indices, reverse=True):
                 data["education_entries"].pop(di)
             st.rerun()
 
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-        if st.button("➕ Add Another Qualification (Post-Graduation / Diploma / Other)", key="btn_add_extra_edu"):
+        if st.button("➕ Add Another Education", key="btn_add_another_edu"):
             data["education_entries"].append({
-                "level": "other", "degree": "", "stream": "", "institution": "", "board_univ": "", "year": "", "grade": ""
+                "degree": "",
+                "field_of_study": "",
+                "institution": "",
+                "board_univ": "",
+                "location": "",
+                "status": "Completed",
+                "start_year": "",
+                "end_year": "",
+                "expected_grad_year": "",
+                "cgpa": "",
+                "percentage": "",
+                "grade": ""
+            })
+            st.rerun()
+
+        # Subsection 2: Qualifications (Optional)
+        st.markdown("<hr style='margin: 22px 0; border: none; border-top: 2px solid #CBD5E0;'/>", unsafe_allow_html=True)
+        st.markdown("#### Qualifications (Optional)")
+        st.caption("Include any additional relevant qualifications, diplomas, or credentials separate from your formal education entries.")
+
+        if "qualification_entries" not in data or not isinstance(data.get("qualification_entries"), list):
+            data["qualification_entries"] = []
+
+        del_qual_indices = []
+        if data["qualification_entries"]:
+            for q_idx, qual in enumerate(data["qualification_entries"]):
+                q_title = qual.get("title", "").strip() or "Qualification Entry"
+                with st.container():
+                    col_qh, col_qd = st.columns([5, 1])
+                    with col_qh:
+                        st.markdown(f"**📜 {q_title}**")
+                    with col_qd:
+                        if st.button("🗑️ Remove", key=f"btn_del_qual_{q_idx}"):
+                            del_qual_indices.append(q_idx)
+
+                    cq1, cq2 = st.columns(2)
+                    with cq1:
+                        qual["title"] = st.text_input(
+                            "Qualification Title:",
+                            value=qual.get("title", ""),
+                            placeholder="e.g. Certified Cloud Practitioner / Diploma in Project Management",
+                            key=f"qual_title_{q_idx}"
+                        )
+                        qual["organization"] = st.text_input(
+                            "Issuing Body / Organization:",
+                            value=qual.get("organization", ""),
+                            placeholder="e.g. AWS / PMI / University Name",
+                            key=f"qual_org_{q_idx}"
+                        )
+                    with cq2:
+                        qual["year"] = st.text_input(
+                            "Year / Period:",
+                            value=qual.get("year", ""),
+                            placeholder="e.g. 2023",
+                            key=f"qual_yr_{q_idx}"
+                        )
+                        qual["details"] = st.text_input(
+                            "Details / Score (Optional):",
+                            value=qual.get("details", ""),
+                            placeholder="e.g. Credential ID: 12345 / Score: 92%",
+                            key=f"qual_det_{q_idx}"
+                        )
+                    st.markdown("<hr style='margin: 10px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
+
+        if del_qual_indices:
+            for dqi in sorted(del_qual_indices, reverse=True):
+                data["qualification_entries"].pop(dqi)
+            st.rerun()
+
+        if st.button("➕ Add Qualification", key="btn_add_qual"):
+            data["qualification_entries"].append({
+                "title": "",
+                "organization": "",
+                "year": "",
+                "details": ""
             })
             st.rerun()
 
         # Compile into realistic preview
-        compiled_edu = ResumeBuilderModel.compile_education_entries(data["education_entries"])
+        compiled_edu = ResumeBuilderModel.compile_education_and_qualifications(
+            data.get("education_entries", []),
+            data.get("qualification_entries", [])
+        )
         if compiled_edu and (not data.get("education") or data.get("education") != compiled_edu):
             data["education"] = compiled_edu
 
         st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
-        st.markdown("#### 📄 Formatted Education Preview (As it will appear on your resume):")
+        st.markdown("#### 📄 Formatted Education and Qualifications Preview (As it will appear on your resume):")
         data["education"] = st.text_area(
-            "Live Compiled Education Preview (Editable):",
+            "Live Compiled Education and Qualifications Preview (Editable):",
             value=data.get("education", ""),
-            height=140,
+            height=160,
             key="builder_edu_preview_input"
         )
 
         st.markdown(
             """
             <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Realistic Resume Structure:</strong> Each education entry is compiled with clear degree titles, institution, board, duration, and marks. Clicking <strong>'✨ Enhance Writing'</strong> standardizes all degree acronyms, streams, and boards while strictly preserving your authentic institutions and grades.
+                <strong>💡 Realistic Resume Structure:</strong> Information is organized under the main heading 'Education and Qualifications' with separate subsections for Education and Qualifications. Status-based dates, CGPA, and optional grades are displayed only when provided. No internal form labels appear on your resume.
             </div>
             """,
             unsafe_allow_html=True
@@ -413,9 +566,14 @@ def render_create_resume_flow():
             if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
                 if data.get("education_entries"):
                     data["education_entries"] = ResumeBuilderModel.enhance_education_entries(data["education_entries"])
-                    compiled = ResumeBuilderModel.compile_education_entries(data["education_entries"])
-                    if compiled:
-                        data["education"] = compiled
+                if data.get("qualification_entries"):
+                    data["qualification_entries"] = ResumeBuilderModel.enhance_qualification_entries(data["qualification_entries"])
+                compiled = ResumeBuilderModel.compile_education_and_qualifications(
+                    data.get("education_entries", []),
+                    data.get("qualification_entries", [])
+                )
+                if compiled:
+                    data["education"] = compiled
                 elif data.get("education", "").strip():
                     data["education"] = ResumeBuilderModel.enhance_qualifications(data["education"])
                 st.session_state.builder_step = 6

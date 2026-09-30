@@ -42,33 +42,21 @@ class ResumeBuilderModel:
             "template_name": "Modern",
             "education_entries": [
                 {
-                    "level": "college",
                     "degree": "",
-                    "stream": "",
+                    "field_of_study": "",
                     "institution": "",
                     "board_univ": "",
-                    "year": "",
-                    "grade": ""
-                },
-                {
-                    "level": "12th",
-                    "degree": "Class XII (Higher Secondary)",
-                    "stream": "",
-                    "institution": "",
-                    "board_univ": "",
-                    "year": "",
-                    "grade": ""
-                },
-                {
-                    "level": "10th",
-                    "degree": "Class X (Secondary)",
-                    "stream": "",
-                    "institution": "",
-                    "board_univ": "",
-                    "year": "",
+                    "location": "",
+                    "status": "Completed",  # "Completed" or "Currently Pursuing"
+                    "start_year": "",
+                    "end_year": "",
+                    "expected_grad_year": "",
+                    "cgpa": "",
+                    "percentage": "",
                     "grade": ""
                 }
-            ]
+            ],
+            "qualification_entries": []
         }
 
     @staticmethod
@@ -138,26 +126,43 @@ class ResumeBuilderModel:
         return "\n".join(enhanced_lines)
 
     @staticmethod
-    def enhance_education_entries(entries: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def enhance_education_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Enhance a list of structured qualification dictionaries with professional keywords
+        Enhance a list of structured education dictionaries with professional keywords
         without altering the candidate's actual institutions, degrees, or grades.
         """
         enhanced_entries = []
         for entry in entries:
             e = dict(entry)
             deg = e.get("degree", "").strip()
-            stream = e.get("stream", "").strip()
+            field = e.get("field_of_study", e.get("stream", "")).strip()
             board = e.get("board_univ", "").strip()
-            year = e.get("year", "").strip()
+            cgpa = e.get("cgpa", "").strip()
+            pct = e.get("percentage", "").strip()
             grade = e.get("grade", "").strip()
+            start_yr = e.get("start_year", "").strip()
+            end_yr = e.get("end_year", "").strip()
+            exp_yr = e.get("expected_grad_year", "").strip()
+
+            if not cgpa and grade and re.search(r"\b(?:cgpa|gpa)\b", grade, flags=re.IGNORECASE):
+                cgpa_match = re.search(r"([0-9.]+)\s*(?:cgpa|gpa)|(?:cgpa|gpa)\s*[:=]?\s*([0-9.]+)", grade, flags=re.IGNORECASE)
+                if cgpa_match:
+                    cgpa = cgpa_match.group(1) or cgpa_match.group(2)
+
+            year_raw = e.get("year", "").strip()
+            if year_raw and not start_yr and not end_yr and not exp_yr:
+                y_parts = [y.strip() for y in re.split(r"[-–—]", year_raw) if y.strip()]
+                if len(y_parts) == 2:
+                    start_yr, end_yr = y_parts[0], y_parts[1]
+                elif len(y_parts) == 1:
+                    end_yr = y_parts[0]
 
             if deg:
                 deg_enh = ResumeBuilderModel.enhance_qualifications(deg).lstrip("• ")
                 e["degree"] = deg_enh
 
-            if stream:
-                stream_clean = stream
+            if field:
+                field_clean = field
                 for pattern, rep in [
                     (r"\baiml\b|\bai\s*(and|&|\/)\s*ml\b|\bai-ml\b", "Artificial Intelligence & Machine Learning"),
                     (r"\bcs\b|\bcse\b|\bcomputer\s+science\s+(and|&)\s+engineering\b", "Computer Science & Engineering"),
@@ -172,8 +177,9 @@ class ResumeBuilderModel:
                     (r"\bcommerce\b", "Commerce"),
                     (r"\barts\b", "Humanities / Arts"),
                 ]:
-                    stream_clean = re.sub(pattern, rep, stream_clean, flags=re.IGNORECASE)
-                e["stream"] = stream_clean
+                    field_clean = re.sub(pattern, rep, field_clean, flags=re.IGNORECASE)
+                e["field_of_study"] = field_clean
+                e["stream"] = field_clean
 
             if board:
                 b_clean = board
@@ -182,72 +188,202 @@ class ResumeBuilderModel:
                 b_clean = re.sub(r"\bstate\s*board\b", "State Board", b_clean, flags=re.IGNORECASE)
                 e["board_univ"] = b_clean
 
+            if cgpa:
+                c_clean = cgpa
+                c_clean = re.sub(r"([0-9.]+)\s*(?:cgpa|gpa)\b", r"\1", c_clean, flags=re.IGNORECASE)
+                c_clean = re.sub(r"\b(?:cgpa|gpa)\s*[:=]?\s*([0-9.]+)", r"\1", c_clean, flags=re.IGNORECASE)
+                e["cgpa"] = c_clean.strip()
+
+            if pct:
+                p_clean = pct.strip()
+                p_clean = re.sub(r"\bpercentage\s*[:=]?\s*", "", p_clean, flags=re.IGNORECASE)
+                p_clean = re.sub(r"\bscore\s*[:=]?\s*", "", p_clean, flags=re.IGNORECASE)
+                if not p_clean.endswith("%") and re.match(r"^[0-9]+(\.[0-9]+)?$", p_clean):
+                    p_clean = f"{p_clean}%"
+                e["percentage"] = p_clean
+
             if grade:
-                g_clean = grade
+                g_clean = grade.strip()
                 g_clean = re.sub(r"([0-9.]+)\s*(?:cgpa|gpa)\b", r"CGPA: \1", g_clean, flags=re.IGNORECASE)
                 g_clean = re.sub(r"\b(?:cgpa|gpa)\s*[:=]?\s*([0-9.]+)", r"CGPA: \1", g_clean, flags=re.IGNORECASE)
-                g_clean = re.sub(r"([0-9.]+)\s*(?:%|\bpercentage\b|\bpercent\b)", r"Score: \1%", g_clean, flags=re.IGNORECASE)
-                g_clean = re.sub(r"\bpercentage\s*[:=]?\s*([0-9.]+)\s*%?", r"Score: \1%", g_clean, flags=re.IGNORECASE)
-                if re.match(r"^[0-9]\.[0-9]+$", g_clean.strip()):
-                    g_clean = f"CGPA: {g_clean.strip()}"
-                elif re.match(r"^[0-9]{2}(\.[0-9]+)?$", g_clean.strip()):
-                    g_clean = f"Score: {g_clean.strip()}%"
+                if "%" in g_clean or "percentage" in g_clean.lower() or "percent" in g_clean.lower():
+                    g_clean = re.sub(r"([0-9.]+)\s*(?:%|\bpercentage\b|\bpercent\b)", r"Score: \1%", g_clean, flags=re.IGNORECASE)
+                    g_clean = re.sub(r"\bpercentage\s*[:=]?\s*([0-9.]+)%?", r"Score: \1%", g_clean, flags=re.IGNORECASE)
                 e["grade"] = g_clean
 
-            if year:
-                e["year"] = re.sub(r"\s*-\s*", " - ", year.strip())
+            if start_yr:
+                e["start_year"] = start_yr.strip()
+            if end_yr:
+                e["end_year"] = end_yr.strip()
+            if exp_yr:
+                e["expected_grad_year"] = exp_yr.strip()
 
             enhanced_entries.append(e)
         return enhanced_entries
 
     @staticmethod
-    def compile_education_entries(entries: List[Dict[str, str]]) -> str:
+    def enhance_qualification_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Compile structured qualification entries into a professional, realistic resume format.
+        Enhance a list of additional qualifications with clean formatting.
         """
-        compiled_blocks = []
+        enhanced = []
         for entry in entries:
+            q = dict(entry)
+            title = q.get("title", "").strip()
+            org = q.get("organization", "").strip()
+            yr = q.get("year", "").strip()
+            det = q.get("details", "").strip()
+
+            if title:
+                q["title"] = title[0].upper() + title[1:] if len(title) > 1 else title.upper()
+            if org:
+                q["organization"] = org.strip()
+            if yr:
+                q["year"] = yr.strip()
+            if det:
+                q["details"] = det.strip()
+
+            enhanced.append(q)
+        return enhanced
+
+    @staticmethod
+    def compile_education_and_qualifications(
+        education_entries: List[Dict[str, Any]],
+        qualification_entries: Optional[List[Dict[str, Any]]] = None
+    ) -> str:
+        """
+        Compile formal Education and optional Qualifications subsections into
+        a realistic, professional resume section under 'Education and Qualifications'.
+        Does NOT show internal form labels like 'Education 1' or 'Education 2'.
+        """
+        sections = []
+
+        # 1. Subsection: Education
+        valid_edu_blocks = []
+        for entry in (education_entries or []):
             deg = entry.get("degree", "").strip()
-            stream = entry.get("stream", "").strip()
+            field = entry.get("field_of_study", entry.get("stream", "")).strip()
             inst = entry.get("institution", "").strip()
             board = entry.get("board_univ", "").strip()
-            year = entry.get("year", "").strip()
+            loc = entry.get("location", "").strip()
+            status = entry.get("status", "Completed").strip()
+            start_yr = entry.get("start_year", "").strip()
+            end_yr = entry.get("end_year", "").strip()
+            exp_grad_yr = entry.get("expected_grad_year", "").strip()
+            cgpa = entry.get("cgpa", "").strip()
+            pct = entry.get("percentage", "").strip()
             grade = entry.get("grade", "").strip()
 
-            if not any([deg, stream, inst, board, year, grade]):
+            if not any([deg, field, inst, board, loc, start_yr, end_yr, exp_grad_yr, cgpa, pct, grade]):
                 continue
 
-            if deg and stream:
-                if stream.lower() in deg.lower():
+            # Title line: Degree in Field of Study
+            if deg and field:
+                if field.lower() in deg.lower():
                     title_line = f"• {deg}"
                 else:
-                    title_line = f"• {deg} in {stream}"
+                    title_line = f"• {deg} in {field}"
             elif deg:
                 title_line = f"• {deg}"
-            elif stream:
-                title_line = f"• {stream}"
+            elif field:
+                title_line = f"• {field}"
             elif inst:
                 title_line = f"• {inst}"
             else:
                 continue
 
-            details = []
+            # Metadata details line
+            meta = []
             if inst and title_line != f"• {inst}":
-                details.append(inst)
+                meta.append(inst)
             if board and board.lower() not in inst.lower():
-                details.append(board)
-            if year:
-                details.append(year)
+                meta.append(board)
+            if loc:
+                meta.append(loc)
+
+            # Date formatting based on independent status
+            if status == "Currently Pursuing":
+                if start_yr and exp_grad_yr:
+                    meta.append(f"{start_yr} - Present (Expected: {exp_grad_yr})")
+                elif exp_grad_yr:
+                    meta.append(f"Expected: {exp_grad_yr}")
+                elif start_yr:
+                    meta.append(f"{start_yr} - Present")
+                else:
+                    meta.append("Currently Pursuing")
+            else:  # Completed
+                if start_yr and end_yr:
+                    meta.append(f"{start_yr} - {end_yr}")
+                elif end_yr:
+                    meta.append(end_yr)
+                elif start_yr:
+                    meta.append(start_yr)
+
+            # Academic Results (only what user actually provided)
+            if cgpa:
+                c_str = cgpa if cgpa.upper().startswith("CGPA") or cgpa.upper().startswith("GPA") else f"CGPA: {cgpa}"
+                meta.append(c_str)
+            if pct:
+                p_str = pct if pct.lower().startswith("percentage") or pct.lower().startswith("score") else (f"Percentage: {pct}" if pct.endswith("%") else f"Percentage: {pct}%")
+                meta.append(p_str)
             if grade:
-                details.append(grade)
+                clean_g = grade.strip()
+                if cgpa and (clean_g == cgpa or clean_g == f"CGPA: {cgpa}" or clean_g.endswith(cgpa)):
+                    pass
+                elif pct and (clean_g == pct or clean_g == f"Score: {pct}" or clean_g == f"{pct}%"):
+                    pass
+                else:
+                    if clean_g.lower().startswith(("grade", "score", "cgpa", "gpa")):
+                        g_str = clean_g
+                    else:
+                        g_str = f"Grade: {clean_g}"
+                    meta.append(g_str)
 
-            if details:
-                block = f"{title_line}\n  " + " | ".join(details)
+            if meta:
+                valid_edu_blocks.append(f"{title_line}\n  " + " | ".join(meta))
             else:
-                block = title_line
-            compiled_blocks.append(block)
+                valid_edu_blocks.append(title_line)
 
-        return "\n".join(compiled_blocks)
+        # 2. Subsection: Qualifications (Optional)
+        valid_qual_blocks = []
+        for qual in (qualification_entries or []):
+            title = qual.get("title", "").strip()
+            org = qual.get("organization", "").strip()
+            yr = qual.get("year", "").strip()
+            det = qual.get("details", "").strip()
+
+            if not any([title, org, yr, det]):
+                continue
+
+            q_title = f"• {title}" if not title.startswith(("•", "-", "*")) else title
+            q_meta = []
+            if org:
+                q_meta.append(org)
+            if yr:
+                q_meta.append(yr)
+            if det:
+                q_meta.append(det)
+
+            if q_meta:
+                valid_qual_blocks.append(f"{q_title}\n  " + " | ".join(q_meta))
+            else:
+                valid_qual_blocks.append(q_title)
+
+        # Combine into Education and Qualifications structure
+        if valid_edu_blocks and valid_qual_blocks:
+            sections.append("Education\n" + "\n".join(valid_edu_blocks))
+            sections.append("Qualifications\n" + "\n".join(valid_qual_blocks))
+        elif valid_edu_blocks:
+            sections.append("Education\n" + "\n".join(valid_edu_blocks))
+        elif valid_qual_blocks:
+            sections.append("Qualifications\n" + "\n".join(valid_qual_blocks))
+
+        return "\n\n".join(sections)
+
+    @staticmethod
+    def compile_education_entries(entries: List[Dict[str, Any]], qual_entries: Optional[List[Dict[str, Any]]] = None) -> str:
+        """Backward-compatible alias for compile_education_and_qualifications."""
+        return ResumeBuilderModel.compile_education_and_qualifications(entries, qual_entries)
 
     @staticmethod
     def enhance_skills(raw_skills: str) -> str:
@@ -562,10 +698,16 @@ class ResumeBuilderModel:
         if tailored.get("skills"):
             tailored["skills"] = ResumeBuilderModel.enhance_skills(tailored["skills"])
 
-        # 5. Enhance Education
+        # 5. Enhance Education & Qualifications
         if tailored.get("education_entries"):
             tailored["education_entries"] = ResumeBuilderModel.enhance_education_entries(tailored["education_entries"])
-            compiled_edu = ResumeBuilderModel.compile_education_entries(tailored["education_entries"])
+        if tailored.get("qualification_entries"):
+            tailored["qualification_entries"] = ResumeBuilderModel.enhance_qualification_entries(tailored["qualification_entries"])
+        if tailored.get("education_entries") or tailored.get("qualification_entries"):
+            compiled_edu = ResumeBuilderModel.compile_education_and_qualifications(
+                tailored.get("education_entries", []),
+                tailored.get("qualification_entries", [])
+            )
             if compiled_edu:
                 tailored["education"] = compiled_edu
         elif tailored.get("education"):
@@ -605,7 +747,7 @@ class ResumeBuilderModel:
             parts.append(f"PROJECTS\n{data['projects']}\n")
 
         if data.get("education"):
-            parts.append(f"EDUCATION\n{data['education']}\n")
+            parts.append(f"EDUCATION AND QUALIFICATIONS\n{data['education']}\n")
 
         if data.get("certifications"):
             parts.append(f"CERTIFICATIONS & COURSES\n{data['certifications']}\n")

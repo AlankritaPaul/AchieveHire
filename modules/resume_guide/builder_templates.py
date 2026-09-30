@@ -194,10 +194,10 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
 <div class="sec-content" style="white-space: pre-line;">{data['projects']}</div>
 </div>""")
 
-    # Education
+    # Education and Qualifications
     if data.get("education"):
         sections_html.append(f"""<div class="resume-sec">
-<div class="sec-title">EDUCATION</div>
+<div class="sec-title">EDUCATION AND QUALIFICATIONS</div>
 <div class="sec-content" style="white-space: pre-line;">{data['education']}</div>
 </div>""")
 
@@ -509,7 +509,9 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
             if not stripped:
                 continue
             safe_l = stripped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            if safe_l.startswith(("•", "-", "*")):
+            if safe_l in ("Education", "Qualifications"):
+                elements.append(Paragraph(f"<b><u>{safe_l}</u></b>", body_style))
+            elif safe_l.startswith(("•", "-", "*")):
                 clean_b = safe_l.lstrip("•-* ").strip()
                 elements.append(Paragraph(f"&bull; {clean_b}", bullet_style))
             else:
@@ -530,7 +532,7 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
         add_section("Projects", data["projects"])
 
     if data.get("education"):
-        add_section("Education", data["education"])
+        add_section("Education and Qualifications", data["education"])
 
     if data.get("certifications"):
         add_section("Certifications & Courses", data["certifications"])

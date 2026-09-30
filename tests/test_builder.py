@@ -212,5 +212,105 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("Architected and developed a responsive web application", enh_proj)
         self.assertIn("Leveraged Python to implement backend logic", enh_proj)
 
+    def test_education_and_qualifications_section_redesign(self):
+        """Test Education and Qualifications subsection rules, dynamic dates, and optional fields."""
+        edu_entries = [
+            {
+                "degree": "btech",
+                "field_of_study": "cse",
+                "institution": "Stanford University",
+                "board_univ": "",  # Optional, omitted
+                "location": "Stanford, CA",
+                "status": "Currently Pursuing",
+                "start_year": "2023",
+                "end_year": "",
+                "expected_grad_year": "2027",
+                "cgpa": "3.92",
+                "percentage": "",
+                "grade": ""
+            },
+            {
+                "degree": "12th pass",
+                "field_of_study": "pcm",
+                "institution": "Lincoln High School",
+                "board_univ": "State Board",
+                "location": "San Jose, CA",
+                "status": "Completed",
+                "start_year": "2021",
+                "end_year": "2023",
+                "expected_grad_year": "",
+                "cgpa": "",
+                "percentage": "95%",
+                "grade": "A+"
+            }
+        ]
+
+        qual_entries = [
+            {
+                "title": "AWS Certified Solutions Architect",
+                "organization": "Amazon Web Services",
+                "year": "2024",
+                "details": "Validation ID: AWS-12345"
+            }
+        ]
+
+        # 1. Test enhance
+        enhanced_edu = ResumeBuilderModel.enhance_education_entries(edu_entries)
+        enhanced_qual = ResumeBuilderModel.enhance_qualification_entries(qual_entries)
+
+        self.assertIn("B.Tech (Bachelor of Technology)", enhanced_edu[0]["degree"])
+        self.assertIn("Computer Science & Engineering", enhanced_edu[0]["field_of_study"])
+        self.assertEqual(enhanced_edu[0]["cgpa"], "3.92")
+
+        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced_edu[1]["degree"])
+        self.assertIn("Science (Physics, Chemistry, Maths)", enhanced_edu[1]["field_of_study"])
+        self.assertEqual(enhanced_edu[1]["percentage"], "95%")
+
+        # 2. Test compilation with both subsections
+        compiled = ResumeBuilderModel.compile_education_and_qualifications(enhanced_edu, enhanced_qual)
+
+        # Main headings / Subsections check
+        self.assertIn("Education\n", compiled)
+        self.assertIn("Qualifications\n", compiled)
+
+        # No internal labels
+        self.assertNotIn("Education 1", compiled)
+        self.assertNotIn("Education 2", compiled)
+        self.assertNotIn("Qualification 1", compiled)
+
+        # Independent status date check
+        # Entry 0 (Currently Pursuing): start year + expected grad year
+        self.assertIn("2023 - Present (Expected: 2027)", compiled)
+        # Entry 1 (Completed): start year + end year
+        self.assertIn("2021 - 2023", compiled)
+
+        # Optional board: Stanford has no board_univ, so board shouldn't appear
+        self.assertIn("Stanford University | Stanford, CA | 2023 - Present (Expected: 2027) | CGPA: 3.92", compiled)
+
+        # Entry 1 academic results: Percentage and Grade
+        self.assertIn("Percentage: 95%", compiled)
+        self.assertIn("Grade: A+", compiled)
+
+        # Qualifications subsection content
+        self.assertIn("• AWS Certified Solutions Architect", compiled)
+        self.assertIn("Amazon Web Services | 2024 | Validation ID: AWS-12345", compiled)
+
+        # 3. Test compilation without Qualifications (optional subsection omitted cleanly)
+        compiled_no_qual = ResumeBuilderModel.compile_education_and_qualifications(enhanced_edu, [])
+        self.assertIn("Education\n", compiled_no_qual)
+        self.assertNotIn("Qualifications", compiled_no_qual)
+
+        # 4. Test Plain text, HTML and PDF templates title check
+        test_data = dict(self.sample_data)
+        test_data["education"] = compiled
+        plain = ResumeBuilderModel.to_plain_text(test_data)
+        self.assertIn("EDUCATION AND QUALIFICATIONS", plain)
+
+        html = render_resume_html(test_data, "Modern")
+        self.assertIn("EDUCATION AND QUALIFICATIONS", html)
+
+        pdf = export_builder_resume_to_pdf(test_data, "Modern")
+        self.assertTrue(pdf.startswith(b"%PDF"))
+
 if __name__ == "__main__":
     unittest.main()
