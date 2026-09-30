@@ -56,7 +56,8 @@ class ResumeBuilderModel:
                     "grade": ""
                 }
             ],
-            "qualification_entries": []
+            "qualification_entries": [],
+            "experience_entries": []
         }
 
     @staticmethod
@@ -577,6 +578,136 @@ class ResumeBuilderModel:
         return "\n".join(upgraded_lines)
 
     @staticmethod
+    def enhance_experience_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Enhance structured work experience entries by upgrading passive verbs in descriptions
+        and responsibilities without altering authentic facts, companies, or dates.
+        Preserves user-entered custom experience types exactly as provided.
+        """
+        enhanced = []
+        for entry in entries:
+            e = dict(entry)
+            pos = e.get("position", "").strip()
+            desc = e.get("description", "").strip()
+            resp = e.get("responsibilities", "").strip()
+
+            if pos:
+                e["position"] = pos[0].upper() + pos[1:] if len(pos) > 1 else pos.upper()
+
+            if desc:
+                clean_desc = desc
+                for weak_v, strong_options in WEAK_VERBS_MAP.items():
+                    pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
+                    if re.search(pattern, clean_desc):
+                        strong_v = strong_options[0].capitalize()
+                        clean_desc = re.sub(pattern, strong_v, clean_desc, count=1)
+                e["description"] = clean_desc
+
+            if resp:
+                enhanced_lines = []
+                for line in resp.split("\n"):
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    clean_line = stripped.lstrip("•-* ").strip()
+                    for weak_v, strong_options in WEAK_VERBS_MAP.items():
+                        pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
+                        if re.search(pattern, clean_line):
+                            strong_v = strong_options[0].capitalize()
+                            clean_line = re.sub(pattern, strong_v, clean_line, count=1)
+                    if clean_line:
+                        clean_line = clean_line[0].upper() + clean_line[1:]
+                    enhanced_lines.append(f"• {clean_line}")
+                e["responsibilities"] = "\n".join(enhanced_lines)
+
+            enhanced.append(e)
+        return enhanced
+
+    @staticmethod
+    def compile_experience_entries(entries: List[Dict[str, Any]]) -> str:
+        """
+        Compile structured work experience entries into clean, realistic resume formatting
+        under the single 'Work Experience' section.
+        Does NOT show internal form labels such as 'Experience 1' or 'Experience 2'.
+        """
+        if not entries:
+            return ""
+
+        blocks = []
+        for entry in entries:
+            exp_type_raw = entry.get("experience_type", "").strip()
+            if exp_type_raw == "Write Your Own":
+                exp_type = entry.get("custom_experience_type", "").strip()
+            else:
+                exp_type = exp_type_raw
+
+            company = entry.get("company", "").strip()
+            position = entry.get("position", "").strip()
+            location = entry.get("location", "").strip()
+            status = entry.get("status", "Completed").strip()
+            start_date = entry.get("start_date", "").strip()
+            end_date = entry.get("end_date", "").strip()
+            description = entry.get("description", "").strip()
+            responsibilities = entry.get("responsibilities", "").strip()
+
+            if not any([exp_type, company, position, location, start_date, end_date, description, responsibilities]):
+                continue
+
+            # Title line: Position (Experience Type)
+            if position and exp_type:
+                title_line = f"• {position} ({exp_type})"
+            elif position:
+                title_line = f"• {position}"
+            elif company and exp_type:
+                title_line = f"• {company} ({exp_type})"
+            elif company:
+                title_line = f"• {company}"
+            elif exp_type:
+                title_line = f"• {exp_type}"
+            else:
+                continue
+
+            # Metadata line: Company Name | Location | Dates
+            meta = []
+            if company and not title_line.startswith(f"• {company}"):
+                meta.append(company)
+            if location:
+                meta.append(location)
+
+            # Dynamic date formatting based on status
+            if status == "Currently Ongoing":
+                if start_date:
+                    meta.append(f"{start_date} - Present")
+                else:
+                    meta.append("Currently Ongoing")
+            else:  # Completed
+                if start_date and end_date:
+                    meta.append(f"{start_date} - {end_date}")
+                elif end_date:
+                    meta.append(end_date)
+                elif start_date:
+                    meta.append(start_date)
+
+            block_lines = [title_line]
+            if meta:
+                block_lines.append("  " + " | ".join(meta))
+            if description:
+                desc_clean = description.strip()
+                if desc_clean:
+                    block_lines.append(f"  {desc_clean}")
+            if responsibilities:
+                for line in responsibilities.split("\n"):
+                    clean = line.strip()
+                    if not clean:
+                        continue
+                    bullet_text = clean.lstrip("•-* ").strip()
+                    block_lines.append(f"  - {bullet_text}")
+
+            blocks.append("\n".join(block_lines))
+
+        return "\n\n".join(blocks)
+
+    @staticmethod
     def enhance_projects(raw_proj: str) -> str:
         """
         Enhance project descriptions with strong technical phrasing and structured bullets
@@ -687,7 +818,12 @@ class ResumeBuilderModel:
             tailored["summary"] = polished
 
         # 2. Polish Experience
-        if tailored.get("experience"):
+        if tailored.get("experience_entries"):
+            tailored["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(tailored["experience_entries"])
+            compiled_exp = ResumeBuilderModel.compile_experience_entries(tailored["experience_entries"])
+            if compiled_exp:
+                tailored["experience"] = compiled_exp
+        elif tailored.get("experience"):
             tailored["experience"] = ResumeBuilderModel.enhance_experience(tailored["experience"])
 
         # 3. Polish Projects

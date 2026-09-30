@@ -312,5 +312,77 @@ class TestResumeBuilder(unittest.TestCase):
         pdf = export_builder_resume_to_pdf(test_data, "Modern")
         self.assertTrue(pdf.startswith(b"%PDF"))
 
+    def test_work_experience_section_redesign(self):
+        """Test Work Experience structured entries, suggested & custom types, dynamic dates, and optionality."""
+        exp_entries = [
+            {
+                "experience_type": "Internship",
+                "custom_experience_type": "",
+                "company": "Google",
+                "position": "software engineering intern",
+                "location": "Mountain View, CA",
+                "status": "Currently Ongoing",
+                "start_date": "Jun 2024",
+                "end_date": "",
+                "description": "contributed to cloud infrastructure logging pipeline",
+                "responsibilities": "worked on microservices handling 10M requests\nhelped in reducing query latency by 20%"
+            },
+            {
+                "experience_type": "Write Your Own",
+                "custom_experience_type": "Graduate Research Fellow",
+                "company": "MIT CSAIL",
+                "position": "Research Assistant",
+                "location": "Cambridge, MA",
+                "status": "Completed",
+                "start_date": "Sep 2022",
+                "end_date": "May 2024",
+                "description": "Conducted research on distributed systems fault tolerance.",
+                "responsibilities": "Architected simulation framework.\nPublished findings at academic symposium."
+            }
+        ]
+
+        # 1. Test enhance
+        enhanced_exp = ResumeBuilderModel.enhance_experience_entries(exp_entries)
+        # Check custom type preserved exactly as entered by user
+        self.assertEqual(enhanced_exp[1]["custom_experience_type"], "Graduate Research Fellow")
+        # Check position capitalized
+        self.assertEqual(enhanced_exp[0]["position"], "Software engineering intern")
+        # Check weak verbs enhanced
+        self.assertIn("Spearheaded", enhanced_exp[0]["description"])
+        self.assertIn("Architected", enhanced_exp[0]["responsibilities"])
+        self.assertIn("Engineered", enhanced_exp[0]["responsibilities"])
+
+        # 2. Test compilation
+        compiled = ResumeBuilderModel.compile_experience_entries(enhanced_exp)
+
+        # Title line checks (including custom type)
+        self.assertIn("• Software engineering intern (Internship)", compiled)
+        self.assertIn("• Research Assistant (Graduate Research Fellow)", compiled)
+
+        # Metadata line checks
+        self.assertIn("Google | Mountain View, CA | Jun 2024 - Present", compiled)
+        self.assertIn("MIT CSAIL | Cambridge, MA | Sep 2022 - May 2024", compiled)
+
+        # No internal labels
+        self.assertNotIn("Experience 1", compiled)
+        self.assertNotIn("Experience 2", compiled)
+
+        # Description and bullet points
+        self.assertIn("Spearheaded cloud infrastructure logging pipeline", compiled)
+        self.assertIn("- Architected microservices handling 10M requests", compiled)
+
+        # 3. Test optionality: empty entries list produces empty string
+        compiled_empty = ResumeBuilderModel.compile_experience_entries([])
+        self.assertEqual(compiled_empty, "")
+
+        # 4. Verify templates render "WORK EXPERIENCE" title
+        test_data = dict(self.sample_data)
+        test_data["experience"] = compiled
+        html = render_resume_html(test_data, "Modern")
+        self.assertIn("WORK EXPERIENCE", html)
+
+        pdf = export_builder_resume_to_pdf(test_data, "Modern")
+        self.assertTrue(pdf.startswith(b"%PDF"))
+
 if __name__ == "__main__":
     unittest.main()

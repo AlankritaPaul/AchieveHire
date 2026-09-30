@@ -55,6 +55,8 @@ def init_builder_state():
         ]
     if "qualification_entries" not in st.session_state.builder_data or not isinstance(st.session_state.builder_data.get("qualification_entries"), list):
         st.session_state.builder_data["qualification_entries"] = []
+    if "experience_entries" not in st.session_state.builder_data or not isinstance(st.session_state.builder_data.get("experience_entries"), list):
+        st.session_state.builder_data["experience_entries"] = []
     if "builder_accepted" not in st.session_state:
         st.session_state.builder_accepted = False
 
@@ -610,39 +612,202 @@ def render_create_resume_flow():
                 st.rerun()
 
     # -------------------------------------------------------------
+    # -------------------------------------------------------------
     # STEP 7: WORK EXPERIENCE
     # -------------------------------------------------------------
     elif current_step == 7:
         col_exp_head, col_exp_btn = st.columns([3, 1])
         with col_exp_head:
-            st.markdown("### Work Experience & Internships")
-            st.caption("List your work experience or internships. You may skip this if you do not have work experience.")
+            st.markdown("### Work Experience")
+            st.caption("Provide your professional work experience. This section is optional; if you do not have work experience, you can leave it empty and proceed.")
         with col_exp_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
-            if st.button("✨ Enhance Writing", key="btn_enhance_exp", use_container_width=True, help="Upgrade weak verbs to strong action verbs and format bullet points professionally"):
-                if data.get("experience", "").strip():
+            if st.button("✨ Enhance Writing", key="btn_enhance_exp", use_container_width=True, help="Upgrade action verbs in descriptions and responsibilities without altering facts"):
+                if data.get("experience_entries"):
+                    data["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(data["experience_entries"])
+                    compiled_exp = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
+                    if compiled_exp:
+                        data["experience"] = compiled_exp
+                    st.success("✅ Work experience enhanced with powerful action verbs!")
+                    st.rerun()
+                elif data.get("experience", "").strip():
                     data["experience"] = ResumeBuilderModel.enhance_experience(data["experience"])
                     st.success("✅ Work experience enhanced with powerful action verbs!")
                     st.rerun()
                 else:
-                    st.warning("Please enter your work experience first before enhancing.")
+                    st.info("No work experience entries to enhance yet.")
 
-        data["experience"] = st.text_area(
-            "Work Experience:",
-            value=data.get("experience", ""),
-            height=200,
-            placeholder="Junior Developer | TechCorp Solutions | Jun 2023 - Present\n• Developed backend services in Python and SQL.\n• Maintained REST APIs and server logging.",
-            key="builder_exp_input"
-        )
+        if "experience_entries" not in data or not isinstance(data.get("experience_entries"), list):
+            data["experience_entries"] = []
 
-        st.markdown(
-            """
-            <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Action-Oriented Phrasing:</strong> Clicking <strong>'✨ Enhance Writing'</strong> upgrades passive language (like <em>worked on</em> or <em>helped with</em>) into assertive action verbs (<em>Architected, Engineered, Spearheaded, Implemented</em>) while preserving all your real companies, dates, and achievements.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        exp_type_options = [
+            "Internship",
+            "Placement",
+            "Full-Time",
+            "Part-Time",
+            "Contract",
+            "Freelance",
+            "Apprenticeship",
+            "Write Your Own"
+        ]
+
+        if not data["experience_entries"]:
+            st.info("ℹ️ No work experience added yet. If you have internships, placements, or jobs to include, click **'+ Add Work Experience'** below. Otherwise, you can leave this section empty and click **'Next →'**.")
+            if st.button("➕ Add Work Experience", key="btn_add_first_exp", type="primary"):
+                data["experience_entries"].append({
+                    "experience_type": "Full-Time",
+                    "custom_experience_type": "",
+                    "company": "",
+                    "position": "",
+                    "location": "",
+                    "status": "Completed",
+                    "start_date": "",
+                    "end_date": "",
+                    "description": "",
+                    "responsibilities": ""
+                })
+                st.rerun()
+        else:
+            del_exp_indices = []
+            for idx, exp_ent in enumerate(data["experience_entries"]):
+                exp_pos_disp = exp_ent.get("position", "").strip() or "Work Experience Entry"
+                with st.container():
+                    col_h, col_del = st.columns([5, 1])
+                    with col_h:
+                        st.markdown(f"**💼 {exp_pos_disp}**")
+                    with col_del:
+                        if st.button("🗑️ Remove", key=f"btn_del_exp_{idx}"):
+                            del_exp_indices.append(idx)
+
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        current_type = exp_ent.get("experience_type", "Full-Time")
+                        if current_type not in exp_type_options:
+                            type_idx = exp_type_options.index("Write Your Own")
+                            if not exp_ent.get("custom_experience_type"):
+                                exp_ent["custom_experience_type"] = current_type
+                        else:
+                            type_idx = exp_type_options.index(current_type)
+
+                        selected_type = st.selectbox(
+                            "Experience Type:",
+                            options=exp_type_options,
+                            index=type_idx,
+                            key=f"exp_type_sel_{idx}"
+                        )
+                        exp_ent["experience_type"] = selected_type
+
+                        if selected_type == "Write Your Own":
+                            exp_ent["custom_experience_type"] = st.text_input(
+                                "Write Your Own Experience Type:",
+                                value=exp_ent.get("custom_experience_type", ""),
+                                placeholder="e.g. Research Fellow, Volunteer, Trainee",
+                                key=f"exp_custom_type_{idx}"
+                            )
+                        else:
+                            exp_ent["custom_experience_type"] = ""
+
+                        exp_ent["position"] = st.text_input(
+                            "Position or Job Title:",
+                            value=exp_ent.get("position", ""),
+                            placeholder="e.g. Software Engineer, Data Analyst",
+                            key=f"exp_pos_{idx}"
+                        )
+
+                    with c2:
+                        exp_ent["company"] = st.text_input(
+                            "Company Name:",
+                            value=exp_ent.get("company", ""),
+                            placeholder="e.g. Google, Microsoft, TechCorp Solutions",
+                            key=f"exp_comp_{idx}"
+                        )
+                        exp_ent["location"] = st.text_input(
+                            "Location (Optional):",
+                            value=exp_ent.get("location", ""),
+                            placeholder="e.g. Bengaluru, India / Remote",
+                            key=f"exp_loc_{idx}"
+                        )
+
+                    # Status and Dynamic Date Fields
+                    st.markdown("<span style='font-size: 0.88rem; font-weight: 600; color: #4A5568;'>Status & Dates:</span>", unsafe_allow_html=True)
+                    status_val = exp_ent.get("status", "Completed")
+                    status_idx = 0 if status_val == "Completed" else 1
+                    exp_ent["status"] = st.radio(
+                        "Status:",
+                        options=["Completed", "Currently Ongoing"],
+                        index=status_idx,
+                        key=f"exp_status_{idx}",
+                        horizontal=True
+                    )
+
+                    if exp_ent["status"] == "Completed":
+                        cd1, cd2 = st.columns(2)
+                        with cd1:
+                            exp_ent["start_date"] = st.text_input(
+                                "Start Date:",
+                                value=exp_ent.get("start_date", ""),
+                                placeholder="e.g. Jun 2022",
+                                key=f"exp_sdate_{idx}"
+                            )
+                        with cd2:
+                            exp_ent["end_date"] = st.text_input(
+                                "End Date:",
+                                value=exp_ent.get("end_date", ""),
+                                placeholder="e.g. May 2024",
+                                key=f"exp_edate_{idx}"
+                            )
+                    else:  # Currently Ongoing
+                        exp_ent["start_date"] = st.text_input(
+                            "Start Date:",
+                            value=exp_ent.get("start_date", ""),
+                            placeholder="e.g. Jun 2023",
+                            key=f"exp_sdate_{idx}"
+                        )
+                        exp_ent["end_date"] = ""
+
+                    # Description & Responsibilities
+                    exp_ent["description"] = st.text_area(
+                        "Description (Overview of role or team, optional):",
+                        value=exp_ent.get("description", ""),
+                        height=75,
+                        placeholder="e.g. Part of the core engineering team building microservices and customer APIs.",
+                        key=f"exp_desc_{idx}"
+                    )
+                    exp_ent["responsibilities"] = st.text_area(
+                        "Key Responsibilities or Achievements (Bullet points):",
+                        value=exp_ent.get("responsibilities", ""),
+                        height=110,
+                        placeholder="• Architected REST APIs handling 5M+ daily requests with 99.9% uptime.\n• Optimized database queries cutting page load time by 30%.\n• Collaborated with product designers to ship 4 customer-facing features.",
+                        key=f"exp_resp_{idx}"
+                    )
+                    st.markdown("<hr style='margin: 14px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
+
+            if del_exp_indices:
+                for di in sorted(del_exp_indices, reverse=True):
+                    data["experience_entries"].pop(di)
+                st.rerun()
+
+            if st.button("➕ Add Another Experience", key="btn_add_another_exp"):
+                data["experience_entries"].append({
+                    "experience_type": "Full-Time",
+                    "custom_experience_type": "",
+                    "company": "",
+                    "position": "",
+                    "location": "",
+                    "status": "Completed",
+                    "start_date": "",
+                    "end_date": "",
+                    "description": "",
+                    "responsibilities": ""
+                })
+                st.rerun()
+
+        # Compile in background into data["experience"]
+        compiled_exp = ResumeBuilderModel.compile_experience_entries(data.get("experience_entries", []))
+        if compiled_exp:
+            data["experience"] = compiled_exp
+        elif not data.get("experience_entries"):
+            data["experience"] = ""
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -652,8 +817,10 @@ def render_create_resume_flow():
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
-                if data.get("experience", "").strip():
-                    data["experience"] = ResumeBuilderModel.enhance_experience(data["experience"])
+                if data.get("experience_entries"):
+                    data["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(data["experience_entries"])
+                    compiled_exp = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
+                    data["experience"] = compiled_exp
                 st.session_state.builder_step = 8
                 st.rerun()
 
