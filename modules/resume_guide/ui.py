@@ -49,7 +49,7 @@ def render_resume_guide():
                 <div style="border: 2px solid #CBD5E0; border-radius: 10px; padding: 24px; background: #FFFFFF; height: 190px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <h3 style="margin: 0; color: #2F855A; font-size: 1.35rem;">Create Resume</h3>
-                        <p style="color: #4A5568; font-size: 0.95rem; margin-top: 8px;">Build a professional, tailored resume from scratch with customized templates, photo options, and mandatory declaration.</p>
+                        <p style="color: #4A5568; font-size: 0.95rem; margin-top: 8px;">Create a well-structured, professional resume tailored to your target job role and company.</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
