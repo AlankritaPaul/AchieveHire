@@ -30,6 +30,8 @@ def init_builder_state():
         st.session_state.builder_custom_sections = []
     if "builder_photo_b64" not in st.session_state:
         st.session_state.builder_photo_b64 = ""
+    if "builder_sig_b64" not in st.session_state:
+        st.session_state.builder_sig_b64 = ""
     if "builder_accepted" not in st.session_state:
         st.session_state.builder_accepted = False
 
@@ -192,21 +194,64 @@ def render_create_resume_flow():
 
         with col_p2:
             st.markdown("#### Photo Section (Optional)")
-            st.caption("Upload a photograph if desired for your template. You are never forced to upload one.")
+            st.caption("Choose whether to upload a digital photo, keep a designated space for a physical photo, or omit photo entirely.")
             
-            photo_file = st.file_uploader("Upload Photo (PNG/JPG):", type=["png", "jpg", "jpeg"], key="builder_photo_upload")
-            if photo_file:
-                b64 = base64.b64encode(photo_file.read()).decode("utf-8")
-                st.session_state.builder_photo_b64 = b64
-                data["photo_b64"] = b64
-                st.success("Photo uploaded.")
+            photo_options = [
+                "Upload digital photo (JPG or PNG from your device)",
+                "Keep space for passport-size photo (To paste a physical photo later)",
+                "Do not include a photo or photo space"
+            ]
+            current_photo_mode = data.get("photo_mode", "none")
+            initial_idx = 0 if current_photo_mode == "upload" else (1 if current_photo_mode == "box" else 2)
+            
+            selected_photo_option = st.radio(
+                "Photo Preference:",
+                options=photo_options,
+                index=initial_idx,
+                key="builder_photo_mode_radio"
+            )
 
-            if st.session_state.builder_photo_b64:
-                st.image(f"data:image/jpeg;base64,{st.session_state.builder_photo_b64}", width=100)
-                if st.button("Remove Photo", key="btn_remove_photo"):
-                    st.session_state.builder_photo_b64 = ""
-                    data["photo_b64"] = ""
-                    st.rerun()
+            if selected_photo_option == photo_options[0]:
+                data["photo_mode"] = "upload"
+                photo_file = st.file_uploader(
+                    "Upload Photograph (JPG, JPEG, PNG):",
+                    type=["png", "jpg", "jpeg"],
+                    key="builder_photo_upload"
+                )
+                if photo_file:
+                    b64 = base64.b64encode(photo_file.read()).decode("utf-8")
+                    st.session_state.builder_photo_b64 = b64
+                    data["photo_b64"] = b64
+                    st.success("Photo uploaded successfully.")
+
+                if st.session_state.get("builder_photo_b64"):
+                    st.image(f"data:image/jpeg;base64,{st.session_state.builder_photo_b64}", width=100)
+                    if st.button("🗑️ Remove Photo", key="btn_remove_photo"):
+                        st.session_state.builder_photo_b64 = ""
+                        data["photo_b64"] = ""
+                        st.rerun()
+
+            elif selected_photo_option == photo_options[1]:
+                data["photo_mode"] = "box"
+                data["photo_b64"] = ""
+                st.session_state.builder_photo_b64 = ""
+                st.markdown(
+                    """
+                    <div style="border: 2px dashed #718096; background: #F8FAFC; border-radius: 6px; padding: 14px 18px; text-align: center; max-width: 160px; margin: 10px 0;">
+                        <div style="font-size: 26px; color: #4A5568;">📷</div>
+                        <div style="font-size: 11px; font-weight: 600; color: #2D3748; margin-top: 4px;">Affix Passport Size Photo</div>
+                        <div style="font-size: 9px; color: #718096; margin-top: 2px;">(Standard 3.5cm x 4.5cm)</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.info("A designated passport-size photo box will be placed on your resume so you can affix a printed physical photo after printing.")
+
+            else:
+                data["photo_mode"] = "none"
+                data["photo_b64"] = ""
+                st.session_state.builder_photo_b64 = ""
+                st.caption("No photo or photo box will be added to your resume.")
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -220,18 +265,38 @@ def render_create_resume_flow():
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 5: EDUCATION
+    # STEP 5: EDUCATION & QUALIFICATIONS
     # -------------------------------------------------------------
     elif current_step == 5:
-        st.markdown("### Education")
-        st.caption("Provide your education details. Skip if not applicable.")
+        st.markdown("### Education & Qualifications")
+        st.caption("Provide your education details. Skip if not applicable. You can enter details naturally, and enhance them with professional terminology.")
+
+        col_e1, col_e2 = st.columns([3, 1])
+        with col_e2:
+            st.markdown("<div style='margin-top: 26px;'></div>", unsafe_allow_html=True)
+            if st.button("✨ Enhance Wording", key="btn_enhance_edu", use_container_width=True, help="Standardize degrees and keywords professionally without altering your colleges, dates, or grades"):
+                if data.get("education", "").strip():
+                    data["education"] = ResumeBuilderModel.enhance_qualifications(data["education"])
+                    st.success("Enhanced qualifications with professional terminology!")
+                    st.rerun()
+                else:
+                    st.warning("Please enter your qualifications first before enhancing.")
 
         data["education"] = st.text_area(
-            "Education Details:",
+            "Education Details (Editable):",
             value=data.get("education", ""),
             height=150,
-            placeholder="• B.S. in Computer Science | State University | 2020 - 2024\n• High School Diploma | City High | 2018 - 2020",
+            placeholder="• B.Tech in Computer Science | State University | 2020 - 2024 | CGPA: 8.5\n• Class XII (Higher Secondary) | City High School | 2018 - 2020 | Score: 92%",
             key="builder_edu_input"
+        )
+
+        st.markdown(
+            """
+            <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
+                <strong>💡 Professional Keyword Enhancement:</strong> You can type your degrees and specializations (e.g. <em>btech cse from XYZ College with 8.5 cgpa</em> or <em>12th CBSE</em>). The system automatically standardizes degree nomenclature and structures bullet points cleanly while strictly preserving your authentic institutions, dates, and scores.
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
@@ -242,6 +307,8 @@ def render_create_resume_flow():
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
+                if data.get("education", "").strip():
+                    data["education"] = ResumeBuilderModel.enhance_qualifications(data["education"])
                 st.session_state.builder_step = 6
                 st.rerun()
 
@@ -419,17 +486,17 @@ def render_create_resume_flow():
     # -------------------------------------------------------------
     elif current_step == 10:
         st.markdown("### Declaration, Date and Signature")
-        st.caption("Every generated resume includes a declaration section.")
+        st.caption("Every generated resume includes a professional declaration section.")
 
         st.markdown("#### Declaration")
         data["declaration"] = st.text_area(
-            "Declaration (Editable):",
+            "Declaration Statement (Editable):",
             value=data.get("declaration", DEFAULT_DECLARATION),
-            height=100,
+            height=90,
             key="builder_dec_input"
         )
 
-        col_d, col_s = st.columns(2)
+        col_d, col_s = st.columns([1, 1])
         with col_d:
             st.markdown("#### Date")
             data["date_val"] = st.text_input("Date:", value=data.get("date_val", ""), placeholder="e.g. October 15, 2026")
@@ -438,9 +505,92 @@ def render_create_resume_flow():
 
         with col_s:
             st.markdown("#### Signature")
-            data["sig_val"] = st.text_input("Signature:", value=data.get("sig_val", ""), placeholder="e.g. Alex Morgan")
-            if not data["sig_val"]:
-                st.caption("Will render as: `Signature: ____________________`")
+            
+            sig_choices = [
+                "Write the signature",
+                "Upload the signature",
+                "Leave blank line"
+            ]
+            cur_sig_mode = data.get("signature_mode", "write")
+            sig_idx = 0 if cur_sig_mode == "write" else (1 if cur_sig_mode == "upload" else 2)
+
+            selected_sig = st.radio(
+                "Select Signature Type:",
+                options=sig_choices,
+                index=sig_idx,
+                key="builder_sig_mode_radio"
+            )
+
+            if selected_sig == sig_choices[0]:
+                data["signature_mode"] = "write"
+                data["sig_val"] = st.text_input(
+                    "Write Your Signature (Type your name):",
+                    value=data.get("sig_val", data.get("full_name", "")),
+                    placeholder="e.g. Alex Morgan",
+                    key="builder_sig_write_input"
+                )
+                if data["sig_val"]:
+                    st.markdown(
+                        f"""
+                        <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-top: 6px;">
+                            <div style="font-size: 11px; color: #718096; margin-bottom: 2px;">Live Signature Preview:</div>
+                            <div style="font-family: 'Brush Script MT', 'Dancing Script', 'Caveat', cursive, sans-serif; font-size: 1.6rem; color: #1E3A8A; line-height: 1.2;">
+                                {data["sig_val"]}
+                            </div>
+                            <div style="border-top: 1px solid #A0AEC0; width: 170px; margin-top: 4px;"></div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.caption("Will render as: `Signature: ____________________`")
+
+            elif selected_sig == sig_choices[1]:
+                data["signature_mode"] = "upload"
+                st.markdown(
+                    """
+                    <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 10px 12px; border-radius: 4px; font-size: 0.88rem; color: #92400E; margin-bottom: 8px;">
+                        <strong>Requirement:</strong> The signature file must be in <strong>JPEG, JPG, or PNG</strong> format with a <strong>maximum file size of 100 KB</strong>.
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                sig_file = st.file_uploader(
+                    "Upload Signature Image (JPEG, JPG, PNG — Max 100 KB):",
+                    type=["jpg", "jpeg", "png"],
+                    key="builder_sig_file_uploader"
+                )
+                if sig_file:
+                    if sig_file.size > 100 * 1024:
+                        st.error(f"❌ File size exceeds 100 KB ({sig_file.size / 1024:.1f} KB). Please upload a signature file smaller than 100 KB.")
+                    else:
+                        sig_bytes = sig_file.read()
+                        b64_sig = base64.b64encode(sig_bytes).decode("utf-8")
+                        st.session_state.builder_sig_b64 = b64_sig
+                        data["signature_img_b64"] = b64_sig
+                        st.success(f"✅ Signature uploaded successfully ({sig_file.size / 1024:.1f} KB).")
+
+                if data.get("signature_img_b64"):
+                    st.markdown("##### Uploaded Signature Preview:")
+                    st.markdown(
+                        f"""
+                        <div style="padding: 8px 12px; background: white; border: 1px solid #CBD5E0; border-radius: 6px; display: inline-block;">
+                            <img src="data:image/png;base64,{data['signature_img_b64']}" style="max-height: 48px; max-width: 170px; object-fit: contain; display: block;" />
+                            <div style="border-top: 1px solid #718096; width: 170px; margin-top: 4px;"></div>
+                            <div style="font-size: 11px; color: #718096; margin-top: 2px;">Signature</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    if st.button("🗑️ Remove Signature Image", key="btn_remove_sig_img"):
+                        data["signature_img_b64"] = ""
+                        st.session_state.builder_sig_b64 = ""
+                        st.rerun()
+
+            else:
+                data["signature_mode"] = "blank"
+                data["sig_val"] = ""
+                st.info("A blank signature line (`Signature: ____________________`) will be included for physical hand signing after printing.")
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])

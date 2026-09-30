@@ -11,6 +11,7 @@ Supports 6 distinct templates:
 
 from typing import Dict, Any, List
 import io
+import base64
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
@@ -153,93 +154,104 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
     if data.get("location"): contact_parts.append(data["location"])
     contact_line = " &bull; ".join(contact_parts)
 
+    # Handle photo mode
+    photo_mode = data.get("photo_mode", "none")
     photo_tag = ""
-    if photo_b64:
+    if (photo_mode == "upload" or photo_b64) and photo_b64:
         photo_tag = f'<img src="data:image/jpeg;base64,{photo_b64}" style="width: 85px; height: 85px; object-fit: cover; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.15);"/>'
+    elif photo_mode == "box":
+        photo_tag = '<div style="width: 95px; height: 115px; border: 2px dashed #718096; background: #F8FAFC; border-radius: 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4px; box-sizing: border-box;"><span style="font-size: 18px; color: #A0AEC0;">📷</span><span style="font-size: 8px; color: #4A5568; font-weight: 600; margin-top: 4px; line-height: 1.2;">Affix Passport Size Photo</span></div>'
 
     # Build sections HTML
     sections_html = []
 
     # Summary
     if data.get("summary"):
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">PROFESSIONAL SUMMARY</div>
-                <div class="sec-content">{data['summary']}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">PROFESSIONAL SUMMARY</div>
+<div class="sec-content">{data['summary']}</div>
+</div>""")
 
     # Skills
     if data.get("skills"):
         skills_text = data['skills']
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">TECHNICAL & FUNCTIONAL SKILLS</div>
-                <div class="sec-content" style="white-space: pre-line;">{skills_text}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">TECHNICAL & FUNCTIONAL SKILLS</div>
+<div class="sec-content" style="white-space: pre-line;">{skills_text}</div>
+</div>""")
 
     # Work Experience
     if data.get("experience"):
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">WORK EXPERIENCE</div>
-                <div class="sec-content" style="white-space: pre-line;">{data['experience']}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">WORK EXPERIENCE</div>
+<div class="sec-content" style="white-space: pre-line;">{data['experience']}</div>
+</div>""")
 
     # Projects
     if data.get("projects"):
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">PROJECTS</div>
-                <div class="sec-content" style="white-space: pre-line;">{data['projects']}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">PROJECTS</div>
+<div class="sec-content" style="white-space: pre-line;">{data['projects']}</div>
+</div>""")
 
     # Education
     if data.get("education"):
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">EDUCATION</div>
-                <div class="sec-content" style="white-space: pre-line;">{data['education']}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">EDUCATION</div>
+<div class="sec-content" style="white-space: pre-line;">{data['education']}</div>
+</div>""")
 
     # Certifications
     if data.get("certifications"):
-        sections_html.append(f"""
-            <div class="resume-sec">
-                <div class="sec-title">CERTIFICATIONS & COURSES</div>
-                <div class="sec-content" style="white-space: pre-line;">{data['certifications']}</div>
-            </div>
-        """)
+        sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">CERTIFICATIONS & COURSES</div>
+<div class="sec-content" style="white-space: pre-line;">{data['certifications']}</div>
+</div>""")
 
     # Custom / Other Sections
     for extra in data.get("custom_sections", []):
         if extra.get("title") and extra.get("content"):
-            sections_html.append(f"""
-                <div class="resume-sec">
-                    <div class="sec-title">{extra['title'].upper()}</div>
-                    <div class="sec-content" style="white-space: pre-line;">{extra['content']}</div>
-                </div>
-            """)
+            sections_html.append(f"""<div class="resume-sec">
+<div class="sec-title">{extra['title'].upper()}</div>
+<div class="sec-content" style="white-space: pre-line;">{extra['content']}</div>
+</div>""")
 
-    # Declaration (MANDATORY)
+    # Declaration & Signature (MANDATORY)
     declaration_text = data.get("declaration", "").strip() or "I hereby declare that all the information and details provided above are true, complete, and correct to the best of my knowledge and belief."
     date_val = data.get("date_val", "").strip() or "____________________"
-    sig_val = data.get("sig_val", "").strip() or "____________________"
+    
+    # Handle signature rendering (Write / Upload / Blank)
+    sig_mode = data.get("signature_mode", "write")
+    sig_img_b64 = data.get("signature_img_b64", "")
+    sig_val = data.get("sig_val", "").strip()
 
-    sections_html.append(f"""
-        <div class="resume-sec" style="margin-top: 25px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
-            <div class="sec-title">DECLARATION</div>
-            <div class="sec-content" style="font-size: 0.88rem; color: #4A5568; font-style: italic;">{declaration_text}</div>
-            <div style="display: flex; justify-content: space-between; margin-top: 25px; font-size: 0.9rem; font-weight: 500;">
-                <div><strong>Date:</strong> {date_val}</div>
-                <div><strong>Signature:</strong> {sig_val}</div>
-            </div>
-        </div>
-    """)
+    if sig_mode == "upload" and sig_img_b64:
+        signature_element = f'''<div style="text-align: right; min-width: 170px;">
+<img src="data:image/png;base64,{sig_img_b64}" style="max-height: 48px; max-width: 160px; object-fit: contain; margin-bottom: 2px; display: inline-block;" />
+<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>
+<div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature</div>
+</div>'''
+    elif sig_mode == "write" and sig_val:
+        signature_element = f'''<div style="text-align: right; min-width: 170px;">
+<div style="font-family: 'Brush Script MT', 'Dancing Script', 'Caveat', cursive, sans-serif; font-size: 1.55rem; color: #1A365D; line-height: 1.1; margin-bottom: 2px;">{sig_val}</div>
+<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>
+<div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature</div>
+</div>'''
+    else:
+        signature_element = '''<div style="text-align: right; min-width: 170px;">
+<div style="height: 30px;"></div>
+<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>
+<div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature: ____________________</div>
+</div>'''
+
+    sections_html.append(f"""<div class="resume-sec" style="margin-top: 25px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
+<div class="sec-title">DECLARATION</div>
+<div class="sec-content" style="font-size: 0.88rem; color: #4A5568; font-style: italic;">{declaration_text}</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px;">
+<div style="font-size: 0.9rem;"><strong>Date:</strong> {date_val}</div>
+{signature_element}
+</div>
+</div>""")
 
     all_sections = "".join(sections_html)
 
@@ -427,14 +439,64 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
 
     # Title & Contact
     name = data.get("full_name", "").strip() or "YOUR NAME"
-    elements.append(Paragraph(name, title_style))
 
     contact_parts = []
     if data.get("email"): contact_parts.append(data["email"])
     if data.get("phone"): contact_parts.append(data["phone"])
     if data.get("location"): contact_parts.append(data["location"])
     if data.get("job_role"): contact_parts.append(f"{data['job_role']} - {data.get('company', '')}" if data.get('company') else data['job_role'])
-    elements.append(Paragraph(" &bull; ".join(contact_parts), contact_style))
+
+    header_left = [
+        Paragraph(name, title_style),
+        Paragraph(" &bull; ".join(contact_parts), contact_style)
+    ]
+
+    photo_mode = data.get("photo_mode", "none")
+    photo_b64 = data.get("photo_b64", "")
+
+    if (photo_mode == "upload" or photo_b64) and photo_b64:
+        try:
+            photo_bytes = base64.b64decode(photo_b64)
+            img_obj = RLImage(io.BytesIO(photo_bytes), width=70, height=70)
+            hdr_table = Table([[header_left, img_obj]], colWidths=[440, 80])
+            hdr_table.setStyle(TableStyle([
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('ALIGN', (1,0), (1,0), 'RIGHT')
+            ]))
+            elements.append(hdr_table)
+        except Exception:
+            elements.extend(header_left)
+    elif photo_mode == "box":
+        box_style = ParagraphStyle(
+            "PassportBoxText",
+            parent=styles["Normal"],
+            fontName="Helvetica-Bold",
+            fontSize=7.5,
+            leading=9.5,
+            alignment=1,
+            textColor=colors.HexColor("#718096")
+        )
+        box_content = [
+            Spacer(1, 14),
+            Paragraph("Affix<br/>Passport Size<br/>Photo", box_style)
+        ]
+        box_table = Table([[box_content]], colWidths=[70], rowHeights=[85])
+        box_table.setStyle(TableStyle([
+            ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#A0AEC0")),
+            ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F8FAFC")),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ]))
+        hdr_table = Table([[header_left, box_table]], colWidths=[440, 80])
+        hdr_table.setStyle(TableStyle([
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('ALIGN', (1,0), (1,0), 'RIGHT')
+        ]))
+        elements.append(hdr_table)
+    else:
+        elements.extend(header_left)
+
+    elements.append(Spacer(1, 4))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=accent_color, spaceAfter=8))
 
     # Helper to add section
@@ -486,9 +548,30 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
     elements.append(Spacer(1, 14))
 
     date_val = data.get("date_val", "").strip() or "____________________"
-    sig_val = data.get("sig_val", "").strip() or "____________________"
-    date_sig_html = f"<b>Date:</b> {date_val}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Signature:</b> {sig_val}"
-    elements.append(Paragraph(date_sig_html, body_style))
+    sig_mode = data.get("signature_mode", "write")
+    sig_img_b64 = data.get("signature_img_b64", "")
+    sig_val = data.get("sig_val", "").strip()
+
+    if sig_mode == "upload" and sig_img_b64:
+        try:
+            sig_bytes = base64.b64decode(sig_img_b64)
+            sig_img = RLImage(io.BytesIO(sig_bytes), width=110, height=35)
+            sig_table = Table([[
+                Paragraph(f"<b>Date:</b> {date_val}", body_style),
+                sig_img
+            ]], colWidths=[320, 200])
+            sig_table.setStyle(TableStyle([
+                ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
+                ('ALIGN', (1,0), (1,0), 'RIGHT')
+            ]))
+            elements.append(sig_table)
+        except Exception:
+            date_sig_html = f"<b>Date:</b> {date_val}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Signature:</b> ____________________"
+            elements.append(Paragraph(date_sig_html, body_style))
+    else:
+        sig_str = sig_val if (sig_mode == "write" and sig_val) else "____________________"
+        date_sig_html = f"<b>Date:</b> {date_val}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Signature:</b> {sig_str}"
+        elements.append(Paragraph(date_sig_html, body_style))
 
     doc.build(elements)
     buffer.seek(0)

@@ -61,7 +61,7 @@ class TestResumeBuilder(unittest.TestCase):
             self.assertIn("MAYA LIN" if tpl == "Classic" else "Maya Lin", html)
             self.assertIn("DECLARATION", html)
             self.assertIn("Date:", html)
-            self.assertIn("Signature:", html)
+            self.assertIn("Signature", html)
             self.assertIn("Leadership &amp; Volunteering" if "&amp;" in html else "LEADERSHIP & VOLUNTEERING", html)
 
     def test_export_builder_pdf_and_docx(self):
@@ -72,6 +72,70 @@ class TestResumeBuilder(unittest.TestCase):
         plain_text = ResumeBuilderModel.to_plain_text(self.sample_data)
         docx_bytes = export_resume_to_docx(plain_text)
         self.assertTrue(docx_bytes.startswith(b"PK"))
+
+    def test_enhance_qualifications(self):
+        """Test professional keyword enhancement preserves facts while standardizing terms."""
+        raw_edu = "btech in cse from IIT Delhi 2020-2024 with 8.9 cgpa\n12th CBSE from DPS RK Puram 2020 with 94 percentage"
+        enhanced = ResumeBuilderModel.enhance_qualifications(raw_edu)
+
+        # Preserves user's actual facts
+        self.assertIn("IIT Delhi", enhanced)
+        self.assertIn("2020-2024", enhanced)
+        self.assertIn("DPS RK Puram", enhanced)
+
+        # Standardizes professional keywords
+        self.assertIn("B.Tech (Bachelor of Technology)", enhanced)
+        self.assertIn("Computer Science & Engineering", enhanced)
+        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced)
+        self.assertIn("CGPA: 8.9", enhanced)
+        self.assertIn("Score: 94%", enhanced)
+
+    def test_passport_photo_space_and_upload(self):
+        """Test passport photo space and digital upload in HTML and PDF."""
+        # Box mode
+        box_data = dict(self.sample_data)
+        box_data["photo_mode"] = "box"
+        html_box = render_resume_html(box_data, template_name="Modern")
+        self.assertIn("Affix Passport Size Photo", html_box)
+        pdf_box = export_builder_resume_to_pdf(box_data, "Modern")
+        self.assertTrue(pdf_box.startswith(b"%PDF"))
+
+        # Upload mode
+        dummy_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        upload_data = dict(self.sample_data)
+        upload_data["photo_mode"] = "upload"
+        upload_data["photo_b64"] = dummy_b64
+        html_upload = render_resume_html(upload_data, template_name="Modern", photo_b64=dummy_b64)
+        self.assertIn("data:image/jpeg;base64,", html_upload)
+        pdf_upload = export_builder_resume_to_pdf(upload_data, "Modern")
+        self.assertTrue(pdf_upload.startswith(b"%PDF"))
+
+    def test_signature_options(self):
+        """Test write signature, upload signature, and blank line in HTML and PDF."""
+        # Write mode
+        write_data = dict(self.sample_data)
+        write_data["signature_mode"] = "write"
+        write_data["sig_val"] = "Maya Lin Signature"
+        html_write = render_resume_html(write_data, template_name="Modern")
+        self.assertIn("Maya Lin Signature", html_write)
+
+        # Upload mode
+        dummy_sig_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        sig_upload_data = dict(self.sample_data)
+        sig_upload_data["signature_mode"] = "upload"
+        sig_upload_data["signature_img_b64"] = dummy_sig_b64
+        html_sig_upload = render_resume_html(sig_upload_data, template_name="Modern")
+        self.assertIn("data:image/png;base64,", html_sig_upload)
+        pdf_sig = export_builder_resume_to_pdf(sig_upload_data, "Modern")
+        self.assertTrue(pdf_sig.startswith(b"%PDF"))
+
+        # Blank mode
+        blank_data = dict(self.sample_data)
+        blank_data["signature_mode"] = "blank"
+        html_blank = render_resume_html(blank_data, template_name="Modern")
+        self.assertIn("Signature: ____________________", html_blank)
+        pdf_blank = export_builder_resume_to_pdf(blank_data, "Modern")
+        self.assertTrue(pdf_blank.startswith(b"%PDF"))
 
 if __name__ == "__main__":
     unittest.main()

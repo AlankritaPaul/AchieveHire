@@ -32,12 +32,81 @@ class ResumeBuilderModel:
             "education": "",
             "certifications": "",
             "custom_sections": [],
+            "photo_mode": "none",  # "upload", "box", "none"
             "photo_b64": "",
             "declaration": DEFAULT_DECLARATION,
             "date_val": "",
+            "signature_mode": "write",  # "write", "upload", "blank"
             "sig_val": "",
+            "signature_img_b64": "",
             "template_name": "Modern"
         }
+
+    @staticmethod
+    def enhance_qualifications(raw_edu: str) -> str:
+        """
+        Enhance educational qualifications using standard professional terminology
+        without changing the candidate's actual institutions, degrees, or facts.
+        """
+        if not raw_edu or not raw_edu.strip():
+            return ""
+
+        degree_map = [
+            (r"\bb\.?\s*tech\b|\bbachelor\s+of\s+technology\b", "B.Tech (Bachelor of Technology)"),
+            (r"\bb\.?\s*e\b|\bbachelor\s+of\s+engineering\b", "B.E. (Bachelor of Engineering)"),
+            (r"\bb\.?\s*sc\b|\bb\.?\s*s\b|\bbachelor\s+of\s+science\b", "B.S. (Bachelor of Science)"),
+            (r"\bm\.?\s*tech\b|\bmaster\s+of\s+technology\b", "M.Tech (Master of Technology)"),
+            (r"\bm\.?\s*sc\b|\bm\.?\s*s\b|\bmaster\s+of\s+science\b", "M.S. (Master of Science)"),
+            (r"\bbca\b|\bbachelor\s+of\s+computer\s+applications?\b", "BCA (Bachelor of Computer Applications)"),
+            (r"\bmca\b|\bmaster\s+of\s+computer\s+applications?\b", "MCA (Master of Computer Applications)"),
+            (r"\bmba\b|\bmaster\s+of\s+business\s+administration\b", "MBA (Master of Business Administration)"),
+            (r"\bbba\b|\bbachelor\s+of\s+business\s+administration\b", "BBA (Bachelor of Business Administration)"),
+            (r"\bb\.?\s*com\b|\bbachelor\s+of\s+commerce\b", "B.Com (Bachelor of Commerce)"),
+            (r"\bb\.?\s*a\b|\bbachelor\s+of\s+arts\b", "B.A. (Bachelor of Arts)"),
+            (r"\bph\.?d\b|\bdoctor\s+of\s+philosophy\b", "Ph.D. (Doctor of Philosophy)"),
+            (r"\b12th(\s*(grade|standard|class))?|\bclass\s*12\b|\bhsc\b|\bintermediate\b", "Higher Secondary Certificate (Class XII)"),
+            (r"\b10th(\s*(grade|standard|class))?|\bclass\s*10\b|\bssc\b|\bmatric(ulation)?\b", "Secondary School Certificate (Class X)"),
+            (r"\bdiploma\b", "Diploma"),
+        ]
+
+        spec_map = [
+            (r"\baiml\b|\bai\s*(and|&|\/)\s*ml\b|\bai-ml\b", "Artificial Intelligence & Machine Learning"),
+            (r"\bcs\b|\bcse\b|\bcomputer\s+science\s+(and|&)\s+engineering\b", "Computer Science & Engineering"),
+            (r"\bcomputer\s+science\b", "Computer Science"),
+            (r"\bit\b|\binformation\s+technology\b", "Information Technology"),
+            (r"\bece\b|\belectronics\s+(and|&)\s+communication\b", "Electronics & Communication Engineering"),
+            (r"\beee\b|\bee\b|\belectrical\s+engineering\b", "Electrical & Electronics Engineering"),
+            (r"\bme\b|\bmech\b|\bmechanical\s+engineering\b", "Mechanical Engineering"),
+            (r"\bcivil\b|\bcivil\s+engineering\b", "Civil Engineering"),
+            (r"\bai\b|\bartificial\s+intelligence\b", "Artificial Intelligence"),
+            (r"\bml\b|\bmachine\s+learning\b", "Machine Learning"),
+            (r"\bds\b|\bdata\s+science\b", "Data Science"),
+            (r"\bcyber\s*sec(urity)?\b", "Cybersecurity"),
+        ]
+
+        lines = raw_edu.split("\n")
+        enhanced_lines = []
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            cleaned = stripped.lstrip("•-* ")
+            for pattern, replacement in degree_map:
+                cleaned = re.sub(pattern, replacement, cleaned, flags=re.IGNORECASE)
+            for pattern, replacement in spec_map:
+                cleaned = re.sub(pattern, replacement, cleaned, flags=re.IGNORECASE)
+
+            # Professional grade formatting (handles both "8.9 CGPA" and "CGPA: 8.9", "94%" and "94 percentage")
+            cleaned = re.sub(r"([0-9.]+)\s*(?:cgpa|gpa)\b", r"CGPA: \1", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"\b(?:cgpa|gpa)\s*[:=]?\s*([0-9.]+)", r"CGPA: \1", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"([0-9.]+)\s*(?:%|\bpercentage\b|\bpercent\b)", r"Score: \1%", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"\bpercentage\s*[:=]?\s*([0-9.]+)\s*%?", r"Score: \1%", cleaned, flags=re.IGNORECASE)
+
+            if not cleaned.startswith("•"):
+                cleaned = f"• {cleaned}"
+            enhanced_lines.append(cleaned)
+
+        return "\n".join(enhanced_lines)
 
     @staticmethod
     def tailor_content(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -113,6 +182,10 @@ class ResumeBuilderModel:
         if user_skills_list and "\n" not in skills_str and "•" not in skills_str:
             tailored["skills"] = "• Core Competencies: " + ", ".join(user_skills_list)
 
+        # 5. Enhance Educational Qualifications with professional keywords without altering facts
+        if tailored.get("education"):
+            tailored["education"] = ResumeBuilderModel.enhance_qualifications(tailored["education"])
+
         return tailored
 
     @staticmethod
@@ -156,10 +229,16 @@ class ResumeBuilderModel:
             if extra.get("title") and extra.get("content"):
                 parts.append(f"{extra['title'].upper()}\n{extra['content']}\n")
 
-        # Declaration
+        # Declaration & Signature
         dec = data.get("declaration", "").strip() or DEFAULT_DECLARATION
         date_v = data.get("date_val", "").strip() or "____________________"
-        sig_v = data.get("sig_val", "").strip() or "____________________"
+        sig_mode = data.get("signature_mode", "write")
+        if sig_mode == "upload" and data.get("signature_img_b64"):
+            sig_v = "[Digital Image Signature Uploaded]"
+        elif sig_mode == "write" and data.get("sig_val"):
+            sig_v = data.get("sig_val")
+        else:
+            sig_v = "____________________"
 
         parts.append(f"DECLARATION\n{dec}\n\nDate: {date_v}                    Signature: {sig_v}")
 
