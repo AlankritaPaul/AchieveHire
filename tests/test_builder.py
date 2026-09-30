@@ -137,5 +137,80 @@ class TestResumeBuilder(unittest.TestCase):
         pdf_blank = export_builder_resume_to_pdf(blank_data, "Modern")
         self.assertTrue(pdf_blank.startswith(b"%PDF"))
 
+    def test_structured_education_and_compilation(self):
+        """Test realistic multi-qualification structured education entries and compilation."""
+        entries = [
+            {
+                "level": "college",
+                "degree": "btech",
+                "stream": "cse",
+                "institution": "Delhi Technological University",
+                "board_univ": "DTU",
+                "year": "2020 - 2024",
+                "grade": "8.6 cgpa"
+            },
+            {
+                "level": "12th",
+                "degree": "12th pass",
+                "stream": "pcm",
+                "institution": "Delhi Public School",
+                "board_univ": "cbse",
+                "year": "2020",
+                "grade": "92.4 percentage"
+            },
+            {
+                "level": "10th",
+                "degree": "10th",
+                "stream": "",
+                "institution": "Delhi Public School",
+                "board_univ": "cbse",
+                "year": "2018",
+                "grade": "94.6%"
+            }
+        ]
+
+        enhanced = ResumeBuilderModel.enhance_education_entries(entries)
+        # Degree and stream enhancements
+        self.assertIn("B.Tech (Bachelor of Technology)", enhanced[0]["degree"])
+        self.assertIn("Computer Science & Engineering", enhanced[0]["stream"])
+        self.assertIn("CGPA: 8.6", enhanced[0]["grade"])
+
+        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced[1]["degree"])
+        self.assertIn("Science (Physics, Chemistry, Maths)", enhanced[1]["stream"])
+        self.assertIn("CBSE Board", enhanced[1]["board_univ"])
+        self.assertIn("Score: 92.4%", enhanced[1]["grade"])
+
+        compiled = ResumeBuilderModel.compile_education_entries(enhanced)
+        self.assertIn("• B.Tech (Bachelor of Technology) in Computer Science & Engineering", compiled)
+        self.assertIn("Delhi Technological University | DTU | 2020 - 2024 | CGPA: 8.6", compiled)
+        self.assertIn("• Higher Secondary Certificate (Class XII) in Science (Physics, Chemistry, Maths)", compiled)
+        self.assertIn("Delhi Public School | CBSE Board | 2020 | Score: 92.4%", compiled)
+        self.assertIn("• Secondary School Certificate (Class X)", compiled)
+
+    def test_enhance_skills_grouping(self):
+        """Test skill enhancement groups into industry categories and normalizes keywords."""
+        raw_skills = "python, reactjs, nodejs, postgresql, git, aws, dsa, problem solving"
+        enhanced = ResumeBuilderModel.enhance_skills(raw_skills)
+
+        self.assertIn("Programming Languages: Python", enhanced)
+        self.assertIn("Frameworks & Libraries: React.js, Node.js", enhanced)
+        self.assertIn("Databases: PostgreSQL", enhanced)
+        self.assertIn("Tools & Cloud Technologies: Git, AWS (Amazon Web Services)", enhanced)
+        self.assertIn("Core Competencies & Methodologies: Data Structures & Algorithms, Problem Solving", enhanced)
+
+    def test_enhance_experience_and_projects(self):
+        """Test experience and project text enhancement upgrades action verbs and technical phrasing."""
+        raw_exp = "worked on user management module\nhelped in query optimization"
+        enh_exp = ResumeBuilderModel.enhance_experience(raw_exp)
+        self.assertNotIn("worked on", enh_exp.lower())
+        self.assertIn("Architected", enh_exp)
+        self.assertIn("Engineered", enh_exp)
+
+        raw_proj = "Inventory System\nmade a website for warehouse tracking\nused python for backend"
+        enh_proj = ResumeBuilderModel.enhance_projects(raw_proj)
+        self.assertNotIn("made a website", enh_proj)
+        self.assertIn("Architected and developed a responsive web application", enh_proj)
+        self.assertIn("Leveraged Python to implement backend logic", enh_proj)
+
 if __name__ == "__main__":
     unittest.main()

@@ -108,7 +108,10 @@ ROLE_SKILL_DATABASE = {
 # Weak phrasing to strong action verbs mapping
 WEAK_VERBS_MAP = {
     "worked on": ["architected", "engineered", "spearheaded", "developed", "built"],
+    "worked with": ["collaborated with", "partnered with", "utilized", "leveraged"],
+    "helped in": ["engineered", "streamlined", "optimized", "collaborated on"],
     "helped with": ["collaborated to deliver", "partnered across teams to accelerate", "co-authored", "facilitated"],
+    "helped": ["collaborated to deliver", "accelerated", "facilitated", "partnered on"],
     "responsible for": ["drove", "led", "directed", "managed", "orchestrated"],
     "handled": ["resolved", "executed", "streamlined", "administered", "optimized"],
     "did": ["implemented", "executed", "delivered", "performed", "established"],
