@@ -342,6 +342,18 @@ class TestResumeBuilder(unittest.TestCase):
                 "end_date": "May 2024",
                 "description": "Conducted research on distributed systems fault tolerance.",
                 "responsibilities": "Architected simulation framework.\nPublished findings at academic symposium."
+            },
+            {
+                "experience_type": "Contract",
+                "work_arrangement": "Rotational Offshore",
+                "company": "BP Global",
+                "position": "Field Operations Specialist",
+                "location": "Aberdeen, UK",
+                "status": "Completed",
+                "start_date": "Jan 2021",
+                "end_date": "Aug 2022",
+                "description": "Managed automated telemetry equipment.",
+                "responsibilities": "Coordinated offshore inspection schedule."
             }
         ]
 
@@ -363,14 +375,17 @@ class TestResumeBuilder(unittest.TestCase):
         # Title line checks (including custom type)
         self.assertIn("• Software engineering intern (Internship)", compiled)
         self.assertIn("• Research Assistant (Graduate Research Fellow)", compiled)
+        self.assertIn("• Field Operations Specialist (Contract)", compiled)
 
         # Metadata line checks: Location, Work Arrangement, and Dates kept completely separate
         self.assertIn("Google | Mountain View, CA | Hybrid | Jun 2024 - Present", compiled)
         self.assertIn("MIT CSAIL | Cambridge, MA | Client-site (Mon-Wed) | Sep 2022 - May 2024", compiled)
+        self.assertIn("BP Global | Aberdeen, UK | Rotational Offshore | Jan 2021 - Aug 2022", compiled)
 
         # No internal labels
         self.assertNotIn("Experience 1", compiled)
         self.assertNotIn("Experience 2", compiled)
+        self.assertNotIn("Experience 3", compiled)
 
         # Description and bullet points
         self.assertIn("Spearheaded cloud infrastructure logging pipeline", compiled)
