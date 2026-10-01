@@ -7,7 +7,7 @@
   <p align="center">
     <img src="assets/tagline.png" alt="Better Preparation. Stronger Presentation." height="68" />
     <br/>
-    <img src="assets/subtagline.png" alt="Prepare for the opportunity you've been waiting for" height="42" />
+    <img src="assets/subtagline.png" alt="Prepare for the opportunity you've been waiting for" height="52" />
     <br/><br/>
     <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>

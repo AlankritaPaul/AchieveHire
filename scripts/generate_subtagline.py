@@ -5,7 +5,7 @@ def create_subtagline():
     print("Generating stylish subtagline badge (Prepare for the opportunity you’ve been waiting for)...")
     SCALE = 4
     
-    font = ImageFont.truetype('assets/fonts/hatton/Hatton1.otf', int(38 * SCALE))
+    font = ImageFont.truetype('assets/fonts/hatton/Hatton1.otf', int(46 * SCALE))
     
     part1 = "Prepare for the opportunity you"
     apo = "'"
@@ -20,8 +20,8 @@ def create_subtagline():
     bb = font.getbbox("Prepare for the opportunity you've been waiting for")
     txt_h = bb[3] - bb[1]
     
-    pad_x = int(36 * SCALE)
-    pad_y = int(24 * SCALE)
+    pad_x = int(40 * SCALE)
+    pad_y = int(28 * SCALE)
     
     W = total_w + pad_x * 2
     H = txt_h + pad_y * 2
@@ -35,7 +35,7 @@ def create_subtagline():
         # part 1
         draw_target.text((base_x + offset_x, base_y + offset_y), part1, font=font, fill=fill_color)
         # apostrophe lifted slightly to natural shoulder height in Hatton font
-        draw_target.text((base_x + offset_x + w1 + int(1 * SCALE), base_y + offset_y - int(12 * SCALE)), apo, font=font, fill=fill_color)
+        draw_target.text((base_x + offset_x + w1 + int(1 * SCALE), base_y + offset_y - int(14 * SCALE)), apo, font=font, fill=fill_color)
         # part 2
         draw_target.text((base_x + offset_x + w1 + w_apo + int(2 * SCALE), base_y + offset_y), part2, font=font, fill=fill_color)
     
@@ -43,14 +43,14 @@ def create_subtagline():
     shd = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     sdraw = ImageDraw.Draw(shd)
     draw_text_parts(sdraw, int(1.5 * SCALE), int(2.5 * SCALE), (0, 0, 0, 115))
-    shd = shd.filter(ImageFilter.GaussianBlur(int(2.8 * SCALE)))
+    shd = shd.filter(ImageFilter.GaussianBlur(int(3.2 * SCALE)))
     img.alpha_composite(shd)
     
     # 2. Warm Golden Halo / Ambient Bloom
     glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     gdraw = ImageDraw.Draw(glow)
     draw_text_parts(gdraw, 0, 0, (245, 175, 45, 145))
-    glow = glow.filter(ImageFilter.GaussianBlur(int(7 * SCALE)))
+    glow = glow.filter(ImageFilter.GaussianBlur(int(8 * SCALE)))
     img.alpha_composite(glow)
     
     # 3. Rich Champagne Gold Text with Specular Edge
