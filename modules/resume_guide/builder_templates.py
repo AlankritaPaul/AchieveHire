@@ -181,7 +181,7 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
 </div>""")
 
     # Work Experience
-    if data.get("experience"):
+    if data.get("experience") and data["experience"].strip():
         sections_html.append(f"""<div class="resume-sec">
 <div class="sec-title">WORK EXPERIENCE</div>
 <div class="sec-content" style="white-space: pre-line;">{data['experience']}</div>
@@ -239,8 +239,6 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
 </div>'''
     else:
         signature_element = '''<div style="text-align: right; min-width: 170px;">
-<div style="height: 30px;"></div>
-<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>
 <div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature: ____________________</div>
 </div>'''
 
@@ -525,7 +523,7 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
     if data.get("skills"):
         add_section("Technical & Functional Skills", data["skills"])
 
-    if data.get("experience"):
+    if data.get("experience") and data["experience"].strip():
         add_section("Work Experience", data["experience"])
 
     if data.get("projects"):

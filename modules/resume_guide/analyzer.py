@@ -75,9 +75,9 @@ class ResumeAnalyzer:
         high_level_areas = []
         if missing_skills:
             high_level_areas.append("Add relevant skills")
-        if experience_eval["weak_verb_count"] > 0 or not experience_eval["has_metrics"] or role_alignment_score < 80:
+        if experience_eval.get("weak_verb_count", 0) > 0 or (experience_eval.get("has_experience", False) and not experience_eval.get("has_metrics", False)) or role_alignment_score < 80:
             high_level_areas.append("Improve job-related keywords")
-        if project_eval["score"] < 80 or not project_eval["has_projects"]:
+        if project_eval.get("score", 0) < 80 or not project_eval.get("has_projects", False):
             high_level_areas.append("Highlight relevant projects")
         if unnecessary_details:
             high_level_areas.append("Remove outdated personal details")
@@ -171,6 +171,9 @@ class ResumeAnalyzer:
             return {
                 "has_projects": False,
                 "score": 40,
+                "skills_in_projects": [],
+                "has_metrics": False,
+                "has_links": False,
                 "summary": "No dedicated Projects section was identified in the resume.",
                 "details": "Adding relevant personal or academic projects demonstrates practical capability for " + self.job_role + "."
             }
@@ -211,6 +214,7 @@ class ResumeAnalyzer:
                 "has_experience": False,
                 "score": 50,
                 "weak_verb_count": 0,
+                "found_weak_verbs": [],
                 "has_metrics": False,
                 "summary": "No professional experience section found. (If applying as entry-level/fresher, highlight project outcomes and internships)."
             }
@@ -353,7 +357,7 @@ class ResumeAnalyzer:
                 "recommendation": f"If you have hands-on experience or coursework in these areas, explicitly list them in your technical skills or reference them in your project bullet points."
             })
 
-        if experience_eval["found_weak_verbs"]:
+        if experience_eval.get("found_weak_verbs"):
             suggestions.append({
                 "title": "Upgrade Passive Phrases to High-Impact Action Verbs",
                 "category": "Impact & Presentation",
@@ -361,7 +365,7 @@ class ResumeAnalyzer:
                 "recommendation": "Begin experience bullet points with strong power verbs like 'Architected', 'Spearheaded', 'Optimized', or 'Engineered' to convey ownership and initiative."
             })
 
-        if not experience_eval["has_metrics"] and experience_eval["has_experience"]:
+        if experience_eval.get("has_experience", False) and not experience_eval.get("has_metrics", False):
             suggestions.append({
                 "title": "Quantify Achievements with Data & Scale",
                 "category": "Accomplishments",
@@ -369,7 +373,7 @@ class ResumeAnalyzer:
                 "recommendation": "Use numbers, percentages, or scale metrics where applicable (e.g., 'improved query performance by 35%', 'supported 10,000+ daily active users')."
             })
 
-        if not project_eval["has_metrics"] and project_eval["has_projects"]:
+        if project_eval.get("has_projects", False) and not project_eval.get("has_metrics", False):
             suggestions.append({
                 "title": "Add Measurable Scope to Projects",
                 "category": "Project Relevance",

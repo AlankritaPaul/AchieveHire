@@ -404,5 +404,75 @@ class TestResumeBuilder(unittest.TestCase):
         pdf = export_builder_resume_to_pdf(test_data, "Modern")
         self.assertTrue(pdf.startswith(b"%PDF"))
 
+    def test_unpopulated_work_experience_entries_omitted(self):
+        """Test that default dropdown selections without company or position do NOT generate a Work Experience section."""
+        # User clicked '+ Add Experience' 3 times but did not enter company, position, or description
+        dummy_entries = [
+            {
+                "experience_type": "Placement",
+                "custom_experience_type": "",
+                "work_arrangement": "On-site",
+                "custom_work_arrangement": "",
+                "company": "",
+                "position": "",
+                "location": "",
+                "status": "Completed",
+                "start_date": "",
+                "end_date": "",
+                "description": "",
+                "responsibilities": ""
+            },
+            {
+                "experience_type": "Full-Time",
+                "custom_experience_type": "",
+                "work_arrangement": "On-site",
+                "custom_work_arrangement": "",
+                "company": "",
+                "position": "",
+                "location": "",
+                "status": "Completed",
+                "start_date": "",
+                "end_date": "",
+                "description": "",
+                "responsibilities": ""
+            }
+        ]
+
+        compiled = ResumeBuilderModel.compile_experience_entries(dummy_entries)
+        # Must return empty string because no substantive details were provided
+        self.assertEqual(compiled, "")
+
+        # When compiled is empty string, resume template must NOT display WORK EXPERIENCE
+        test_data = dict(self.sample_data)
+        test_data["experience"] = compiled
+        html = render_resume_html(test_data, "Modern")
+        self.assertNotIn("WORK EXPERIENCE", html)
+
+    def test_analyzer_without_experience_section(self):
+        """Test that analyzing a resume without an experience section does not throw KeyError: found_weak_verbs."""
+        from modules.resume_guide.analyzer import ResumeAnalyzer
+        analyzer = ResumeAnalyzer(job_role="Data Analyst", company="Google")
+        raw_text = "MAYA LIN\nEmail: maya@email.com\n\nEDUCATION AND QUALIFICATIONS\nB.S. in Statistics | 2023\n\nSKILLS\nPython, SQL, Tableau"
+        sections = {
+            "header": "MAYA LIN\nEmail: maya@email.com",
+            "education": "B.S. in Statistics | 2023",
+            "skills": "Python, SQL, Tableau"
+        }
+        # Must not raise KeyError: 'found_weak_verbs'
+        result = analyzer.analyze(raw_text, sections)
+        self.assertIn("role_alignment_score", result)
+        self.assertIn("suggestions", result)
+        self.assertFalse(result["experience_relevance"]["has_experience"])
+
+    def test_blank_signature_single_dash_only(self):
+        """Test that blank signature mode renders a single line / dash and no duplicate horizontal rules."""
+        test_data = dict(self.sample_data)
+        test_data["signature_mode"] = "blank"
+        html = render_resume_html(test_data, "Modern")
+        # Single clean line Signature: ____________________
+        self.assertIn("Signature: ____________________", html)
+        # Must NOT contain a duplicate border-top line above it
+        self.assertNotIn('<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>\n<div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature: ____________________</div>', html)
+
 if __name__ == "__main__":
     unittest.main()

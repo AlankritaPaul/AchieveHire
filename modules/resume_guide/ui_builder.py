@@ -838,10 +838,7 @@ def render_create_resume_flow():
 
         # Compile in background into data["experience"]
         compiled_exp = ResumeBuilderModel.compile_experience_entries(data.get("experience_entries", []))
-        if compiled_exp:
-            data["experience"] = compiled_exp
-        elif not data.get("experience_entries"):
-            data["experience"] = ""
+        data["experience"] = compiled_exp
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -851,10 +848,22 @@ def render_create_resume_flow():
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
-                if data.get("experience_entries"):
-                    data["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(data["experience_entries"])
-                    compiled_exp = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
-                    data["experience"] = compiled_exp
+                # Clean out any empty entries where no substantive details were entered
+                valid_entries = [
+                    e for e in data.get("experience_entries", [])
+                    if any([
+                        e.get("company", "").strip(),
+                        e.get("position", "").strip(),
+                        e.get("description", "").strip(),
+                        e.get("responsibilities", "").strip()
+                    ])
+                ]
+                data["experience_entries"] = valid_entries
+                if valid_entries:
+                    data["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(valid_entries)
+                    data["experience"] = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
+                else:
+                    data["experience"] = ""
                 st.session_state.builder_step = 8
                 st.rerun()
 

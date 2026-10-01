@@ -588,8 +588,13 @@ class ResumeBuilderModel:
         for entry in entries:
             e = dict(entry)
             pos = e.get("position", "").strip()
+            comp = e.get("company", "").strip()
             desc = e.get("description", "").strip()
             resp = e.get("responsibilities", "").strip()
+
+            # Skip entries with no substantive user input
+            if not any([pos, comp, desc, resp]):
+                continue
 
             if pos:
                 e["position"] = pos[0].upper() + pos[1:] if len(pos) > 1 else pos.upper()
@@ -635,6 +640,22 @@ class ResumeBuilderModel:
 
         blocks = []
         for entry in entries:
+            company = entry.get("company", "").strip()
+            position = entry.get("position", "").strip()
+            location = entry.get("location", "").strip()
+            status = entry.get("status", "Completed").strip()
+            start_date = entry.get("start_date", "").strip()
+            end_date = entry.get("end_date", "").strip()
+            description = entry.get("description", "").strip()
+            responsibilities = entry.get("responsibilities", "").strip()
+
+            # A work experience entry is only valid if the user has provided substantive details
+            # (such as position, company, description, or responsibilities).
+            # Default dropdown values alone (e.g. 'Placement' or 'On-site') without company or position
+            # do NOT qualify as an experience entry and must be ignored.
+            if not any([position, company, description, responsibilities]):
+                continue
+
             exp_type_raw = entry.get("experience_type", "").strip()
             if exp_type_raw == "Write Your Own":
                 exp_type = entry.get("custom_experience_type", "").strip()
@@ -647,19 +668,7 @@ class ResumeBuilderModel:
             else:
                 arrangement = arr_raw
 
-            company = entry.get("company", "").strip()
-            position = entry.get("position", "").strip()
-            location = entry.get("location", "").strip()
-            status = entry.get("status", "Completed").strip()
-            start_date = entry.get("start_date", "").strip()
-            end_date = entry.get("end_date", "").strip()
-            description = entry.get("description", "").strip()
-            responsibilities = entry.get("responsibilities", "").strip()
-
-            if not any([exp_type, arrangement, company, position, location, start_date, end_date, description, responsibilities]):
-                continue
-
-            # Title line: Position (Experience Type)
+            # Title line: Position (Experience Type) or Company
             if position and exp_type:
                 title_line = f"• {position} ({exp_type})"
             elif position:
@@ -668,8 +677,8 @@ class ResumeBuilderModel:
                 title_line = f"• {company} ({exp_type})"
             elif company:
                 title_line = f"• {company}"
-            elif exp_type:
-                title_line = f"• {exp_type}"
+            elif description or responsibilities:
+                title_line = f"• Professional Experience ({exp_type})" if exp_type else "• Professional Experience"
             else:
                 continue
 
@@ -831,6 +840,8 @@ class ResumeBuilderModel:
             compiled_exp = ResumeBuilderModel.compile_experience_entries(tailored["experience_entries"])
             if compiled_exp:
                 tailored["experience"] = compiled_exp
+            else:
+                tailored["experience"] = ""
         elif tailored.get("experience"):
             tailored["experience"] = ResumeBuilderModel.enhance_experience(tailored["experience"])
 
@@ -884,7 +895,7 @@ class ResumeBuilderModel:
         if data.get("skills"):
             parts.append(f"TECHNICAL & FUNCTIONAL SKILLS\n{data['skills']}\n")
 
-        if data.get("experience"):
+        if data.get("experience") and data["experience"].strip():
             parts.append(f"WORK EXPERIENCE\n{data['experience']}\n")
 
         if data.get("projects"):
