@@ -169,18 +169,20 @@ def _inject_css(t: dict):
     }}
 
     /* ── Prominent Theme Toggle Button (Sun/Moon Split Icon) ─────────── */
-    div[data-testid="column"]:last-child .stButton > button,
-    button[key="ac_theme_toggle"] {{
-        width: 58px !important;
-        height: 58px !important;
-        min-width: 58px !important;
-        max-width: 58px !important;
+    .ac-theme-toggle-btn,
+    button[key="ac_theme_toggle"],
+    .ac-theme-toggle-wrap button,
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:last-child button {{
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
         border-radius: 50% !important;
         background-color: {t["surface"]} !important;
         background-image: url('{theme_icon_uri}') !important;
         background-repeat: no-repeat !important;
         background-position: center !important;
-        background-size: 38px 38px !important;
+        background-size: 36px 36px !important;
         border: 2px solid {t["border"]} !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
         cursor: pointer !important;
@@ -191,26 +193,85 @@ def _inject_css(t: dict):
         justify-content: center !important;
         transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
     }}
-    div[data-testid="column"]:last-child .stButton > button:hover,
-    button[key="ac_theme_toggle"]:hover {{
+    .ac-theme-toggle-btn:hover,
+    button[key="ac_theme_toggle"]:hover,
+    .ac-theme-toggle-wrap button:hover,
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:last-child button:hover {{
         transform: scale(1.12) rotate(8deg) !important;
         box-shadow: 0 6px 24px rgba(0,0,0,0.28) !important;
         border-color: {t["accent"]} !important;
     }}
 
-    /* ── Sign In button override ──────────────────────────────────────── */
-    [data-testid="stButton"][key="ac_signin_btn"] > button,
-    div[data-testid="column"]:nth-child(2) .stButton > button {{
-        background: linear-gradient(135deg, {t["accent"]}, {t["accent_hover"]}) !important;
-        color: {t["btn_text"]} !important;
-        border: none !important;
+    /* ── Pink Sign In Option (Vibrant & Visible in both themes — NEVER white) ─ */
+    .ac-pink-signin-btn,
+    button[data-testid="baseButton-primary"],
+    button[key="ac_top_signin_btn"],
+    button[key="ac_signin_btn"],
+    .ac-signin-btn-wrap button,
+    .ac-top-signin-btn-wrap button,
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:nth-child(2) button {{
+        background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
+        background-color: #DB2777 !important;
+        color: #FFFFFF !important;
+        border: 1.5px solid #F472B6 !important;
         border-radius: 50px !important;
-        padding: 14px 0 !important;
-        font-size: 1.05rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.04em !important;
-        box-shadow: 0 6px 28px rgba(79,70,229,0.32) !important;
-        transition: all 0.2s ease !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
+        cursor: pointer !important;
+        transition: all 0.22s ease !important;
+    }}
+    
+    /* Top bar specific button sizing */
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:nth-child(2) button,
+    .ac-top-signin-btn-wrap button {{
+        padding: 9px 22px !important;
+        font-size: 0.98rem !important;
+        min-height: 48px !important;
+        height: 48px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+
+    /* Bottom CTA button sizing */
+    .ac-signin-btn-wrap button {{
+        padding: 14px 32px !important;
+        font-size: 1.08rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+
+    .ac-pink-signin-btn:hover,
+    button[data-testid="baseButton-primary"]:hover,
+    button[key="ac_top_signin_btn"]:hover,
+    button[key="ac_signin_btn"]:hover,
+    .ac-signin-btn-wrap button:hover,
+    .ac-top-signin-btn-wrap button:hover,
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:nth-child(2) button:hover {{
+        background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
+        background-color: #E11D48 !important;
+        color: #FFFFFF !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 24px rgba(236, 72, 153, 0.65) !important;
+        border-color: #FDA4AF !important;
+    }}
+
+    .ac-pink-signin-btn *,
+    button[data-testid="baseButton-primary"] *,
+    button[key="ac_top_signin_btn"] *,
+    button[key="ac_signin_btn"] *,
+    .ac-signin-btn-wrap button *,
+    .ac-top-signin-btn-wrap button *,
+    [data-testid="stHorizontalBlock"]:first-of-type [data-testid="column"]:nth-child(2) button * {{
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+    }}
+
+    /* Ensure no button has ugly sharp corners */
+    div[data-testid="stButton"] button {{
+        border-radius: 50px !important;
     }}
 
     /* ── Typography ───────────────────────────────────────────────────── */
@@ -602,6 +663,25 @@ def _animated_background(theme_key: str):
         f"""
         <script>
         (function run() {{
+            // Tag buttons dynamically in parent DOM so pink and theme styles apply reliably
+            function tagButtons() {{
+                try {{
+                    const doc = window.parent.document;
+                    if (!doc) return;
+                    const btns = doc.querySelectorAll('button');
+                    btns.forEach(btn => {{
+                        const txt = (btn.innerText || '').trim();
+                        if (txt.includes('Sign In')) {{
+                            btn.classList.add('ac-pink-signin-btn');
+                        }} else if (txt === '' || btn.querySelector('svg')) {{
+                            btn.classList.add('ac-theme-toggle-btn');
+                        }}
+                    }});
+                }} catch(e) {{}}
+            }}
+            tagButtons();
+            setInterval(tagButtons, 250);
+
             // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
             if (!canvas) {{ setTimeout(run, 50); return; }}
@@ -700,11 +780,14 @@ def _render_signin_cta(t: dict) -> bool:
     </div>
     """), unsafe_allow_html=True)
 
-    col_l, col_m, col_r = st.columns([1.2, 1, 1.2])
+    col_l, col_m, col_r = st.columns([1.1, 1.3, 1.1])
     with col_m:
-        clicked = st.button("🚀  Sign In to AscendCareer",
+        st.markdown("<div class='ac-signin-btn-wrap'>", unsafe_allow_html=True)
+        clicked = st.button("👤  Sign In to AscendCareer",
                             key="ac_signin_btn",
+                            type="primary",
                             use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding:8px 24px 0;">
@@ -853,10 +936,14 @@ def render_landing() -> dict:
     # ── Animated background ──────────────────────────────────────────────────
     _animated_background(theme_key)
 
-    # ── Top Bar: Prominent Theme Switcher (Sun/Moon Split Icon) ──────────────
-    top_col_spacer, top_col_theme = st.columns([86, 14])
+    # ── Top Bar: Sign In (Top Right-Hand Side) & Split Sun/Moon Theme Switcher ──
+    top_col_spacer, top_col_signin, top_col_theme = st.columns([62, 25, 13])
+    with top_col_signin:
+        st.markdown("<div class='ac-top-signin-btn-wrap' style='padding-top:12px; padding-bottom:6px;'>", unsafe_allow_html=True)
+        top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     with top_col_theme:
-        st.markdown("<div style='padding-top:14px; padding-bottom:6px; display:flex; justify-content:flex-end;'>", unsafe_allow_html=True)
+        st.markdown("<div class='ac-theme-toggle-wrap' style='padding-top:12px; padding-bottom:6px; display:flex; justify-content:flex-end;'>", unsafe_allow_html=True)
         if st.button("", key="ac_theme_toggle", help="Toggle Light / Dark Theme"):
             st.session_state["ac_theme"] = other_key
             st.rerun()
@@ -864,12 +951,12 @@ def render_landing() -> dict:
 
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
-    signin_clicked = _render_signin_cta(t)
+    cta_signin_clicked = _render_signin_cta(t)
     _render_core_principle(t)
     _render_privacy_trust(t)
     _render_footer(t)
 
     return {
-        "proceed": signin_clicked,
+        "proceed": top_signin_clicked or cta_signin_clicked,
         "theme":   theme_key,
     }
