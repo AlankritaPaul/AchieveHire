@@ -4,11 +4,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 def create_banner():
-    print("Initializing Enhanced Banner & Logo Generator...")
+    print("Initializing Refined Banner & Logo Generator...")
     
     # 1. Load and prepare logo components
     logo = Image.open('assets/logo.png').convert('RGBA')
-    logo_w, logo_h = logo.size
     arr = np.array(logo)
     r, g, b, a = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2], arr[:, :, 3]
 
@@ -56,35 +55,32 @@ def create_banner():
 
     # Base ribbon with clean open-air flight path and dark groove inside ribbon body
     base_arr = arr.copy()
-    # Clear arrow from base
     base_arr[arrow_mask, 3] = 0
-    # Clear any residual flight path pixels in open air
     in_flight = dilated_arrow_mask & (y_ind < 340) & (dist_target > 90)
     base_arr[in_flight, 3] = 0
-    # Subtle dark teal groove inside ribbon body
     in_groove = arrow_mask & (y_ind >= 340) & (dist_target > 100)
     base_arr[in_groove] = [16, 55, 82, 220]
     base_img = Image.fromarray(base_arr)
 
     # 2. Canvas parameters (2x supersampling)
     SCALE = 2
-    W_ORIG, H_ORIG = 1200, 360
+    W_ORIG, H_ORIG = 1200, 380
     W, H = W_ORIG * SCALE, H_ORIG * SCALE
 
     # Fonts
-    font_title = ImageFont.truetype('assets/fonts/BodoniModa.ttf', int(66 * SCALE))
+    font_title = ImageFont.truetype('assets/fonts/glitten/Glitten-Regular.otf', int(64 * SCALE))
     font_tagline = ImageFont.truetype('assets/fonts/Kerry Halton.ttf', int(46 * SCALE))
-    font_badge = ImageFont.truetype('C:/Windows/Fonts/arial.ttf', int(14 * SCALE))
+    font_mono = ImageFont.truetype('C:/Windows/Fonts/consolab.ttf', int(15 * SCALE))
 
     # Right side text coordinates
     start_x = int(395 * SCALE)
-    base_y = int(112 * SCALE)
+    base_y = int(98 * SCALE)
 
-    # Pre-render Title layers
+    # Pre-render Title layer (Completely STATIC, NO animation)
     title_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     t_draw = ImageDraw.Draw(title_layer)
 
-    # 'AscendCareer' text
+    # 'AscendCareer' text in Glitten luxury serif
     t_draw.text((start_x, base_y), 'AscendCareer', font=font_title, fill=(248, 250, 252, 255))
     bbox_all = t_draw.textbbox((start_x, base_y), 'AscendCareer', font=font_title)
     bbox_A = t_draw.textbbox((start_x, base_y), 'A', font=font_title)
@@ -96,22 +92,21 @@ def create_banner():
     a_draw.text((start_x, base_y), 'A', font=font_title, fill=(255, 122, 0, 255))
     a_arr = np.array(a_layer)
     y_ia, x_ia = np.indices(a_arr.shape[:2])
-    # Keep left leg orange, right leg white
     is_right_leg = (x_ia > ax_mid + int(6 * SCALE))
     a_arr[is_right_leg, 3] = 0
 
-    # Draw bold angled orange left stroke
-    peak = (bbox_A[0] + int(21 * SCALE), bbox_A[1] + int(5 * SCALE))
-    foot = (bbox_A[0] + int(3 * SCALE), bbox_A[3] - int(4 * SCALE))
+    # Bold angled orange left stroke
+    peak = (bbox_A[0] + int(19 * SCALE), bbox_A[1] + int(5 * SCALE))
+    foot = (bbox_A[0] + int(2 * SCALE), bbox_A[3] - int(4 * SCALE))
     leg_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     ldraw = ImageDraw.Draw(leg_layer)
     ldraw.line([foot, peak], fill=(255, 122, 0, 255), width=int(12 * SCALE))
-    ldraw.line([foot, peak], fill=(255, 175, 45, 255), width=int(3 * SCALE))
+    ldraw.line([foot, peak], fill=(255, 180, 50, 255), width=int(3 * SCALE))
 
     title_layer.alpha_composite(Image.fromarray(a_arr))
     title_layer.alpha_composite(leg_layer)
 
-    # Swoosh curve points
+    # Static swoosh curve points
     p0 = (bbox_A[0] + int(8 * SCALE), base_y + int(42 * SCALE))
     p1 = (start_x + int(110 * SCALE), base_y - int(34 * SCALE))
     p2 = (start_x + int(370 * SCALE), base_y - int(40 * SCALE))
@@ -134,7 +129,6 @@ def create_banner():
     head_right = (pt_last[0] - head_len * 0.5 * math.cos(curve_ang) - head_w * 0.5 * math.sin(curve_ang),
                   pt_last[1] - head_len * 0.5 * math.sin(curve_ang) + head_w * 0.5 * math.cos(curve_ang))
 
-    # Pre-render static base of swoosh curve
     curve_static = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     cdraw = ImageDraw.Draw(curve_static)
     for i in range(len(curve_pts) - 1):
@@ -151,12 +145,24 @@ def create_banner():
                    (head_right[0] + int(2 * SCALE) * math.cos(curve_ang), head_right[1] + int(2 * SCALE) * math.sin(curve_ang))], 
                   fill=(255, 210, 70, 255))
 
-    # Tagline setup
+    title_layer.alpha_composite(curve_static)
+
+    # 3. Tagline (Generous breathing room below title)
     tagline_text = "Where Preparation Meets Opportunity."
-    tag_y = base_y + int(76 * SCALE)
+    tag_y = base_y + int(94 * SCALE)
     tag_bbox = t_draw.textbbox((start_x, tag_y), tagline_text, font=font_tagline)
 
-    # Glitter twinkle positions across tagline
+    # Static golden text layer
+    tag_halo_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    th_draw = ImageDraw.Draw(tag_halo_layer)
+    th_draw.text((start_x + int(4 * SCALE), tag_y), tagline_text, font=font_tagline, fill=(245, 158, 11, 200))
+    tag_halo_layer = tag_halo_layer.filter(ImageFilter.GaussianBlur(int(4 * SCALE)))
+
+    tag_core = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    tc_draw = ImageDraw.Draw(tag_core)
+    tc_draw.text((start_x + int(4 * SCALE), tag_y), tagline_text, font=font_tagline, fill=(255, 215, 0, 255))
+    tc_draw.text((start_x + int(4 * SCALE), tag_y - int(1 * SCALE)), tagline_text, font=font_tagline, fill=(255, 248, 180, 180))
+
     sparkle_bases = [
         (start_x + int(30 * SCALE), tag_y + int(18 * SCALE), 0.0),
         (start_x + int(115 * SCALE), tag_y + int(12 * SCALE), 0.35),
@@ -168,6 +174,59 @@ def create_banner():
         (start_x + int(720 * SCALE), tag_y + int(12 * SCALE), 0.65),
     ]
 
+    # 4. Monospace Pills Functions & Setup
+    pill_y = tag_y + int(80 * SCALE)
+    pill_h = int(28 * SCALE)
+
+    def draw_doc_icon(d, cx, cy, s=int(10 * SCALE), color=(56, 189, 248)):
+        x0, y0 = cx - s*0.6, cy - s*0.8
+        x1, y1 = cx + s*0.6, cy + s*0.8
+        fold = s*0.4
+        pts = [(x0, y0), (x1 - fold, y0), (x1, y0 + fold), (x1, y1), (x0, y1)]
+        d.polygon(pts, outline=color, fill=(15, 23, 42, 255), width=max(1, int(1.4 * SCALE)))
+        d.line([(x1 - fold, y0), (x1 - fold, y0 + fold), (x1, y0 + fold)], fill=color, width=max(1, int(1.4 * SCALE)))
+        d.line([(x0 + int(3*SCALE), cy - int(2*SCALE)), (x1 - int(3*SCALE), cy - int(2*SCALE))], fill=color, width=max(1, int(1.4 * SCALE)))
+        d.line([(x0 + int(3*SCALE), cy + int(3*SCALE)), (x1 - int(3*SCALE), cy + int(3*SCALE))], fill=color, width=max(1, int(1.4 * SCALE)))
+
+    def draw_mic_icon(d, cx, cy, s=int(10 * SCALE), color=(245, 158, 11)):
+        w, h = s*0.38, s*0.7
+        d.rounded_rectangle((cx - w, cy - h, cx + w, cy + h*0.2), radius=int(w), outline=color, fill=color, width=1)
+        d.arc((cx - w*1.6, cy - h*0.4, cx + w*1.6, cy + h*0.6), start=0, end=180, fill=color, width=max(1, int(1.4 * SCALE)))
+        d.line([(cx, cy + h*0.6), (cx, cy + h*0.95)], fill=color, width=max(1, int(1.4 * SCALE)))
+        d.line([(cx - w*0.9, cy + h*0.95), (cx + w*0.9, cy + h*0.95)], fill=color, width=max(1, int(1.4 * SCALE)))
+
+    def draw_chart_icon(d, cx, cy, s=int(10 * SCALE), color=(52, 211, 153)):
+        x0, y0 = cx - s*0.7, cy - s*0.7
+        x1, y1 = cx + s*0.7, cy + s*0.7
+        d.line([(x0, y1), (x1, y1)], fill=color, width=max(1, int(1.4 * SCALE)))
+        d.line([(cx - s*0.42, y1), (cx - s*0.42, cy + int(3*SCALE))], fill=color, width=int(2.2 * SCALE))
+        d.line([(cx, y1), (cx, cy - int(2*SCALE))], fill=color, width=int(2.2 * SCALE))
+        d.line([(cx + s*0.42, y1), (cx + s*0.42, cy - s*0.65)], fill=color, width=int(2.2 * SCALE))
+
+    # Pre-render static monospace pills
+    pills_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    pdraw = ImageDraw.Draw(pills_layer)
+    pills_data = [
+        (draw_doc_icon, 'Smart Resume', (56, 189, 248)),
+        (draw_mic_icon, 'Realistic Interviews', (245, 158, 11)),
+        (draw_chart_icon, 'Detailed Feedback', (52, 211, 153))
+    ]
+    cur_bx = start_x + int(4 * SCALE)
+    for icon_fn, label, color in pills_data:
+        bbox = pdraw.textbbox((0, 0), label, font=font_mono)
+        tw = bbox[2] - bbox[0]
+        pw = tw + int(44 * SCALE)
+        pdraw.rounded_rectangle(
+            (cur_bx, pill_y, cur_bx + pw, pill_y + pill_h),
+            radius=int(6 * SCALE),
+            fill=(15, 23, 42, 255),
+            outline=(30, 41, 59, 255),
+            width=int(1 * SCALE)
+        )
+        icon_fn(pdraw, cur_bx + int(14 * SCALE), pill_y + pill_h // 2)
+        pdraw.text((cur_bx + int(28 * SCALE), pill_y + int(6 * SCALE)), label, font=font_mono, fill=color)
+        cur_bx += pw + int(12 * SCALE)
+
     NUM_FRAMES = 32
     banner_frames = []
     logo_only_frames = []
@@ -175,7 +234,7 @@ def create_banner():
     logo_display_w = int(300 * SCALE)
     logo_display_h = int(300 * SCALE)
     logo_pos_x = int(45 * SCALE)
-    logo_pos_y = int(30 * SCALE)
+    logo_pos_y = int(40 * SCALE)
 
     print("Rendering 32 high-resolution animation frames...")
 
@@ -300,94 +359,12 @@ def create_banner():
         scaled_logo = logo_canvas.resize((logo_display_w, logo_display_h), Image.Resampling.LANCZOS)
         banner.alpha_composite(scaled_logo, (logo_pos_x, logo_pos_y))
 
-        # 1. Title Layer
+        # 1. Composite STATIC Title (AscendCareer + Orange 'A' + Swoosh) - NO ANIMATION
         banner.alpha_composite(title_layer)
 
-        # Shimmer sweep across title
-        shimmer_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        s_draw = ImageDraw.Draw(shimmer_layer)
-        beam_cx = start_x - int(80 * SCALE) + t * (bbox_all[2] - start_x + int(200 * SCALE))
-        beam_w = int(55 * SCALE)
-        s_draw.polygon([
-            (beam_cx - beam_w, 0),
-            (beam_cx + beam_w, 0),
-            (beam_cx + beam_w - int(70 * SCALE), H),
-            (beam_cx - beam_w - int(70 * SCALE), H)
-        ], fill=(255, 255, 255, 140))
-        shimmer_layer = shimmer_layer.filter(ImageFilter.GaussianBlur(int(10 * SCALE)))
-
-        title_arr = np.array(title_layer)
-        shimmer_arr = np.array(shimmer_layer)
-        shimmer_arr[:, :, 3] = np.clip(
-            shimmer_arr[:, :, 3].astype(float) * (title_arr[:, :, 3].astype(float) / 255.0),
-            0, 255
-        ).astype(np.uint8)
-        banner.alpha_composite(Image.fromarray(shimmer_arr, mode='RGBA'))
-
-        # 2. Swoosh Curve & Comet
-        banner.alpha_composite(curve_static)
-
-        # Comet pulse riding the swoosh curve
-        pulse_pos = int(t * (len(curve_pts) - 1))
-        px, py = curve_pts[pulse_pos]
-        p_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        pd = ImageDraw.Draw(p_layer)
-        p_rad = int(12 * SCALE)
-        pd.ellipse((px - p_rad, py - p_rad, px + p_rad, py + p_rad), fill=(255, 255, 220, 255))
-        pd.ellipse((px - p_rad * 1.8, py - p_rad * 1.8, px + p_rad * 1.8, py + p_rad * 1.8), fill=(255, 180, 0, 160))
-        p_layer = p_layer.filter(ImageFilter.GaussianBlur(int(4 * SCALE)))
-        banner.alpha_composite(p_layer)
-
-        # Starburst sparkle at swoosh arrowhead (t > 0.80)
-        if t > 0.80:
-            fade = (1.0 - (t - 0.80) / 0.20)
-            sp_int = int(255 * fade)
-            sp_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-            sp_draw = ImageDraw.Draw(sp_layer)
-            sp_len = int(24 * SCALE * fade)
-            sp_cx, sp_cy = head_tip
-            sp_draw.line((sp_cx - sp_len, sp_cy, sp_cx + sp_len, sp_cy), fill=(255, 255, 255, sp_int), width=int(2 * SCALE))
-            sp_draw.line((sp_cx, sp_cy - sp_len, sp_cx, sp_cy + sp_len), fill=(255, 255, 255, sp_int), width=int(2 * SCALE))
-            sp_draw.ellipse((sp_cx - int(6 * SCALE), sp_cy - int(6 * SCALE), sp_cx + int(6 * SCALE), sp_cy + int(6 * SCALE)), fill=(255, 240, 150, sp_int))
-            sp_layer = sp_layer.filter(ImageFilter.GaussianBlur(int(2 * SCALE)))
-            banner.alpha_composite(sp_layer)
-
-        # 3. Tagline in Bright Golden Glitter
-        # Soft golden ambient halo under tagline
-        tag_halo_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        th_draw = ImageDraw.Draw(tag_halo_layer)
-        th_draw.text((start_x + int(4 * SCALE), tag_y), tagline_text, font=font_tagline, fill=(245, 158, 11, 200))
-        tag_halo_layer = tag_halo_layer.filter(ImageFilter.GaussianBlur(int(4 * SCALE)))
+        # 2. Tagline with soft halo and gentle glittering sparkles
         banner.alpha_composite(tag_halo_layer)
-
-        # Crisp golden text layer with metallic brightness
-        tag_core = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        tc_draw = ImageDraw.Draw(tag_core)
-        tc_draw.text((start_x + int(4 * SCALE), tag_y), tagline_text, font=font_tagline, fill=(255, 215, 0, 255))
-        tc_draw.text((start_x + int(4 * SCALE), tag_y - int(1 * SCALE)), tagline_text, font=font_tagline, fill=(255, 248, 180, 180))
-
-        # Shimmer wave sweeping across tagline (offset from title shimmer)
-        tag_shimmer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-        tsh_draw = ImageDraw.Draw(tag_shimmer)
-        t_beam_cx = start_x - int(60 * SCALE) + ((t + 0.4) % 1.0) * (tag_bbox[2] - start_x + int(150 * SCALE))
-        t_beam_w = int(45 * SCALE)
-        tsh_draw.polygon([
-            (t_beam_cx - t_beam_w, tag_y - int(15 * SCALE)),
-            (t_beam_cx + t_beam_w, tag_y - int(15 * SCALE)),
-            (t_beam_cx + t_beam_w - int(30 * SCALE), tag_y + int(60 * SCALE)),
-            (t_beam_cx - t_beam_w - int(30 * SCALE), tag_y + int(60 * SCALE))
-        ], fill=(255, 255, 240, 190))
-        tag_shimmer = tag_shimmer.filter(ImageFilter.GaussianBlur(int(6 * SCALE)))
-
-        tag_core_arr = np.array(tag_core)
-        tsh_arr = np.array(tag_shimmer)
-        tsh_arr[:, :, 3] = np.clip(
-            tsh_arr[:, :, 3].astype(float) * (tag_core_arr[:, :, 3].astype(float) / 255.0),
-            0, 255
-        ).astype(np.uint8)
-
         banner.alpha_composite(tag_core)
-        banner.alpha_composite(Image.fromarray(tsh_arr, mode='RGBA'))
 
         # Animated Glitter Sparkles (twinkling starbursts across tagline)
         glitter_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -396,61 +373,15 @@ def create_banner():
             twinkle = math.sin((t + phase) * 2 * math.pi)
             if twinkle > 0.1:
                 brt = int(255 * (twinkle - 0.1) / 0.9)
-                s_size = int((9 + 7 * twinkle) * SCALE)
-                glt_draw.line((sx - s_size, sy, sx + s_size, sy), fill=(255, 255, 255, brt), width=max(1, int(1.5 * SCALE)))
-                glt_draw.line((sx, sy - s_size, sx, sy + s_size), fill=(255, 255, 255, brt), width=max(1, int(1.5 * SCALE)))
+                s_size = int((8 + 6 * twinkle) * SCALE)
+                glt_draw.line((sx - s_size, sy, sx + s_size, sy), fill=(255, 255, 255, brt), width=max(1, int(1.4 * SCALE)))
+                glt_draw.line((sx, sy - s_size, sx, sy + s_size), fill=(255, 255, 255, brt), width=max(1, int(1.4 * SCALE)))
                 glt_draw.ellipse((sx - int(3 * SCALE), sy - int(3 * SCALE), sx + int(3 * SCALE), sy + int(3 * SCALE)), fill=(255, 230, 100, brt))
         glitter_layer = glitter_layer.filter(ImageFilter.GaussianBlur(int(1 * SCALE)))
         banner.alpha_composite(glitter_layer)
 
-        # 4. Feature Badges with Custom Vector Icons
-        final_draw = ImageDraw.Draw(banner)
-        badges = [
-            ('target', 'Realistic Multi-Persona Panels', (30, 41, 59), (56, 189, 248)),
-            ('waveform', 'Live Voice-to-Voice AI', (30, 41, 59), (245, 158, 11)),
-            ('crest', 'Target Role & Company Tailoring', (30, 41, 59), (52, 211, 153))
-        ]
-        bx = start_x + int(4 * SCALE)
-        by = tag_y + int(72 * SCALE)
-        for icon_type, label, bg_c, text_c in badges:
-            b_box = final_draw.textbbox((0, 0), label, font=font_badge)
-            text_w = b_box[2] - b_box[0]
-            pill_w = text_w + int(36 * SCALE)
-            pill_h = int(25 * SCALE)
-            
-            # Pill background
-            final_draw.rounded_rectangle(
-                (bx, by, bx + pill_w, by + pill_h),
-                radius=int(6 * SCALE),
-                fill=(15, 23, 42, 255),
-                outline=bg_c,
-                width=int(1 * SCALE)
-            )
-            
-            # Custom vector icon inside pill
-            icx = bx + int(12 * SCALE)
-            icy = by + pill_h // 2
-            
-            if icon_type == 'target':
-                # Bullseye icon
-                final_draw.ellipse((icx - int(5 * SCALE), icy - int(5 * SCALE), icx + int(5 * SCALE), icy + int(5 * SCALE)), outline=text_c, width=max(1, int(1.2 * SCALE)))
-                final_draw.ellipse((icx - int(2 * SCALE), icy - int(2 * SCALE), icx + int(2 * SCALE), icy + int(2 * SCALE)), fill=text_c)
-            elif icon_type == 'waveform':
-                # Audio waveform bars
-                final_draw.line((icx - int(4 * SCALE), icy - int(3 * SCALE), icx - int(4 * SCALE), icy + int(3 * SCALE)), fill=text_c, width=max(1, int(1.2 * SCALE)))
-                final_draw.line((icx, icy - int(6 * SCALE), icx, icy + int(6 * SCALE)), fill=text_c, width=max(1, int(1.5 * SCALE)))
-                final_draw.line((icx + int(4 * SCALE), icy - int(3 * SCALE), icx + int(4 * SCALE), icy + int(3 * SCALE)), fill=text_c, width=max(1, int(1.2 * SCALE)))
-            elif icon_type == 'crest':
-                # Diamond / building crest
-                final_draw.polygon([
-                    (icx, icy - int(5 * SCALE)),
-                    (icx + int(5 * SCALE), icy),
-                    (icx, icy + int(5 * SCALE)),
-                    (icx - int(5 * SCALE), icy)
-                ], fill=text_c)
-
-            final_draw.text((bx + int(22 * SCALE), by + int(5 * SCALE)), label, font=font_badge, fill=text_c)
-            bx += pill_w + int(10 * SCALE)
+        # 3. Monospace Feature Pills (Smart Resume • Realistic Interviews • Detailed Feedback)
+        banner.alpha_composite(pills_layer)
 
         # Downsample with Lanczos for crystal-clear anti-aliasing
         frame_final = banner.resize((W_ORIG, H_ORIG), Image.Resampling.LANCZOS)
