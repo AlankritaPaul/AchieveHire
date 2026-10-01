@@ -5,7 +5,6 @@ Main Streamlit Application Entrypoint
 
 import streamlit as st
 from modules.landing.ui import render_landing
-from modules.resume_guide.ui import render_resume_guide
 
 # Page Configuration
 st.set_page_config(
@@ -82,6 +81,7 @@ def _render_main_app():
 
     # Route navigation
     if app_mode == "📄 Resume Guide":
+        from modules.resume_guide.ui import render_resume_guide
         render_resume_guide()
     elif app_mode == "🎙️ Voice Interview (Stage 1-6)":
         st.info("🎙️ **Voice Interview Simulator**: Real-time microphone-driven conversational engine across progressive Levels 1-6 will be activated in the upcoming milestone.")

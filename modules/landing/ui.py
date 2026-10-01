@@ -20,27 +20,38 @@ from modules.landing.content import (
 )
 
 
+_CACHED_LOGO_URI = ""
 def _get_logo_data_uri() -> str:
     """Return inline base64 data URI of the transparent logo so it always renders without 404s."""
+    global _CACHED_LOGO_URI
+    if _CACHED_LOGO_URI:
+        return _CACHED_LOGO_URI
     p = Path(__file__).resolve().parent.parent.parent / "assets" / "logo.png"
     if p.exists():
         encoded = base64.b64encode(p.read_bytes()).decode("utf-8")
-        return f"data:image/png;base64,{encoded}"
+        _CACHED_LOGO_URI = f"data:image/png;base64,{encoded}"
+        return _CACHED_LOGO_URI
     return ""
 
 
+_CACHED_THEME_ICON_URI = ""
 def _get_theme_icon_data_uri() -> str:
     """Return data URI of the Sun/Moon split theme icon."""
+    global _CACHED_THEME_ICON_URI
+    if _CACHED_THEME_ICON_URI:
+        return _CACHED_THEME_ICON_URI
     p_png = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.png"
     if p_png.exists():
         encoded = base64.b64encode(p_png.read_bytes()).decode("ascii")
-        return f"data:image/png;base64,{encoded}"
+        _CACHED_THEME_ICON_URI = f"data:image/png;base64,{encoded}"
+        return _CACHED_THEME_ICON_URI
     p = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.svg"
     if p.exists():
         import urllib.parse
         svg_text = p.read_text(encoding="utf-8")
         encoded = urllib.parse.quote(svg_text)
-        return f"data:image/svg+xml;utf8,{encoded}"
+        _CACHED_THEME_ICON_URI = f"data:image/svg+xml;utf8,{encoded}"
+        return _CACHED_THEME_ICON_URI
     return ""
 
 
@@ -126,17 +137,22 @@ THEMES = {
 
 def _inject_css(t: dict):
     theme_icon_uri = _get_theme_icon_data_uri()
+    # Fast asynchronous font loading (non-blocking)
+    st.markdown(
+        '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">',
+        unsafe_allow_html=True,
+    )
     st.markdown(clean_html(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
     /* ── Reset & Base ─────────────────────────────────────────────────── */
     html, body,
     [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {{
         background: {t["bg"]} !important;
         color: {t["text_primary"]} !important;
-        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     }}
 
     /* Hide default Streamlit chrome on landing */
@@ -172,33 +188,100 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Theme Toggle Link (Clean, interactive, 100% transparent) ────────── */
-    #ac-theme-toggle-link {{
-        display: inline-flex !important;
+    /* ── Header Row Alignment ─────────────────────────────────────────── */
+    div[data-testid="stHorizontalBlock"]:first-of-type {{
         align-items: center !important;
-        justify-content: center !important;
+        padding: 8px 12px 0 !important;
+    }}
+
+    /* ── Instant Theme Toggle Button (Exact reference icon, 100% transparent) ── */
+    div:has(#ac-theme-toggle-anchor),
+    div[data-testid="stColumn"]:last-child {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }}
+
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"],
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] {{
+        display: inline-flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+    }}
+
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button,
+    div:has(#ac-theme-toggle-anchor) button,
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button,
+    div[data-testid="column"]:last-child div[data-testid="stButton"] > button,
+    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button,
+    button[key="ac_theme_toggle_btn"] {{
         width: 48px !important;
         height: 48px !important;
-        text-decoration: none !important;
-        cursor: pointer !important;
-        transition: transform 0.22s ease !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
+        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
-    }}
-    #ac-theme-toggle-link:hover {{
-        transform: scale(1.18) rotate(8deg) !important;
-    }}
-    #ac-theme-toggle-link img {{
+        background-size: contain !important;
         border: none !important;
+        border-width: 0 !important;
+        box-shadow: none !important;
         outline: none !important;
-        display: block !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }}
+
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:hover,
+    div:has(#ac-theme-toggle-anchor) button:hover,
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:hover,
+    div[data-testid="column"]:last-child div[data-testid="stButton"] > button:hover,
+    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button:hover,
+    button[key="ac_theme_toggle_btn"]:hover {{
+        transform: scale(1.15) !important;
+        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:focus,
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:active,
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:focus,
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:active,
+    button[key="ac_theme_toggle_btn"]:focus,
+    button[key="ac_theme_toggle_btn"]:active {{
+        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }}
+
+    /* Hide any text inside the theme toggle button so only the icon shows */
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button *,
+    div:has(#ac-theme-toggle-anchor) button *,
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button *,
+    div[data-testid="column"]:last-child div[data-testid="stButton"] > button *,
+    button[key="ac_theme_toggle_btn"] * {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
     }}
 
     /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
-    div[data-testid="column"]:has(#ac-top-signin-marker) button,
+    div:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
+    div[data-testid="stColumn"]:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
+    div[data-testid="column"]:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
     .ac-pink-signin-btn,
     button[data-testid="baseButton-primary"] {{
         background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
@@ -635,6 +718,36 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
         (function run() {{
 
 
+            // Ensure theme toggle button has transparent icon styling applied
+            function applyThemeIcon() {{
+                try {{
+                    const doc = window.parent.document;
+                    if (!doc) return;
+                    const anchor = doc.getElementById('ac-theme-toggle-anchor');
+                    if (anchor) {{
+                        const col = anchor.closest('[data-testid="stColumn"], [data-testid="column"], div') || anchor.parentElement;
+                        const btn = col ? col.querySelector('button') : null;
+                        if (btn) {{
+                            btn.style.setProperty('background', 'transparent url("{theme_icon_uri}") no-repeat center center / contain', 'important');
+                            btn.style.setProperty('background-color', 'transparent', 'important');
+                            btn.style.setProperty('border', 'none', 'important');
+                            btn.style.setProperty('box-shadow', 'none', 'important');
+                            btn.style.setProperty('outline', 'none', 'important');
+                            btn.style.setProperty('width', '46px', 'important');
+                            btn.style.setProperty('height', '46px', 'important');
+                            btn.style.setProperty('cursor', 'pointer', 'important');
+                            btn.style.setProperty('padding', '0', 'important');
+                            const inner = btn.querySelectorAll('*');
+                            inner.forEach(el => {{ el.style.display = 'none'; }});
+                        }}
+                    }}
+                }} catch(e) {{}}
+            }}
+            applyThemeIcon();
+            setTimeout(applyThemeIcon, 40);
+            setTimeout(applyThemeIcon, 120);
+            setTimeout(applyThemeIcon, 250);
+
             // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
             if (!canvas) {{ setTimeout(run, 50); return; }}
@@ -845,13 +958,11 @@ def render_landing() -> dict:
     The caller (app.py) checks 'proceed' to move to the next step.
     """
     # ── State initialisation ─────────────────────────────────────────────────
-    if "theme" in st.query_params:
-        requested = st.query_params.get("theme")
-        if requested in THEMES:
-            st.session_state["ac_theme"] = requested
-
     if "ac_theme" not in st.session_state:
-        st.session_state["ac_theme"] = "light"      # Light is default
+        if "theme" in st.query_params and st.query_params.get("theme") in THEMES:
+            st.session_state["ac_theme"] = st.query_params.get("theme")
+        else:
+            st.session_state["ac_theme"] = "light"      # Light is default
 
     theme_key = st.session_state["ac_theme"]
     t         = THEMES[theme_key]
@@ -865,21 +976,16 @@ def render_landing() -> dict:
     _animated_background(theme_key, theme_icon_uri)
 
     # ── Top Bar: Sign In (Top Right-Hand Side) & Split Sun/Moon Theme Switcher ──
-    top_col_spacer, top_col_signin, top_col_theme = st.columns([62, 25, 13])
+    top_col_spacer, top_col_signin, top_col_theme = st.columns([66, 23, 11])
     with top_col_signin:
         st.markdown('<div id="ac-top-signin-marker"></div>', unsafe_allow_html=True)
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
-        st.markdown(clean_html(f"""
-        <div style="display:flex; justify-content:flex-end; align-items:center; height:100%; padding-top:6px;">
-            <a href="?theme={other_key}" target="_self" id="ac-theme-toggle-link"
-               style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; text-decoration:none; cursor:pointer; transition:transform 0.22s ease;"
-               title="Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme">
-                <img src="{theme_icon_uri}" alt="Toggle Theme" 
-                     style="width:44px; height:44px; display:block; pointer-events:none; user-select:none;" />
-            </a>
-        </div>
-        """), unsafe_allow_html=True)
+        st.markdown('<div id="ac-theme-toggle-anchor"></div>', unsafe_allow_html=True)
+        if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+            st.session_state["ac_theme"] = other_key
+            st.query_params["theme"] = other_key
+            st.rerun()
 
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
