@@ -5,8 +5,8 @@
   <br/><br/>
 
   <p align="center">
-    <strong>A comprehensive, AI-powered interview preparation and career-readiness platform.</strong><br/>
-    <em>Dynamic multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
+    <h3>Where Preparation Meets Opportunity.</h3>
+    <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>
 
   <p align="center">
