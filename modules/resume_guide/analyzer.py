@@ -682,7 +682,7 @@ class ResumeAnalyzer:
                 "title": "Add Measurable Scope to Projects",
                 "category": "Project Relevance",
                 "observation": "Projects lack clear outcome or scale indicators.",
-                "recommendation": "Specify the problem solved, tech stack utilized, and the tangible outcome or deployment link (e.g., live URL or GitHub repo)."
+                "recommendation": "Specify the problem solved, tech stack utilized, and the tangible outcome or deployment link (e.g., live demo link or GitHub repository)."
             })
 
         if unnecessary_details:

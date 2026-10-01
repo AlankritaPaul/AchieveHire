@@ -312,8 +312,8 @@ def render_create_resume_flow():
             data["email"] = st.text_input("Email Address:", value=data.get("email", ""), placeholder="e.g. alex.morgan@email.com")
             data["phone"] = st.text_input("Phone Number:", value=data.get("phone", ""), placeholder="e.g. +1 (555) 019-2834")
             data["location"] = st.text_input("Location / City, Country:", value=data.get("location", ""), placeholder="e.g. San Francisco, CA")
-            data["linkedin"] = st.text_input("LinkedIn Profile / URL (Optional):", value=data.get("linkedin", ""), placeholder="e.g. linkedin.com/in/alexmorgan")
-            data["github"] = st.text_input("GitHub Profile / URL (Optional):", value=data.get("github", ""), placeholder="e.g. github.com/alexmorgan")
+            data["linkedin"] = st.text_input("LinkedIn (Optional):", value=data.get("linkedin", ""), placeholder="e.g. linkedin.com/in/alexmorgan")
+            data["github"] = st.text_input("GitHub (Optional):", value=data.get("github", ""), placeholder="e.g. github.com/alexmorgan")
 
         with col_p2:
             st.markdown("#### Photo Section (Optional)")
