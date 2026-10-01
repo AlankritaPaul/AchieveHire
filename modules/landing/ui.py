@@ -194,6 +194,50 @@ def _inject_css(t: dict):
         padding: 8px 16px 0 !important;
     }}
 
+    /* ── Hamburger Menu Button (Three Horizontal Lines) ─────────────────── */
+    .st-key-ac_hamburger_btn button {{
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        transition: transform 0.18s ease !important;
+    }}
+    .st-key-ac_hamburger_btn button:hover {{
+        transform: scale(1.14) !important;
+        background: transparent !important;
+    }}
+    .st-key-ac_hamburger_btn button * {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+    .st-key-ac_hamburger_btn button::before {{
+        content: "";
+        display: block;
+        width: 22px;
+        height: 2.2px;
+        background-color: {t["text_primary"]};
+        box-shadow: 0 -7px 0 {t["text_primary"]}, 0 7px 0 {t["text_primary"]};
+        border-radius: 2px;
+        transition: background-color 0.2s;
+    }}
+    .st-key-ac_hamburger_btn button:hover::before {{
+        background-color: {t["accent"]};
+        box-shadow: 0 -7px 0 {t["accent"]}, 0 7px 0 {t["accent"]};
+    }}
+
     /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
     .st-key-ac_top_signin_btn {{
         display: flex !important;
@@ -928,8 +972,16 @@ def render_landing() -> dict:
     theme_icon_uri = _get_theme_icon_data_uri()
     _animated_background(theme_key, theme_icon_uri)
 
-    # ── Top Bar: Sign In (Top Right-Hand Side) & Split Sun/Moon Theme Switcher ──
-    top_col_spacer, top_col_signin, top_col_theme = st.columns([72, 19, 9])
+    # ── Navigation Drawer (if open) ──────────────────────────────────────────
+    from modules.navigation.panel import render_navigation_drawer
+    render_navigation_drawer(t)
+
+    # ── Top Bar: Hamburger (Left), Spacer, Sign In (Right) & Sun/Moon Theme Switcher ──
+    top_col_h, top_col_spacer, top_col_signin, top_col_theme = st.columns([6, 66, 19, 9])
+    with top_col_h:
+        if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
+            st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
+            st.rerun()
     with top_col_signin:
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
