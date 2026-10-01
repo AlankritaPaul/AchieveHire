@@ -262,7 +262,7 @@ def render_resume_analysis_flow():
                 stale_keys = [
                     "ui_p_name", "ui_p_desc", "ui_p_tools", "ui_p_outcome",
                     "ui_e_comp", "ui_e_role", "ui_e_dates", "ui_e_bullets",
-                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_s_text",
+                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_ed_details", "ui_s_text",
                     "missing_proj_choice", "missing_exp_choice", "missing_skills_choice", "missing_edu_choice", "missing_sum_choice",
                     "final_resume_text", "final_resume_generated", "improvements_list", "user_decisions", "show_improvements", "show_suggestions"
                 ]
@@ -424,8 +424,20 @@ def render_resume_analysis_flow():
                             if p_choice == "Provide Project Details":
                                 p_name = st.text_input("Project Name *", key="ui_p_name", placeholder="e.g. Distributed Task Orchestrator")
                                 p_desc = st.text_area("Project Description *", key="ui_p_desc", placeholder="Describe what the project does, key features, and your role...")
-                                p_tools = st.text_input("Technologies Used (Languages, Frameworks, Tools)", key="ui_p_tools", placeholder="e.g. Python, Docker, Redis, REST APIs")
-                                p_outcome = st.text_input("Key Contribution or Outcome (Optional/Measurable)", key="ui_p_outcome", placeholder="e.g. Handled 5,000 requests/sec with p99 latency < 20ms")
+                                p_tools = st.text_area(
+                                    "Technologies Used (Languages, Frameworks, Tools)",
+                                    key="ui_p_tools",
+                                    height=68,
+                                    placeholder="e.g. Python\nDocker\nRedis\nREST APIs",
+                                    help="Press Enter to write technologies on each line or separate by commas"
+                                )
+                                p_outcome = st.text_area(
+                                    "Key Contribution or Outcome (Optional/Measurable)",
+                                    key="ui_p_outcome",
+                                    height=68,
+                                    placeholder="e.g. Handled 5,000 requests/sec with p99 latency < 20ms\nReduced query latency by 35%",
+                                    help="Press Enter to write contributions on each line"
+                                )
                                 if p_name or p_desc:
                                     user_provided_info["projects"] = {
                                         "name": p_name,
@@ -507,11 +519,19 @@ def render_resume_analysis_flow():
                                 ed_deg = st.text_input("Degree / Qualification *", key="ui_ed_deg", placeholder="e.g. B.S. in Computer Science")
                                 ed_inst = st.text_input("Institution / University *", key="ui_ed_inst", placeholder="e.g. State University")
                                 ed_year = st.text_input("Graduation Year / Dates", key="ui_ed_year", placeholder="e.g. 2024")
+                                ed_details = st.text_area(
+                                    "Specialization / Coursework / Highlights (Optional):",
+                                    key="ui_ed_details",
+                                    height=68,
+                                    placeholder="e.g. Specialization in Distributed Systems\nRelevant Coursework: Data Structures, Operating Systems",
+                                    help="Press Enter to write details on each line"
+                                )
                                 if ed_deg or ed_inst:
                                     user_provided_info["education"] = {
                                         "degree": ed_deg,
                                         "institution": ed_inst,
-                                        "year": ed_year
+                                        "year": ed_year,
+                                        "details": ed_details
                                     }
                             else:
                                 user_provided_info["declined_sections"].append("education")
@@ -671,7 +691,7 @@ def render_resume_analysis_flow():
                     "missing_proj_choice", "missing_exp_choice", "missing_skills_choice", "missing_edu_choice", "missing_sum_choice",
                     "ui_p_name", "ui_p_desc", "ui_p_tools", "ui_p_outcome",
                     "ui_e_comp", "ui_e_role", "ui_e_dates", "ui_e_bullets",
-                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_s_text"
+                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_ed_details", "ui_s_text"
                 ]
                 for k in keys_to_purge:
                     st.session_state.pop(k, None)

@@ -16,7 +16,7 @@ DEFAULT_DECLARATION = (
 )
 
 class ResumeBuilderModel:
-    def __init__(self):
+    def __init__(self, initial_data: Optional[Dict[str, Any]] = None):
         self.data: Dict[str, Any] = {
             "job_role": "",
             "company": "",
@@ -26,6 +26,8 @@ class ResumeBuilderModel:
             "email": "",
             "phone": "",
             "location": "",
+            "linkedin": "",
+            "github": "",
             "place_val": "",
             "summary": "",
             "skills": "",
@@ -62,6 +64,8 @@ class ResumeBuilderModel:
             "qualification_entries": [],
             "experience_entries": []
         }
+        if initial_data:
+            self.data.update(initial_data)
 
     @staticmethod
     def enhance_headline(raw_headline: str) -> str:
@@ -1016,7 +1020,8 @@ class ResumeBuilderModel:
 
             heading = f"• {name}" if name else "• Technical Project"
             if stack:
-                heading += f" | Technologies Used: {stack}"
+                clean_stack = ", ".join([s.strip(" •-*") for s in re.split(r"[\n,;]", stack) if s.strip(" •-*")])
+                heading += f" | Technologies Used: {clean_stack}"
 
             proj_lines = [heading]
             if desc:
@@ -1230,9 +1235,17 @@ class ResumeBuilderModel:
 
         return tailored
 
-    @staticmethod
-    def to_plain_text(data: Dict[str, Any]) -> str:
-        """Render complete plain text version of the resume."""
+    def to_plain_text(self_or_data: Any, data: Optional[Dict[str, Any]] = None) -> str:
+        """Render complete plain text version of the resume. Callable on class or instance."""
+        if data is not None:
+            target_data = data
+        elif isinstance(self_or_data, ResumeBuilderModel):
+            target_data = self_or_data.data
+        elif isinstance(self_or_data, dict):
+            target_data = self_or_data
+        else:
+            target_data = {}
+        data = target_data
         parts = []
         name = data.get("full_name", "").strip() or "YOUR NAME"
         parts.append(name.upper())
@@ -1253,6 +1266,8 @@ class ResumeBuilderModel:
         if data.get("email"): contact.append(f"Email: {data['email']}")
         if data.get("phone"): contact.append(f"Phone: {data['phone']}")
         if data.get("location"): contact.append(f"Location: {data['location']}")
+        if data.get("linkedin"): contact.append(f"LinkedIn: {data['linkedin']}")
+        if data.get("github"): contact.append(f"GitHub: {data['github']}")
         if contact:
             parts.append(" | ".join(contact))
 

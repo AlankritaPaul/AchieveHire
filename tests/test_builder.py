@@ -611,5 +611,70 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("NON-TECHNICAL SKILLS", res["after"])
         self.assertIn("Public Speaking", res["after"])
 
+    def test_builder_linkedin_and_github_in_header(self):
+        """Test that LinkedIn and GitHub links are rendered in resume HTML, PDF, and plain text."""
+        data = dict(self.sample_data)
+        data["linkedin"] = "linkedin.com/in/mayalin"
+        data["github"] = "github.com/mayalin"
+
+        # HTML
+        for t_name in TEMPLATES_INFO:
+            html = render_resume_html(data, t_name)
+            self.assertIn("linkedin.com/in/mayalin", html, f"LinkedIn missing in {t_name}")
+            self.assertIn("github.com/mayalin", html, f"GitHub missing in {t_name}")
+
+        # PDF
+        pdf_bytes = export_builder_resume_to_pdf(data, "Modern")
+        self.assertTrue(pdf_bytes.startswith(b"%PDF"))
+
+        # Plain Text
+        model = ResumeBuilderModel(data)
+        plain = model.to_plain_text()
+        self.assertIn("LinkedIn: linkedin.com/in/mayalin", plain)
+        self.assertIn("GitHub: github.com/mayalin", plain)
+
+    def test_multiline_tech_stack_enter_support(self):
+        """Test that compile_project_entries parses technologies entered across multiple lines using Enter key."""
+        project_entries = [
+            {
+                "name": "Cloud Microservices",
+                "tech_stack": "Python\nFastAPI\nDocker\nRedis\nPostgreSQL",
+                "description": "Engineered containerized microservices."
+            }
+        ]
+        compiled = ResumeBuilderModel.compile_project_entries(project_entries)
+        self.assertIn("Technologies Used: Python, FastAPI, Docker, Redis, PostgreSQL", compiled)
+        self.assertIn("• Cloud Microservices", compiled)
+
+    def test_optimizer_multiline_projects_and_education(self):
+        """Test that optimizer properly handles multi-line tools, outcomes, and education details."""
+        from modules.resume_guide.optimizer import ResumeOptimizer
+        optimizer = ResumeOptimizer(job_role="Software Developer", company="Google")
+        
+        # Multiline tools & outcome in projects
+        user_proj = {
+            "name": "Distributed Storage Engine",
+            "description": "built scalable raft consensus engine",
+            "tools": "Go\nDocker\nKubernetes\ngRPC",
+            "outcome": "Achieved sub-10ms replication latency\nHandled 1M ops/sec"
+        }
+        res_p = optimizer._improve_projects(original_proj="", user_proj=user_proj, in_needs_improvement=True)
+        self.assertIsNotNone(res_p)
+        self.assertIn("Technologies Used: Go, Docker, Kubernetes, gRPC", res_p["after"])
+        self.assertIn("Achieved sub-10ms replication latency", res_p["after"])
+        self.assertIn("Handled 1M ops/sec", res_p["after"])
+
+        # Multiline details in education
+        user_edu = {
+            "degree": "B.Tech Computer Science",
+            "institution": "IIT Delhi",
+            "year": "2024",
+            "details": "Specialization in Distributed Systems\nDean's Honor List"
+        }
+        res_e = optimizer._improve_education(user_edu=user_edu)
+        self.assertIsNotNone(res_e)
+        self.assertIn("• Specialization in Distributed Systems", res_e["after"])
+        self.assertIn("• Dean's Honor List", res_e["after"])
+
 if __name__ == "__main__":
     unittest.main()

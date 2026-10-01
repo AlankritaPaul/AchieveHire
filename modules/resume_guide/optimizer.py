@@ -255,9 +255,15 @@ class ResumeOptimizer:
                         desc_upgraded = re.sub(pattern, strong_options[0].capitalize(), desc_upgraded, count=1)
                 parts.append(f"  {desc_upgraded}")
             if tools:
-                parts.append(f"  • Technologies Used: {tools}")
+                clean_tools = ", ".join([s.strip(" •-*") for s in re.split(r"[\n,;]", tools) if s.strip(" •-*")])
+                parts.append(f"  • Technologies Used: {clean_tools if clean_tools else tools}")
             if outcome:
-                parts.append(f"  • Key Outcome / Impact: {outcome}")
+                outcome_lines = [ol.strip(" •-*") for ol in outcome.split("\n") if ol.strip(" •-*")]
+                if len(outcome_lines) > 1:
+                    for ol in outcome_lines:
+                        parts.append(f"  • Key Outcome / Impact: {ol}")
+                else:
+                    parts.append(f"  • Key Outcome / Impact: {outcome.strip()}")
 
             after_text = "TECHNICAL PROJECTS\n" + "\n".join(parts)
             return {
@@ -432,6 +438,7 @@ class ResumeOptimizer:
         degree = user_edu.get("degree", "").strip()
         institution = user_edu.get("institution", "").strip()
         year = user_edu.get("year", "").strip()
+        details = user_edu.get("details", "").strip()
 
         if not degree and not institution:
             return None
@@ -442,6 +449,10 @@ class ResumeOptimizer:
         inst_line = " | ".join([p for p in [institution, year] if p])
         if inst_line:
             lines.append(inst_line)
+        if details:
+            for d in details.split("\n"):
+                if d.strip():
+                    lines.append(f"• {d.strip().lstrip('•-* ')}")
 
         return {
             "section_key": "education",

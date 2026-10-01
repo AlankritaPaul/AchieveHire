@@ -31,7 +31,7 @@ def render_builder_section_breakdown_pie_chart(data: Dict[str, Any]):
     sections_status = []
 
     # 1. Contact / Personal Details
-    has_contact = bool(data.get("full_name") and (data.get("email") or data.get("phone")))
+    has_contact = bool(data.get("full_name") and (data.get("email") or data.get("phone") or data.get("linkedin") or data.get("github")))
     sections_status.append(("Personal Details & Contact", has_contact, "Essential contact credentials provided." if has_contact else "Missing name or contact info."))
 
     # 2. Professional Headline
@@ -312,6 +312,8 @@ def render_create_resume_flow():
             data["email"] = st.text_input("Email Address:", value=data.get("email", ""), placeholder="e.g. alex.morgan@email.com")
             data["phone"] = st.text_input("Phone Number:", value=data.get("phone", ""), placeholder="e.g. +1 (555) 019-2834")
             data["location"] = st.text_input("Location / City, Country:", value=data.get("location", ""), placeholder="e.g. San Francisco, CA")
+            data["linkedin"] = st.text_input("LinkedIn Profile / URL (Optional):", value=data.get("linkedin", ""), placeholder="e.g. linkedin.com/in/alexmorgan")
+            data["github"] = st.text_input("GitHub Profile / URL (Optional):", value=data.get("github", ""), placeholder="e.g. github.com/alexmorgan")
 
         with col_p2:
             st.markdown("#### Photo Section (Optional)")
@@ -406,11 +408,13 @@ def render_create_resume_flow():
                 else:
                     st.warning("Please enter your basic headline or role/skills first before enhancing.")
 
-        data["professional_headline"] = st.text_input(
+        data["professional_headline"] = st.text_area(
             "Professional Headline (Optional):",
             value=st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")),
             placeholder="e.g. Full-Stack Developer | Python & Cloud Solutions",
-            key="builder_prof_headline_input"
+            height=68,
+            key="builder_prof_headline_input",
+            help="Press Enter to write on each line if desired"
         )
 
         st.markdown(
@@ -714,11 +718,13 @@ def render_create_resume_flow():
                             placeholder="e.g. 2023",
                             key=f"qual_yr_{q_idx}"
                         )
-                        qual["details"] = st.text_input(
+                        qual["details"] = st.text_area(
                             "Details / Score (Optional):",
                             value=qual.get("details", ""),
-                            placeholder="e.g. Credential ID: 12345 / Score: 92%",
-                            key=f"qual_det_{q_idx}"
+                            placeholder="e.g. Credential ID: 12345 / Score: 92%\nKey skills or coursework covered",
+                            height=68,
+                            key=f"qual_det_{q_idx}",
+                            help="Press Enter to write details on each line"
                         )
                     st.markdown("<hr style='margin: 10px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
 
@@ -1195,11 +1201,13 @@ def render_create_resume_flow():
                             key=f"proj_name_{p_idx}"
                         )
                     with c2:
-                        proj["tech_stack"] = st.text_input(
+                        proj["tech_stack"] = st.text_area(
                             "Technologies Used (Languages, Frameworks, Tools):",
                             value=st.session_state.get(f"proj_stack_{p_idx}", proj.get("tech_stack", "")),
-                            placeholder="e.g. Python, Redis, Docker, FastAPI",
-                            key=f"proj_stack_{p_idx}"
+                            placeholder="e.g. Python\nRedis\nDocker\nFastAPI",
+                            height=68,
+                            key=f"proj_stack_{p_idx}",
+                            help="Press Enter to write technologies on each line or separate by commas"
                         )
 
                     proj["description"] = st.text_area(

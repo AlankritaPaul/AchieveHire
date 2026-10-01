@@ -261,6 +261,8 @@ def render_resume_html(data: Dict[str, Any], template_name: str = "Modern", phot
     if data.get("email"): contact_parts.append(data["email"])
     if data.get("phone"): contact_parts.append(data["phone"])
     if data.get("location"): contact_parts.append(data["location"])
+    if data.get("linkedin"): contact_parts.append(f"LinkedIn: {data['linkedin'].strip()}")
+    if data.get("github"): contact_parts.append(f"GitHub: {data['github'].strip()}")
     contact_line = " &bull; ".join(contact_parts)
 
     # Handle photo mode
@@ -605,6 +607,8 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
     if data.get("email"): contact_parts.append(data["email"])
     if data.get("phone"): contact_parts.append(data["phone"])
     if data.get("location"): contact_parts.append(data["location"])
+    if data.get("linkedin"): contact_parts.append(f"LinkedIn: {data['linkedin'].strip()}")
+    if data.get("github"): contact_parts.append(f"GitHub: {data['github'].strip()}")
 
     header_left = [
         Paragraph(name.upper() if template_name in ("Classic", "Executive", "Ivy") else name, title_style)
