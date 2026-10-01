@@ -300,25 +300,38 @@ def render_create_resume_flow():
     # STEP 5: PROFESSIONAL HEADLINE
     # -------------------------------------------------------------
     elif current_step == 5:
-        st.markdown("### Professional Headline")
-        st.caption("Provide a professional headline that defines your expertise or specialization. This field is completely user-controlled.")
+        col_hl_head, col_hl_btn = st.columns([3, 1])
+        with col_hl_head:
+            st.markdown("### Professional Headline")
+            st.caption("Provide a professional headline that defines your expertise or specialization. This field is completely user-controlled.")
+        with col_hl_btn:
+            st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+            if st.button("✨ Enhance Writing", key="btn_enhance_headline", use_container_width=True, help="Convert basic headline or skills into a professional, structured resume headline"):
+                current_hl = st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")).strip()
+                if current_hl:
+                    enhanced_hl = ResumeBuilderModel.enhance_headline(current_hl)
+                    st.session_state["builder_prof_headline_input"] = enhanced_hl
+                    data["professional_headline"] = enhanced_hl
+                    st.success("✅ Professional headline enhanced!")
+                    st.rerun()
+                else:
+                    st.warning("Please enter your basic headline or role/skills first before enhancing.")
 
         data["professional_headline"] = st.text_input(
             "Professional Headline (Optional):",
-            value=data.get("professional_headline", ""),
+            value=st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")),
             placeholder="e.g. Full-Stack Developer | Python & Cloud Solutions",
             key="builder_prof_headline_input"
         )
 
         st.markdown(
-            f"""
+            """
             <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; padding: 14px 16px; border-radius: 6px; margin-top: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
                 <strong>📌 Headline Placement & Header Logic:</strong>
                 <ul style="margin: 6px 0 0 16px; padding: 0;">
                     <li><strong>Entered Headline:</strong> If provided, this exact headline appears directly below your name on your final resume.</li>
                     <li><strong>Ongoing Experience Fallback:</strong> If left empty, the builder will look at your <em>Work Experience</em>. If you have an entry marked as <em>Currently Ongoing</em>, its job position title will be displayed.</li>
                     <li><strong>Clean & Empty:</strong> If there is no headline and no ongoing experience, the space below your name remains completely clean and empty.</li>
-                    <li><strong>Target Isolation:</strong> Your interview preparation targets (Job Role: <em>{data.get('job_role', 'Not selected')}</em> and Target Company: <em>{data.get('company', 'Not selected')}</em>) remain strictly separate and will <strong>never</strong> be placed below your name.</li>
                 </ul>
             </div>
             """,
@@ -329,10 +342,12 @@ def render_create_resume_flow():
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
             if st.button("← Back", key="btn_bld_back_5", use_container_width=True):
+                data["professional_headline"] = st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")).strip()
                 st.session_state.builder_step = 4
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
+                data["professional_headline"] = st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")).strip()
                 st.session_state.builder_step = 6
                 st.rerun()
 
@@ -347,10 +362,64 @@ def render_create_resume_flow():
         with col_e_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_edu_top", use_container_width=True, help="Standardize degrees, specializations, and qualifications professionally without altering facts"):
+                for idx, entry in enumerate(data.get("education_entries", [])):
+                    if f"edu_deg_{idx}" in st.session_state:
+                        entry["degree"] = st.session_state[f"edu_deg_{idx}"]
+                    if f"edu_field_{idx}" in st.session_state:
+                        entry["field_of_study"] = st.session_state[f"edu_field_{idx}"]
+                        entry["stream"] = st.session_state[f"edu_field_{idx}"]
+                    if f"edu_inst_{idx}" in st.session_state:
+                        entry["institution"] = st.session_state[f"edu_inst_{idx}"]
+                    if f"edu_board_{idx}" in st.session_state:
+                        entry["board_univ"] = st.session_state[f"edu_board_{idx}"]
+                    if f"edu_loc_{idx}" in st.session_state:
+                        entry["location"] = st.session_state[f"edu_loc_{idx}"]
+                    if f"edu_syr_{idx}" in st.session_state:
+                        entry["start_year"] = st.session_state[f"edu_syr_{idx}"]
+                    if f"edu_eyr_{idx}" in st.session_state:
+                        entry["end_year"] = st.session_state[f"edu_eyr_{idx}"]
+                    if f"edu_expyr_{idx}" in st.session_state:
+                        entry["expected_grad_year"] = st.session_state[f"edu_expyr_{idx}"]
+                    if f"edu_cgpa_{idx}" in st.session_state:
+                        entry["cgpa"] = st.session_state[f"edu_cgpa_{idx}"]
+                    if f"edu_pct_{idx}" in st.session_state:
+                        entry["percentage"] = st.session_state[f"edu_pct_{idx}"]
+                    if f"edu_grd_{idx}" in st.session_state:
+                        entry["grade"] = st.session_state[f"edu_grd_{idx}"]
+
                 if data.get("education_entries"):
                     data["education_entries"] = ResumeBuilderModel.enhance_education_entries(data["education_entries"])
+                    for idx, entry in enumerate(data["education_entries"]):
+                        st.session_state[f"edu_deg_{idx}"] = entry.get("degree", "")
+                        st.session_state[f"edu_field_{idx}"] = entry.get("field_of_study", "")
+                        st.session_state[f"edu_inst_{idx}"] = entry.get("institution", "")
+                        st.session_state[f"edu_board_{idx}"] = entry.get("board_univ", "")
+                        st.session_state[f"edu_loc_{idx}"] = entry.get("location", "")
+                        st.session_state[f"edu_syr_{idx}"] = entry.get("start_year", "")
+                        st.session_state[f"edu_eyr_{idx}"] = entry.get("end_year", "")
+                        st.session_state[f"edu_expyr_{idx}"] = entry.get("expected_grad_year", "")
+                        st.session_state[f"edu_cgpa_{idx}"] = entry.get("cgpa", "")
+                        st.session_state[f"edu_pct_{idx}"] = entry.get("percentage", "")
+                        st.session_state[f"edu_grd_{idx}"] = entry.get("grade", "")
+
+                for q_idx, q_ent in enumerate(data.get("qualification_entries", [])):
+                    if f"qual_title_{q_idx}" in st.session_state:
+                        q_ent["title"] = st.session_state[f"qual_title_{q_idx}"]
+                    if f"qual_org_{q_idx}" in st.session_state:
+                        q_ent["organization"] = st.session_state[f"qual_org_{q_idx}"]
+                    if f"qual_yr_{q_idx}" in st.session_state:
+                        q_ent["year"] = st.session_state[f"qual_yr_{q_idx}"]
+                    if f"qual_det_{q_idx}" in st.session_state:
+                        q_ent["details"] = st.session_state[f"qual_det_{q_idx}"]
+
                 if data.get("qualification_entries"):
                     data["qualification_entries"] = ResumeBuilderModel.enhance_qualification_entries(data["qualification_entries"])
+                    for q_idx, q_ent in enumerate(data["qualification_entries"]):
+                        st.session_state[f"qual_title_{q_idx}"] = q_ent.get("title", "")
+                        st.session_state[f"qual_org_{q_idx}"] = q_ent.get("organization", "")
+                        st.session_state[f"qual_yr_{q_idx}"] = q_ent.get("year", "")
+                        st.session_state[f"qual_det_{q_idx}"] = q_ent.get("details", "")
+
                 compiled = ResumeBuilderModel.compile_education_and_qualifications(
                     data.get("education_entries", []),
                     data.get("qualification_entries", [])
@@ -399,32 +468,32 @@ def render_create_resume_flow():
                 with c1:
                     entry["degree"] = st.text_input(
                         "Degree or Qualification:",
-                        value=entry.get("degree", ""),
+                        value=st.session_state.get(f"edu_deg_{idx}", entry.get("degree", "")),
                         placeholder="e.g. Bachelor of Technology / Class XII",
                         key=f"edu_deg_{idx}"
                     )
                     entry["field_of_study"] = st.text_input(
                         "Field of Study or Specialization:",
-                        value=entry.get("field_of_study", entry.get("stream", "")),
+                        value=st.session_state.get(f"edu_field_{idx}", entry.get("field_of_study", entry.get("stream", ""))),
                         placeholder="e.g. Computer Science & Engineering / Science",
                         key=f"edu_field_{idx}"
                     )
                     entry["institution"] = st.text_input(
                         "Institution Name:",
-                        value=entry.get("institution", ""),
+                        value=st.session_state.get(f"edu_inst_{idx}", entry.get("institution", "")),
                         placeholder="e.g. Delhi Technological University / High School",
                         key=f"edu_inst_{idx}"
                     )
                 with c2:
                     entry["board_univ"] = st.text_input(
                         "University or Board (Optional):",
-                        value=entry.get("board_univ", ""),
+                        value=st.session_state.get(f"edu_board_{idx}", entry.get("board_univ", "")),
                         placeholder="e.g. CBSE / State Board / University Name",
                         key=f"edu_board_{idx}"
                     )
                     entry["location"] = st.text_input(
                         "Location (Optional):",
-                        value=entry.get("location", ""),
+                        value=st.session_state.get(f"edu_loc_{idx}", entry.get("location", "")),
                         placeholder="e.g. New Delhi, India",
                         key=f"edu_loc_{idx}"
                     )
@@ -444,7 +513,7 @@ def render_create_resume_flow():
                 with cd1:
                     entry["start_year"] = st.text_input(
                         "Start Year:",
-                        value=entry.get("start_year", ""),
+                        value=st.session_state.get(f"edu_syr_{idx}", entry.get("start_year", "")),
                         placeholder="e.g. 2020",
                         key=f"edu_syr_{idx}"
                     )
@@ -452,7 +521,7 @@ def render_create_resume_flow():
                     if entry["status"] == "Completed":
                         entry["end_year"] = st.text_input(
                             "End Year:",
-                            value=entry.get("end_year", ""),
+                            value=st.session_state.get(f"edu_eyr_{idx}", entry.get("end_year", "")),
                             placeholder="e.g. 2024",
                             key=f"edu_eyr_{idx}"
                         )
@@ -460,7 +529,7 @@ def render_create_resume_flow():
                     else:  # Currently Pursuing
                         entry["expected_grad_year"] = st.text_input(
                             "Expected Graduation Year:",
-                            value=entry.get("expected_grad_year", ""),
+                            value=st.session_state.get(f"edu_expyr_{idx}", entry.get("expected_grad_year", "")),
                             placeholder="e.g. 2026",
                             key=f"edu_expyr_{idx}"
                         )
@@ -472,21 +541,21 @@ def render_create_resume_flow():
                 with ca1:
                     entry["cgpa"] = st.text_input(
                         "CGPA (if applicable):",
-                        value=entry.get("cgpa", ""),
+                        value=st.session_state.get(f"edu_cgpa_{idx}", entry.get("cgpa", "")),
                         placeholder="e.g. 8.7",
                         key=f"edu_cgpa_{idx}"
                     )
                 with ca2:
                     entry["percentage"] = st.text_input(
                         "Percentage (Optional):",
-                        value=entry.get("percentage", ""),
+                        value=st.session_state.get(f"edu_pct_{idx}", entry.get("percentage", "")),
                         placeholder="e.g. 88.5%",
                         key=f"edu_pct_{idx}"
                     )
                 with ca3:
                     entry["grade"] = st.text_input(
                         "Grade (Optional):",
-                        value=entry.get("grade", ""),
+                        value=st.session_state.get(f"edu_grd_{idx}", entry.get("grade", "")),
                         placeholder="e.g. A+",
                         key=f"edu_grd_{idx}"
                     )
@@ -620,8 +689,11 @@ def render_create_resume_flow():
         with col_s_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_skills", use_container_width=True, help="Group skills into industry categories and capitalize technologies properly"):
-                if data.get("skills", "").strip():
-                    data["skills"] = ResumeBuilderModel.enhance_skills(data["skills"])
+                current_skills = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
+                if current_skills:
+                    enhanced_skills = ResumeBuilderModel.enhance_skills(current_skills)
+                    st.session_state["builder_skills_input"] = enhanced_skills
+                    data["skills"] = enhanced_skills
                     st.success("✅ Skills organized into professional categories and standardized!")
                     st.rerun()
                 else:
@@ -629,7 +701,7 @@ def render_create_resume_flow():
 
         data["skills"] = st.text_area(
             "List your skills (comma-separated or lines):",
-            value=data.get("skills", ""),
+            value=st.session_state.get("builder_skills_input", data.get("skills", "")),
             height=150,
             placeholder="Python, Java, React, SQL, Docker, Git, REST APIs, Problem Solving, PostgreSQL, AWS",
             key="builder_skills_input"
@@ -648,12 +720,17 @@ def render_create_resume_flow():
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
             if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
+                data["skills"] = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
                 st.session_state.builder_step = 6
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
-                if data.get("skills", "").strip():
-                    data["skills"] = ResumeBuilderModel.enhance_skills(data["skills"])
+                raw_sk = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
+                if raw_sk:
+                    data["skills"] = ResumeBuilderModel.enhance_skills(raw_sk)
+                    st.session_state["builder_skills_input"] = data["skills"]
+                else:
+                    data["skills"] = ""
                 st.session_state.builder_step = 8
                 st.rerun()
 
@@ -668,8 +745,28 @@ def render_create_resume_flow():
         with col_exp_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_exp", use_container_width=True, help="Upgrade action verbs in descriptions and responsibilities without altering facts"):
+                for idx, exp_ent in enumerate(data.get("experience_entries", [])):
+                    if f"exp_pos_{idx}" in st.session_state:
+                        exp_ent["position"] = st.session_state[f"exp_pos_{idx}"]
+                    if f"exp_comp_{idx}" in st.session_state:
+                        exp_ent["company"] = st.session_state[f"exp_comp_{idx}"]
+                    if f"exp_loc_{idx}" in st.session_state:
+                        exp_ent["location"] = st.session_state[f"exp_loc_{idx}"]
+                    if f"exp_desc_{idx}" in st.session_state:
+                        exp_ent["description"] = st.session_state[f"exp_desc_{idx}"]
+                    if f"exp_resp_{idx}" in st.session_state:
+                        exp_ent["responsibilities"] = st.session_state[f"exp_resp_{idx}"]
+                    if f"exp_sdate_{idx}" in st.session_state:
+                        exp_ent["start_date"] = st.session_state[f"exp_sdate_{idx}"]
+                    if f"exp_edate_{idx}" in st.session_state:
+                        exp_ent["end_date"] = st.session_state[f"exp_edate_{idx}"]
+
                 if data.get("experience_entries"):
                     data["experience_entries"] = ResumeBuilderModel.enhance_experience_entries(data["experience_entries"])
+                    for idx, exp_ent in enumerate(data["experience_entries"]):
+                        st.session_state[f"exp_pos_{idx}"] = exp_ent.get("position", "")
+                        st.session_state[f"exp_desc_{idx}"] = exp_ent.get("description", "")
+                        st.session_state[f"exp_resp_{idx}"] = exp_ent.get("responsibilities", "")
                     compiled_exp = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
                     if compiled_exp:
                         data["experience"] = compiled_exp
@@ -731,7 +828,7 @@ def render_create_resume_flow():
                     with c1:
                         exp_ent["position"] = st.text_input(
                             "Position or Job Title:",
-                            value=exp_ent.get("position", ""),
+                            value=st.session_state.get(f"exp_pos_{idx}", exp_ent.get("position", "")),
                             placeholder="e.g. Software Engineer, Data Analyst",
                             key=f"exp_pos_{idx}"
                         )
@@ -766,13 +863,13 @@ def render_create_resume_flow():
                     with c2:
                         exp_ent["company"] = st.text_input(
                             "Company Name:",
-                            value=exp_ent.get("company", ""),
+                            value=st.session_state.get(f"exp_comp_{idx}", exp_ent.get("company", "")),
                             placeholder="e.g. Google, Microsoft, TechCorp Solutions",
                             key=f"exp_comp_{idx}"
                         )
                         exp_ent["location"] = st.text_input(
                             "Location (Where work was based, optional):",
-                            value=exp_ent.get("location", ""),
+                            value=st.session_state.get(f"exp_loc_{idx}", exp_ent.get("location", "")),
                             placeholder="e.g. Bengaluru, India / San Francisco, CA",
                             key=f"exp_loc_{idx}"
                         )
@@ -845,14 +942,14 @@ def render_create_resume_flow():
                     # Description & Responsibilities
                     exp_ent["description"] = st.text_area(
                         "Description (Overview of role or team, optional):",
-                        value=exp_ent.get("description", ""),
+                        value=st.session_state.get(f"exp_desc_{idx}", exp_ent.get("description", "")),
                         height=75,
                         placeholder="e.g. Part of the core engineering team building microservices and customer APIs.",
                         key=f"exp_desc_{idx}"
                     )
                     exp_ent["responsibilities"] = st.text_area(
                         "Key Responsibilities or Achievements (Bullet points):",
-                        value=exp_ent.get("responsibilities", ""),
+                        value=st.session_state.get(f"exp_resp_{idx}", exp_ent.get("responsibilities", "")),
                         height=110,
                         placeholder="• Architected REST APIs handling 5M+ daily requests with 99.9% uptime.\n• Optimized database queries cutting page load time by 30%.\n• Collaborated with product designers to ship 4 customer-facing features.",
                         key=f"exp_resp_{idx}"
@@ -922,8 +1019,20 @@ def render_create_resume_flow():
         with col_proj_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_proj", use_container_width=True, help="Upgrade project descriptions to strong technical phrasing"):
+                for p_idx, proj in enumerate(data.get("project_entries", [])):
+                    if f"proj_name_{p_idx}" in st.session_state:
+                        proj["name"] = st.session_state[f"proj_name_{p_idx}"]
+                    if f"proj_stack_{p_idx}" in st.session_state:
+                        proj["tech_stack"] = st.session_state[f"proj_stack_{p_idx}"]
+                    if f"proj_desc_{p_idx}" in st.session_state:
+                        proj["description"] = st.session_state[f"proj_desc_{p_idx}"]
+
                 if data.get("project_entries"):
                     data["project_entries"] = ResumeBuilderModel.enhance_project_entries(data["project_entries"])
+                    for p_idx, proj in enumerate(data["project_entries"]):
+                        st.session_state[f"proj_name_{p_idx}"] = proj.get("name", "")
+                        st.session_state[f"proj_stack_{p_idx}"] = proj.get("tech_stack", "")
+                        st.session_state[f"proj_desc_{p_idx}"] = proj.get("description", "")
                     data["projects"] = ResumeBuilderModel.compile_project_entries(data["project_entries"])
                     st.success("✅ Technical project descriptions enhanced with strong technical phrasing!")
                     st.rerun()
@@ -955,21 +1064,21 @@ def render_create_resume_flow():
                 with c1:
                     proj["name"] = st.text_input(
                         "Project Name:",
-                        value=proj.get("name", ""),
+                        value=st.session_state.get(f"proj_name_{p_idx}", proj.get("name", "")),
                         placeholder="e.g. Distributed Task Queue",
                         key=f"proj_name_{p_idx}"
                     )
                 with c2:
                     proj["tech_stack"] = st.text_input(
                         "Tech Stack / Technologies (Optional):",
-                        value=proj.get("tech_stack", ""),
+                        value=st.session_state.get(f"proj_stack_{p_idx}", proj.get("tech_stack", "")),
                         placeholder="e.g. Python, Redis, Docker, FastAPI",
                         key=f"proj_stack_{p_idx}"
                     )
 
                 proj["description"] = st.text_area(
                     "Project Description (Rendered as normal paragraph below heading):",
-                    value=proj.get("description", ""),
+                    value=st.session_state.get(f"proj_desc_{p_idx}", proj.get("description", "")),
                     height=95,
                     placeholder="Describe what the project does, key features, and your technical implementation. It will appear as a clean normal paragraph below the project name.",
                     key=f"proj_desc_{p_idx}"
@@ -1033,8 +1142,11 @@ def render_create_resume_flow():
         with col_cert_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_cert", use_container_width=True, help="Polish certifications formatting"):
-                if data.get("certifications", "").strip():
-                    data["certifications"] = ResumeBuilderModel.enhance_custom_section(data["certifications"])
+                current_cert = st.session_state.get("builder_cert_input", data.get("certifications", "")).strip()
+                if current_cert:
+                    enhanced_cert = ResumeBuilderModel.enhance_custom_section(current_cert)
+                    st.session_state["builder_cert_input"] = enhanced_cert
+                    data["certifications"] = enhanced_cert
                     st.success("✅ Certifications formatted professionally!")
                     st.rerun()
                 else:
@@ -1042,7 +1154,7 @@ def render_create_resume_flow():
 
         data["certifications"] = st.text_area(
             "Certifications & Courses (Optional):",
-            value=data.get("certifications", ""),
+            value=st.session_state.get("builder_cert_input", data.get("certifications", "")),
             height=100,
             placeholder="• AWS Certified Cloud Practitioner\n• Meta Frontend Developer Certificate",
             key="builder_cert_input"
@@ -1064,15 +1176,19 @@ def render_create_resume_flow():
                     with col_t:
                         sec_title = st.text_input(
                             f"Section Title #{idx + 1}:",
-                            value=sec.get("title", ""),
+                            value=st.session_state.get(f"cs_title_{idx}", sec.get("title", "")),
                             placeholder="e.g. Leadership, Languages, Publications",
                             key=f"cs_title_{idx}"
                         )
+                        sec["title"] = sec_title
                     with col_enh_s:
                         st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
                         if st.button("✨ Enhance Writing", key=f"btn_cs_enh_{idx}", use_container_width=True):
-                            if sec.get("content", "").strip():
-                                sec["content"] = ResumeBuilderModel.enhance_custom_section(sec["content"])
+                            current_cs = st.session_state.get(f"cs_content_{idx}", sec.get("content", "")).strip()
+                            if current_cs:
+                                enhanced_cs = ResumeBuilderModel.enhance_custom_section(current_cs)
+                                st.session_state[f"cs_content_{idx}"] = enhanced_cs
+                                sec["content"] = enhanced_cs
                                 st.success(f"✅ Enhanced '{sec_title or 'Section'}'!")
                                 st.rerun()
                     with col_del:
@@ -1082,7 +1198,7 @@ def render_create_resume_flow():
 
                     sec_content = st.text_area(
                         f"Section Content #{idx + 1}:",
-                        value=sec.get("content", ""),
+                        value=st.session_state.get(f"cs_content_{idx}", sec.get("content", "")),
                         placeholder="Enter description, bullet points, or details...",
                         height=100,
                         key=f"cs_content_{idx}"

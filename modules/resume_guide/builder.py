@@ -64,6 +64,149 @@ class ResumeBuilderModel:
         }
 
     @staticmethod
+    def enhance_headline(raw_headline: str) -> str:
+        """
+        Convert a user's basic headline or role/technologies into a professional,
+        well-structured resume headline (e.g. 'Role | Specialization & Key Technologies')
+        without changing the candidate's actual roles, skills, or data.
+        """
+        raw = (raw_headline or "").strip()
+        if not raw:
+            return ""
+
+        cleaned = re.sub(r"[\r\n\t]+", " ", raw).strip()
+        cleaned = re.sub(r"\s+", " ", cleaned)
+
+        tech_norm = {
+            "python": "Python", "python3": "Python", "java": "Java", "c++": "C++", "cpp": "C++",
+            "c": "C", "c#": "C#", "csharp": "C#", "javascript": "JavaScript", "js": "JavaScript",
+            "typescript": "TypeScript", "ts": "TypeScript", "sql": "SQL", "mysql": "MySQL",
+            "postgresql": "PostgreSQL", "postgres": "PostgreSQL", "mongodb": "MongoDB",
+            "redis": "Redis", "react": "React.js", "reactjs": "React.js", "react.js": "React.js",
+            "angular": "Angular", "vue": "Vue.js", "vuejs": "Vue.js", "nextjs": "Next.js",
+            "next.js": "Next.js", "node": "Node.js", "nodejs": "Node.js", "node.js": "Node.js",
+            "express": "Express.js", "django": "Django", "flask": "Flask", "fastapi": "FastAPI",
+            "spring": "Spring Boot", "spring boot": "Spring Boot", "aws": "AWS", "azure": "Azure",
+            "gcp": "GCP", "docker": "Docker", "kubernetes": "Kubernetes", "git": "Git",
+            "tableau": "Tableau", "power bi": "Power BI", "powerbi": "Power BI", "excel": "Excel",
+            "html": "HTML5", "css": "CSS3", "tailwind": "Tailwind CSS", "bootstrap": "Bootstrap",
+            "pandas": "Pandas", "numpy": "NumPy", "machine learning": "Machine Learning", "ai": "AI",
+            "data science": "Data Science", "cloud": "Cloud Technologies", "devops": "DevOps"
+        }
+
+        role_patterns = [
+            (r"\b(aspiring\s*(software\s*)?engineer|student|fresher|intern)\b", "Aspiring Software Engineer"),
+            (r"\bfull[-\s]*stack\s*(dev(eloper)?|engineer)?\b", "Full-Stack Developer"),
+            (r"\bfront[-\s]*end\s*(dev(eloper)?|engineer)?\b", "Frontend Developer"),
+            (r"\bback[-\s]*end\s*(dev(eloper)?|engineer)?\b", "Backend Developer"),
+            (r"\bpython\s*(dev(eloper)?|engineer)\b", "Python Developer"),
+            (r"\bjava\s*(dev(eloper)?|engineer)\b", "Java Developer"),
+            (r"\bc\+\+\s*(dev(eloper)?|engineer)\b", "C++ Developer"),
+            (r"\bsoftware\s*(dev(eloper)?|engineer)\b", "Software Engineer"),
+            (r"\bdata\s*analyst\b", "Data Analyst"),
+            (r"\bdata\s*scientist\b", "Data Scientist"),
+            (r"\bdevops\s*(engineer)?\b", "DevOps Engineer"),
+            (r"\bcloud\s*(architect|engineer)\b", "Cloud Engineer"),
+            (r"\bmachine\s*learning\s*(engineer)?|\bml\s*engineer\b", "Machine Learning Engineer"),
+            (r"\bai\s*(engineer|specialist)\b", "AI Engineer"),
+            (r"\bqa\s*(engineer)?|\btester|\bquality\s*assurance\b", "Quality Assurance Engineer"),
+            (r"\bweb\s*dev(eloper)?\b", "Web Developer"),
+        ]
+
+        role_specs = {
+            "Software Engineer": "Software Development & System Design",
+            "Full-Stack Developer": "Web Applications & Software Solutions",
+            "Frontend Developer": "UI/UX & Modern Web Technologies",
+            "Backend Developer": "APIs & Distributed Systems",
+            "Python Developer": "Backend Architecture & Data Solutions",
+            "Java Developer": "Enterprise Systems & Microservices",
+            "C++ Developer": "Systems & High-Performance Engineering",
+            "Data Analyst": "Business Intelligence & Data Solutions",
+            "Data Scientist": "Predictive Modeling & Machine Learning",
+            "DevOps Engineer": "CI/CD & Cloud Infrastructure",
+            "Cloud Engineer": "Cloud Architecture & Infrastructure",
+            "Machine Learning Engineer": "AI & Machine Learning Solutions",
+            "AI Engineer": "Applied AI & Intelligent Systems",
+            "Quality Assurance Engineer": "Automated & Manual Testing",
+            "Web Developer": "Modern Web Applications & Development",
+            "Aspiring Software Engineer": "Software Engineering & Problem Solving",
+        }
+
+        # If user entered with pipe delimiter, clean up each segment
+        if "|" in cleaned:
+            parts = [p.strip() for p in cleaned.split("|") if p.strip()]
+            enhanced_parts = []
+            for p in parts:
+                words = p.split()
+                norm_words = []
+                for w in words:
+                    low_w = w.lower().strip(",.;:")
+                    if low_w in tech_norm:
+                        norm_words.append(tech_norm[low_w])
+                    else:
+                        norm_words.append(w.capitalize() if w.islower() else w)
+                enhanced_parts.append(" ".join(norm_words))
+            return " | ".join(enhanced_parts)
+
+        # Detect specific role title
+        detected_role = None
+        for pattern, title in role_patterns:
+            if re.search(pattern, cleaned, re.IGNORECASE):
+                detected_role = title
+                break
+
+        # Detect matched technologies from input
+        found_tech = []
+        sorted_tech_keys = sorted(tech_norm.keys(), key=lambda k: len(k), reverse=True)
+        temp_text = cleaned
+        for tk in sorted_tech_keys:
+            escaped = re.escape(tk)
+            pat = r'(?<![a-zA-Z0-9_])' + escaped + r'(?![a-zA-Z0-9_+#])'
+            if re.search(pat, temp_text, re.IGNORECASE):
+                disp = tech_norm[tk]
+                if detected_role and disp.lower() in detected_role.lower():
+                    pass
+                elif disp not in found_tech:
+                    found_tech.append(disp)
+                temp_text = re.sub(pat, " ", temp_text, flags=re.IGNORECASE)
+
+        if detected_role and found_tech:
+            if len(found_tech) == 1:
+                tech_phrase = f"{found_tech[0]} Development" if found_tech[0] in ["Python", "Java", "C++", "SQL"] else f"{found_tech[0]} Solutions"
+                return f"{detected_role} | {tech_phrase}"
+            elif len(found_tech) == 2:
+                return f"{detected_role} | {found_tech[0]} & {found_tech[1]}"
+            else:
+                return f"{detected_role} | " + ", ".join(found_tech[:-1]) + f" & {found_tech[-1]}"
+
+        if detected_role and not found_tech:
+            spec = role_specs.get(detected_role, "Software Engineering & Solutions")
+            return f"{detected_role} | {spec}"
+
+        if found_tech and not detected_role:
+            if any(t in ["React.js", "Vue.js", "Angular", "HTML5", "CSS3", "Tailwind CSS"] for t in found_tech) and not any(t in ["Node.js", "Django", "Flask", "Spring Boot"] for t in found_tech):
+                inferred_role = "Frontend Developer"
+            elif any(t in ["Node.js", "Django", "Flask", "FastAPI", "Spring Boot"] for t in found_tech) and not any(t in ["React.js", "Angular", "Vue.js"] for t in found_tech):
+                inferred_role = "Backend Developer"
+            elif any(t in ["Tableau", "Power BI", "Excel"] for t in found_tech):
+                inferred_role = "Data Analyst"
+            elif any(t in ["Docker", "Kubernetes", "AWS", "Azure", "GCP"] for t in found_tech) and len(found_tech) <= 2:
+                inferred_role = "Cloud / DevOps Engineer"
+            else:
+                inferred_role = "Software Developer"
+
+            if len(found_tech) == 1:
+                return f"{inferred_role} | {found_tech[0]} Development"
+            elif len(found_tech) == 2:
+                return f"{inferred_role} | {found_tech[0]} & {found_tech[1]}"
+            else:
+                return f"{inferred_role} | " + ", ".join(found_tech[:-1]) + f" & {found_tech[-1]}"
+
+        # Clean title-cased fallback
+        words = [w.capitalize() if w.islower() else w for w in cleaned.split()]
+        return " ".join(words)
+
+    @staticmethod
     def enhance_qualifications(raw_edu: str) -> str:
         """
         Enhance educational qualifications using standard professional terminology
@@ -526,6 +669,7 @@ class ResumeBuilderModel:
         cat_skills: Dict[str, List[str]] = {}
         cat_order: List[str] = []
         current_cat: Optional[str] = None
+        noise_pat = r'(?i)\s+(programming|languages?|development|frameworks?|libraries?|databases?|tools?|technologies)$'
 
         def add_skill(category: str, skill_name: str):
             clean_c = category.strip()
@@ -542,11 +686,16 @@ class ResumeBuilderModel:
             s_clean = skill_name.strip(" •-*")
             if not s_clean:
                 return
-            lower_s = s_clean.lower()
+            clean_s = re.sub(noise_pat, "", s_clean).strip()
+            lower_s = clean_s.lower() if clean_s else s_clean.lower()
             if lower_s in tech_map:
                 norm_s = tech_map[lower_s][0]
+            elif s_clean.lower() in tech_map:
+                norm_s = tech_map[s_clean.lower()][0]
             elif any(v[0].lower() == lower_s for v in tech_map.values()):
                 norm_s = [v[0] for v in tech_map.values() if v[0].lower() == lower_s][0]
+            elif any(v[0].lower() == s_clean.lower() for v in tech_map.values()):
+                norm_s = [v[0] for v in tech_map.values() if v[0].lower() == s_clean.lower()][0]
             else:
                 norm_s = s_clean.title() if len(s_clean) > 3 else s_clean.upper()
 
@@ -583,8 +732,10 @@ class ResumeBuilderModel:
                         else:
                             # Map token to standard category via tech_map
                             low_tok = tok.lower()
-                            if low_tok in tech_map:
-                                name, cat_key = tech_map[low_tok]
+                            clean_tok_str = re.sub(noise_pat, "", low_tok).strip()
+                            lookup_key = clean_tok_str if clean_tok_str in tech_map else low_tok
+                            if lookup_key in tech_map:
+                                name, cat_key = tech_map[lookup_key]
                                 cat_display = {
                                     "languages": "Programming Languages",
                                     "frameworks": "Frameworks & Libraries",

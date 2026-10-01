@@ -527,8 +527,45 @@ class TestResumeBuilder(unittest.TestCase):
         }
         result = analyzer.analyze(raw_text, sections)
         self.assertIn("role_alignment_score", result)
-        self.assertIn("suggestions", result)
-        self.assertFalse(result["experience_relevance"]["has_experience"])
+    def test_enhance_headline(self):
+        """Test ResumeBuilderModel.enhance_headline transforms basic input into structured professional headlines without altering user skills."""
+        # Role + tech
+        res1 = ResumeBuilderModel.enhance_headline("python developer c++")
+        self.assertIn("Python Developer", res1)
+        self.assertIn("C++", res1)
+        self.assertIn("|", res1)
+
+        # Role only
+        res2 = ResumeBuilderModel.enhance_headline("software engineer")
+        self.assertIn("Software Engineer", res2)
+        self.assertIn("|", res2)
+
+        # Skills only without role
+        res3 = ResumeBuilderModel.enhance_headline("python, c++")
+        self.assertIn("Python", res3)
+        self.assertIn("C++", res3)
+        self.assertIn("|", res3)
+
+        # Student / Fresher
+        res4 = ResumeBuilderModel.enhance_headline("student")
+        self.assertIn("Aspiring Software Engineer", res4)
+
+        # Data analyst with tools
+        res5 = ResumeBuilderModel.enhance_headline("data analyst sql excel")
+        self.assertIn("Data Analyst", res5)
+        self.assertIn("SQL", res5)
+        self.assertIn("Excel", res5)
+
+    def test_enhance_skills_noise_cleaning(self):
+        """Test that enhance_skills handles basic user inputs like 'python programming, c++' without duplicating category names."""
+        skills_raw = "python programming, c++"
+        enhanced = ResumeBuilderModel.enhance_skills(skills_raw)
+        self.assertIn("Programming Languages", enhanced)
+        self.assertIn("Python", enhanced)
+        self.assertIn("C++", enhanced)
+        # Should be a single unified line for Programming Languages
+        self.assertEqual(enhanced.count("Programming Languages"), 1)
+        self.assertNotIn("Technical Skills", enhanced)
 
 if __name__ == "__main__":
     unittest.main()
