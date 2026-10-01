@@ -94,6 +94,11 @@ def main():
         from modules.settings.ui import render_settings_page
         render_settings_page()
 
+    # ── Founder Analytics Dashboard ───────────────────────────────────────────
+    elif screen == "founder_analytics":
+        from modules.admin.analytics_ui import render_analytics_dashboard
+        render_analytics_dashboard()
+
     # ── Main Application (legacy fallback) ───────────────────────────────────
     elif screen == "app":
         _render_main_app()

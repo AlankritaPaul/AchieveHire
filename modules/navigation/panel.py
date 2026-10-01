@@ -469,6 +469,14 @@ def render_navigation_drawer(t: dict):
                 st.session_state["nav_open"] = False
                 st.rerun()
 
+        # ── Founder Exclusive Dashboard ──
+        if user_id == "ALANKRITA-FOUNDER":
+            st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px; color:{t["gold"]};">Founder Controls</div>', unsafe_allow_html=True)
+            if st.button("📊  Platform Analytics", key="nav_btn_founder_analytics", use_container_width=True):
+                st.session_state["ac_screen"] = "founder_analytics"
+                st.session_state["nav_open"] = False
+                st.rerun()
+
         st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px;">Platform Policies</div>', unsafe_allow_html=True)
 
         # ── 4. FAQ ──

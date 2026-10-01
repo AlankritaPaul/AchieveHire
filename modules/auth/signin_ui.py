@@ -93,7 +93,15 @@ def render_signin_flow():
 
             st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
 
-            btn_col1, btn_col2, btn_col3 = st.columns([40, 35, 25])
+            is_founder = candidate_name and candidate_name.strip().lower() in ["alankrita pal", "alankrita paul", "alankrita"]
+
+            if is_founder:
+                btn_col1, btn_col2, btn_col3 = st.columns([40, 35, 25])
+            else:
+                btn_col1, btn_col3 = st.columns([65, 35])
+                btn_col2 = None
+                founder_clicked = False
+
             with btn_col1:
                 generate_clicked = st.button(
                     "🚀  Generate User ID",
@@ -101,12 +109,15 @@ def render_signin_flow():
                     use_container_width=True,
                     key="btn_generate_user_id"
                 )
-            with btn_col2:
-                founder_clicked = st.button(
-                    "👑 Direct Access",
-                    use_container_width=True,
-                    key="btn_founder_bypass"
-                )
+            
+            if is_founder and btn_col2:
+                with btn_col2:
+                    founder_clicked = st.button(
+                        "👑 Direct Access",
+                        use_container_width=True,
+                        key="btn_founder_bypass"
+                    )
+            
             with btn_col3:
                 if st.button("← Back", use_container_width=True, key="btn_cancel_signin"):
                     st.session_state["ac_screen"] = "landing"
