@@ -62,17 +62,7 @@ A structured, professional resume creation suite calibrated for high-impact pres
   - 💼 **Work Experience & Projects**: Guided entry with real-time weak verb warnings and instant strong action verb recommendations.
   - ✍️ **Professional Formal Finishing**: Includes formal declaration of accuracy, place and date stamps, flexible photo display (uploaded portrait, photo placeholder box, or none), and signature options (typed cursive, uploaded signature image, or blank line for physical signing).
   - ➕ **Dynamic Custom Sections**: Easily add custom categories for certifications, publications, honors & awards, volunteer leadership, and languages.
-- 🎨 **Curated, ATS-Friendly Professional Templates**:
-  - 🏛️ **Classic**: Timeless, elegant serif layout ideal for corporate, finance, legal, and academic roles.
-  - 💼 **Modern**: Sleek two-tone header bar with crisp typography, tailored for tech companies and startups.
-  - 📄 **Minimal**: Clean, whitespace-optimized design maximizing reading efficiency and scanability.
-  - 🏢 **Professional**: Balanced, authoritative corporate grid layout for seasoned industry practitioners.
-  - 🎨 **Creative**: Vibrant accents and expressive styling for design, marketing, media, and product roles.
-  - 💻 **Technical**: Skills-first layout emphasizing toolchains, system architectures, and technical projects.
-  - 👔 **Executive**: Leadership-focused hierarchy prioritizing executive summaries, scope of impact, and metrics.
-  - 📐 **Compact**: Space-optimized format designed to condense extensive experience into a clean single page.
-  - ❄️ **Nordic**: Understated Scandinavian aesthetic featuring subtle accent lines and modern minimalist typography.
-  - 🎓 **Ivy**: Prestigious, publication-grade layout inspired by top academic and research institutions.
+- 🎨 **Curated, ATS-Friendly Professional Templates**: A versatile collection of clean, industry-tailored layouts engineered for optimal scanability and ATS compliance.
 - 💾 **Live Preview & Multi-Format Export**:
   - 👁️ **Real-Time Interactive Preview**: Instant in-app visual rendering of the chosen template as changes are made.
   - 📥 **High-Quality ATS PDF Generation**: Pixel-perfect, downloadable vector PDF generated with custom styling via ReportLab.
