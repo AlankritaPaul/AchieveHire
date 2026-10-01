@@ -1,0 +1,31 @@
+Alex Morgan
+Email: alex.morgan@email.com | Phone: +1-555-0199 | Location: New York, NY
+GitHub: github.com/alexm | LinkedIn: linkedin.com/in/alexm
+
+CAREER OBJECTIVE
+Looking for an opportunity as a software developer to utilize my programming skills.
+
+WORK EXPERIENCE
+Junior Developer | TechCo Solutions | June 2022 - Present
+- Worked on backend services for internal dashboard.
+- Responsible for maintaining customer databases and bug fixes.
+- Helped with building REST APIs for mobile applications.
+- Handled deployment scripts and server logs.
+
+PROJECTS
+E-Commerce Web App
+- Worked on an online store with product catalog and checkout cart.
+- Used Python and JavaScript with SQLite database.
+- Implemented user registration and order processing.
+
+TECHNICAL SKILLS
+Python, JavaScript, SQLite, Git, HTML, CSS, Problem Solving
+
+EDUCATION
+Bachelor of Science in Computer Science
+State University | Graduated May 2022
+
+PERSONAL DETAILS
+Date of Birth: 15/04/1999
+Marital Status: Single
+Nationality: American
