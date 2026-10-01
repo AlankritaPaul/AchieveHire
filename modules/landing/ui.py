@@ -172,52 +172,29 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Theme column relative layout ──────────────────────────────────────── */
-    div[data-testid="stColumn"]:last-child,
-    div[data-testid="column"]:last-child,
-    div[data-testid="stHorizontalBlock"] > div:last-child {{
-        position: relative !important;
-    }}
-
-    /* ── Make theme toggle button overlay the icon directly ────────────────── */
-    div[data-testid="stColumn"]:last-child [data-testid="stButton"],
-    div[data-testid="column"]:last-child [data-testid="stButton"],
-    div[data-testid="stHorizontalBlock"] > div:last-child [data-testid="stButton"] {{
-        position: absolute !important;
-        top: 4px !important;
-        right: 0 !important;
+    /* ── Theme Toggle Link (Clean, interactive, 100% transparent) ────────── */
+    #ac-theme-toggle-link {{
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         width: 48px !important;
         height: 48px !important;
-        z-index: 10 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }}
-
-    div[data-testid="stColumn"]:last-child button,
-    div[data-testid="column"]:last-child button,
-    div[data-testid="stHorizontalBlock"] > div:last-child button,
-    button:not([data-testid="baseButton-primary"]):not(.ac-pink-signin-btn) {{
-        width: 48px !important;
-        height: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-        opacity: 0 !important;
+        text-decoration: none !important;
         cursor: pointer !important;
-        z-index: 10 !important;
+        transition: transform 0.22s ease !important;
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
         background: transparent !important;
         background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
     }}
-
-    /* ── Hover animation on the theme icon ─────────────────────────────────── */
-    div[data-testid="stColumn"]:last-child:hover #ac-theme-icon-layer,
-    div[data-testid="column"]:last-child:hover #ac-theme-icon-layer,
-    div[data-testid="stHorizontalBlock"] > div:last-child:hover #ac-theme-icon-layer {{
+    #ac-theme-toggle-link:hover {{
         transform: scale(1.18) rotate(8deg) !important;
+    }}
+    #ac-theme-toggle-link img {{
+        border: none !important;
+        outline: none !important;
+        display: block !important;
     }}
 
     /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
@@ -868,6 +845,11 @@ def render_landing() -> dict:
     The caller (app.py) checks 'proceed' to move to the next step.
     """
     # ── State initialisation ─────────────────────────────────────────────────
+    if "theme" in st.query_params:
+        requested = st.query_params.get("theme")
+        if requested in THEMES:
+            st.session_state["ac_theme"] = requested
+
     if "ac_theme" not in st.session_state:
         st.session_state["ac_theme"] = "light"      # Light is default
 
@@ -889,16 +871,15 @@ def render_landing() -> dict:
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
         st.markdown(clean_html(f"""
-        <div style="position:relative; width:48px; height:48px; margin: 4px 0 0 auto;">
-            <div id="ac-theme-icon-layer" style="position:absolute; top:0; left:0; width:48px; height:48px; pointer-events:none; z-index:1; display:flex; align-items:center; justify-content:center; transition:transform 0.22s ease;">
-                <img src="{theme_icon_uri}" alt="Toggle Theme" style="width:44px; height:44px; display:block; pointer-events:none; user-select:none;" />
-            </div>
+        <div style="display:flex; justify-content:flex-end; align-items:center; height:100%; padding-top:6px;">
+            <a href="?theme={other_key}" target="_self" id="ac-theme-toggle-link"
+               style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; text-decoration:none; cursor:pointer; transition:transform 0.22s ease;"
+               title="Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme">
+                <img src="{theme_icon_uri}" alt="Toggle Theme" 
+                     style="width:44px; height:44px; display:block; pointer-events:none; user-select:none;" />
+            </a>
         </div>
         """), unsafe_allow_html=True)
-        theme_clicked = st.button(" ", key="ac_theme_toggle", help="Toggle Light / Dark Theme")
-        if theme_clicked:
-            st.session_state["ac_theme"] = other_key
-            st.rerun()
 
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
