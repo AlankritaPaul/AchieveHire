@@ -43,10 +43,9 @@ def render_privacy_page():
     </div>
     """), unsafe_allow_html=True)
 
-    # Render Q&A Sections from finalized content
+    # Render Q&A Sections from finalized content (Account Deletion is already in FAQ)
     for section in PRIVACY_SECTIONS:
-        # We focus on Privacy Policy, Account Deletion, Secure Authentication, Data Protection
-        if "Terms" in section["title"]:
+        if "Terms" in section["title"] or "Account Deletion" in section["title"]:
             continue
         st.markdown(clean_html(f"""
         <div style="max-width:960px; margin: 16px auto; padding: 0 16px;">

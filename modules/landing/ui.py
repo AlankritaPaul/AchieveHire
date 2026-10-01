@@ -558,11 +558,14 @@ def _inject_css(t: dict):
 
     /* ── Footer ──────────────────────────────────────────────────────── */
     .ac-footer-container {{
-        width: 100%;
-        border-top: 1px solid {t["divider"]};
-        padding: 44px 24px 52px;
-        margin-top: 48px;
-        box-sizing: border-box;
+        width: 100% !important;
+        background: {t["surface"]} !important;
+        border-top: 1px solid {t["border"]} !important;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.06) !important;
+        padding: 32px 24px 36px !important;
+        margin-top: 56px !important;
+        box-sizing: border-box !important;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-inner {{
         max-width: 1200px;
@@ -572,9 +575,11 @@ def _inject_css(t: dict):
         justify-content: space-between;
         gap: 28px;
         box-sizing: border-box;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-col {{
         box-sizing: border-box;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-left {{
         flex: 1 1 0;
@@ -585,25 +590,29 @@ def _inject_css(t: dict):
         gap: 8px;
     }}
     .ac-footer-readiness {{
-        font-size: 0.94rem;
-        font-weight: 500;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.88rem;
+        font-weight: 600;
         color: {t["text_secondary"]};
         line-height: 1.45;
-        letter-spacing: 0.01em;
+        letter-spacing: -0.01em;
     }}
     .ac-footer-copyright-group {{
         display: flex;
         flex-direction: column;
         gap: 3px;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-copy {{
-        font-size: 0.88rem;
-        font-weight: 500;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.82rem;
+        font-weight: 600;
         color: {t["text_secondary"]};
         line-height: 1.4;
     }}
     .ac-footer-rights {{
-        font-size: 0.78rem;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.74rem;
         font-weight: 400;
         color: {t["text_muted"]};
         line-height: 1.35;
@@ -614,17 +623,19 @@ def _inject_css(t: dict):
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
     }}
     .ac-footer-brand {{
-        font-size: 1.28rem;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 1.20rem;
         font-weight: 800;
         color: {t["text_primary"]};
-        letter-spacing: -0.01em;
+        letter-spacing: 0.02em;
         line-height: 1.2;
     }}
     .ac-footer-tagline {{
-        font-size: 0.88rem;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.80rem;
         font-weight: 400;
         color: {t["text_muted"]};
         line-height: 1.45;
@@ -638,14 +649,16 @@ def _inject_css(t: dict):
         justify-content: center;
     }}
     .ac-footer-creator {{
-        font-size: 0.94rem;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.86rem;
         font-weight: 500;
         color: {t["text_secondary"]};
         line-height: 1.45;
         white-space: nowrap;
     }}
     .ac-footer-creator-name {{
-        font-weight: 700;
+        font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-weight: 800;
         color: {t["text_primary"]};
         letter-spacing: 0.02em;
     }}
@@ -667,14 +680,14 @@ def _inject_css(t: dict):
 
         /* Stacked centered footer on mobile in exact required order */
         .ac-footer-container {{
-            padding: 36px 16px 44px;
-            margin-top: 36px;
+            padding: 30px 16px 36px !important;
+            margin-top: 36px !important;
         }}
         .ac-footer-inner {{
             flex-direction: column;
             text-align: center;
             align-items: center;
-            gap: 22px;
+            gap: 20px;
         }}
         .ac-footer-left {{
             text-align: center;

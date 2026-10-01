@@ -84,11 +84,10 @@ class TestNavigationStructure(unittest.TestCase):
         terms_qa_titles = [qa["q"] for qa in terms_sections[0]["qa"]]
         self.assertFalse(any("delete" in q.lower() for q in terms_qa_titles))
 
-        # 3. Privacy includes Account Deletion
-        privacy_sections = [s for s in PRIVACY_SECTIONS if "Terms" not in s["title"]]
-        section_titles = [s["title"] for s in privacy_sections]
-        self.assertIn("Account Deletion", section_titles)
-        self.assertIn("Privacy Policy", section_titles)
+        # 3. FAQ contains Account Deletion (Q5 & Q6)
+        faq_q_titles = [item["q"] for item in FAQ_ITEMS]
+        self.assertIn("Can I delete my account?", faq_q_titles)
+        self.assertIn("What happens to my resume and profile after account deletion?", faq_q_titles)
 
         # 4. Render functions are callable
         self.assertTrue(callable(render_faq_page))
