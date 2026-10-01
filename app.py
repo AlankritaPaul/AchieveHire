@@ -4,6 +4,7 @@ Main Streamlit Application Entrypoint
 """
 
 import streamlit as st
+from modules.landing.ui import render_landing
 from modules.resume_guide.ui import render_resume_guide
 
 # Page Configuration
@@ -11,10 +12,36 @@ st.set_page_config(
     page_title="AscendCareer | AI Career & Interview Readiness",
     page_icon="🚀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed",
 )
 
+
 def main():
+    # ── Session state defaults ────────────────────────────────────────────────
+    if "ac_screen" not in st.session_state:
+        st.session_state["ac_screen"] = "landing"   # Start on landing screen
+
+    screen = st.session_state["ac_screen"]
+
+    # ── Landing Screen ────────────────────────────────────────────────────────
+    if screen == "landing":
+        result = render_landing()
+        if result["proceed"]:
+            # Sign In clicked → move to next step
+            # (Sign-in / profile setup will be added in the next milestone)
+            st.session_state["ac_screen"] = "app"
+            st.rerun()
+
+    # ── Main Application (post sign-in) ───────────────────────────────────────
+    elif screen == "app":
+        _render_main_app()
+
+
+def _render_main_app():
+    """
+    Renders the main AscendCareer application after authentication.
+    Sign-in / profile setup steps will be inserted before this in the next milestone.
+    """
     # Sidebar Branding & Navigation
     with st.sidebar:
         st.markdown("""
@@ -26,7 +53,7 @@ def main():
 
         st.markdown("---")
         st.markdown("### Platform Modules")
-        
+
         # Main section selection
         app_mode = st.radio(
             "Navigation",
@@ -48,6 +75,11 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
+        st.markdown("---")
+        if st.button("← Back to Landing", key="back_to_landing"):
+            st.session_state["ac_screen"] = "landing"
+            st.rerun()
+
     # Route navigation
     if app_mode == "📄 Resume Guide":
         render_resume_guide()
@@ -57,6 +89,7 @@ def main():
         st.info("📈 **Preparation Analytics**: Historical progress, weakness tracking, and readiness metrics dashboard.")
     elif app_mode == "🏅 Certified Profile":
         st.info("🏅 **Certified Profile**: Verifiable completion certificates and public career profiles.")
+
 
 if __name__ == "__main__":
     main()
