@@ -31,7 +31,11 @@ The platform follows a continuous **Weakness → Training → Re-practice → Ve
   - **Technical Interviewer**: Evaluates system architecture, coding depth, and problem-solving.
   - **Senior / Hiring Manager**: Assesses leadership, conflict resolution, and impact.
   - **Panel Lead**: Directs the flow and performs cross-examination.
-- **Specialized Subject Interviews**: 1-on-1 deep-dives in Python, C++, Java, SQL, Data Structures & Algorithms, System Design, and more.
+- **Role-, Company- & Job Description-Targeted Interviews**:
+  - **Target Job Role Adaptation**: Dynamically tailors technical depth, domain scenarios, and practical questions to the specific role chosen by the candidate (e.g., Software Engineer, Data Analyst, Cloud Architect, Systems Engineer, etc.).
+  - **Company-Specific Hiring Benchmarks**: Replicates interview expectations, questioning styles, and cultural evaluations calibrated to the candidate's chosen company (e.g., Google, Amazon, Microsoft, high-growth startups, or enterprise organizations).
+  - **Job Description (JD) Precision**: When a job description is provided, the AI extracts required technical competencies, tools, and responsibilities from the posting to conduct an authentic, role-aligned interview simulation.
+- **Specialized Subject Interviews**: 1-on-1 deep-dives in programming languages and core domains (e.g., Python, C++, Java, SQL, Data Structures & Algorithms, System Design, and more).
 - **Stress & Challenge Modes**:
   - **Resume Stress Testing**: Direct grilling on claims, projects, metrics, and tools mentioned in the candidate's resume.
   - **Interviewer Challenge Mode**: Tests candidate reasoning under skepticism.
