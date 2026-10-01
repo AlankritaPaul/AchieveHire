@@ -13,15 +13,15 @@ def create_banner():
 
     # Fonts
     font_title = ImageFont.truetype('assets/fonts/glitten/Glitten-Regular.otf', int(76 * SCALE))
-    font_tagline = ImageFont.truetype('assets/fonts/PlayfairDisplay.ttf', int(32 * SCALE))
-    font_mono = ImageFont.truetype('C:/Windows/Fonts/consolab.ttf', int(15 * SCALE))
+    font_tagline = ImageFont.truetype('assets/fonts/hatton/Hatton1.otf', int(27 * SCALE))
+    font_mono = ImageFont.truetype('C:/Windows/Fonts/consolab.ttf', int(17.5 * SCALE))
 
     # Base coordinates
     start_x = int(395 * SCALE)
-    base_y = int(80 * SCALE)
-    tag_y = base_y + int(106 * SCALE)
-    pill_y = tag_y + int(72 * SCALE)
-    pill_h = int(28 * SCALE)
+    base_y = int(72 * SCALE)
+    tag_y = base_y + int(94 * SCALE)
+    pill_y = tag_y + int(96 * SCALE)
+    pill_h = int(32 * SCALE)
 
     # 2. Static Logo on Left (NO animation!)
     logo = Image.open('assets/logo.png').convert('RGBA')
@@ -74,7 +74,7 @@ def create_banner():
     mid_c = np.array([255, 215, 0, 255])
     bot_c = np.array([218, 160, 25, 255])
     for y in range(H):
-        ny = (y - tag_y) / float(40 * SCALE)
+        ny = (y - tag_y) / float(55 * SCALE)
         ny = max(0.0, min(1.0, ny))
         if ny < 0.5:
             c = top_c * (1 - ny*2) + mid_c * (ny*2)
@@ -87,16 +87,17 @@ def create_banner():
     # Specular edge highlight
     tag_spec = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     tsdraw = ImageDraw.Draw(tag_spec)
-    tsdraw.text((start_x, tag_y - int(1 * SCALE)), tagline_text, font=font_tagline, fill=(255, 255, 220, 180))
+    tsdraw.text((start_x, tag_y - int(0.5 * SCALE)), tagline_text, font=font_tagline, fill=(255, 255, 220, 180))
 
-    # Glitter twinkle positions across tagline
+    # Glitter twinkle positions across tagline in Hatton font
     sparkle_bases = [
-        (start_x + int(12 * SCALE), tag_y + int(6 * SCALE), 0.0),
-        (start_x + int(135 * SCALE), tag_y + int(20 * SCALE), 0.35),
-        (start_x + int(270 * SCALE), tag_y + int(8 * SCALE), 0.7),
-        (start_x + int(420 * SCALE), tag_y + int(22 * SCALE), 0.15),
-        (start_x + int(560 * SCALE), tag_y + int(10 * SCALE), 0.55),
-        (start_x + int(670 * SCALE), tag_y + int(18 * SCALE), 0.85),
+        (start_x + int(12 * SCALE), tag_y + int(14 * SCALE), 0.0),    # W
+        (start_x + int(135 * SCALE), tag_y + int(16 * SCALE), 0.35),  # P
+        (start_x + int(240 * SCALE), tag_y + int(22 * SCALE), 0.7),   # tt
+        (start_x + int(340 * SCALE), tag_y + int(14 * SCALE), 0.15),  # M
+        (start_x + int(450 * SCALE), tag_y + int(16 * SCALE), 0.55),  # O
+        (start_x + int(560 * SCALE), tag_y + int(22 * SCALE), 0.85),  # tt
+        (start_x + int(624 * SCALE), tag_y + int(24 * SCALE), 0.4),   # .
     ]
 
     # 5. Monospace Feature Pills (Smart Resume • Realistic Interviews • Detailed Feedback)
@@ -136,7 +137,7 @@ def create_banner():
     for icon_fn, label, color in pills_data:
         bbox = pdraw.textbbox((0, 0), label, font=font_mono)
         tw = bbox[2] - bbox[0]
-        pw = tw + int(44 * SCALE)
+        pw = tw + int(48 * SCALE)
         pdraw.rounded_rectangle(
             (cur_bx, pill_y, cur_bx + pw, pill_y + pill_h),
             radius=int(6 * SCALE),
@@ -144,9 +145,9 @@ def create_banner():
             outline=(30, 41, 59, 255),
             width=int(1 * SCALE)
         )
-        icon_fn(pdraw, cur_bx + int(14 * SCALE), pill_y + pill_h // 2)
-        pdraw.text((cur_bx + int(28 * SCALE), pill_y + int(6 * SCALE)), label, font=font_mono, fill=color)
-        cur_bx += pw + int(12 * SCALE)
+        icon_fn(pdraw, cur_bx + int(16 * SCALE), pill_y + pill_h // 2, s=int(11 * SCALE))
+        pdraw.text((cur_bx + int(32 * SCALE), pill_y + int(7 * SCALE)), label, font=font_mono, fill=color)
+        cur_bx += pw + int(14 * SCALE)
 
     # 6. Assemble Static Master Image
     base_banner = Image.new('RGBA', (W, H), (11, 17, 32, 255))
