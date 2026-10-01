@@ -29,6 +29,17 @@ def _get_logo_data_uri() -> str:
     return ""
 
 
+def _get_theme_icon_data_uri() -> str:
+    """Return data URI of the Sun/Moon split SVG theme icon."""
+    p = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.svg"
+    if p.exists():
+        import urllib.parse
+        svg_text = p.read_text(encoding="utf-8")
+        encoded = urllib.parse.quote(svg_text)
+        return f"data:image/svg+xml;utf8,{encoded}"
+    return ""
+
+
 def clean_html(html_str: str) -> str:
     """
     Strips 100% of leading & trailing whitespace from every line.
@@ -45,7 +56,7 @@ def clean_html(html_str: str) -> str:
 
 THEMES = {
     "light": {
-        "label": "🌙 Switch to Dark Theme",
+        "label": "Toggle Theme",
         "bg": "#F8FAFF",
         "surface": "#FFFFFF",
         "surface2": "#F0F4FF",
@@ -68,12 +79,13 @@ THEMES = {
         "qa_answer_bg": "#F0F4FF",
         "qa_border": "#DDE3F0",
         "principle_border": "#A7F3D0",
-        "theme_btn_bg": "#0F172A",
-        "theme_btn_text": "#FFFFFF",
-        "theme_btn_border": "#334155",
+        "brand_ascend_color": "#4338CA",
+        "brand_ascend_glow": "rgba(67, 56, 202, 0.16)",
+        "brand_career_color": "#D97706",
+        "brand_career_glow": "rgba(217, 119, 6, 0.20)",
     },
     "dark": {
-        "label": "☀️ Switch to Light Theme",
+        "label": "Toggle Theme",
         "bg": "#0D0F1A",
         "surface": "#141827",
         "surface2": "#1C2035",
@@ -96,9 +108,10 @@ THEMES = {
         "qa_answer_bg": "#1A1F36",
         "qa_border": "#2D3450",
         "principle_border": "#3730A3",
-        "theme_btn_bg": "#FFFFFF",
-        "theme_btn_text": "#0F172A",
-        "theme_btn_border": "#CBD5E1",
+        "brand_ascend_color": "#818CF8",
+        "brand_ascend_glow": "rgba(129, 140, 248, 0.38)",
+        "brand_career_color": "#FCD34D",
+        "brand_career_glow": "rgba(252, 211, 77, 0.42)",
     },
 }
 
@@ -108,6 +121,7 @@ THEMES = {
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _inject_css(t: dict):
+    theme_icon_uri = _get_theme_icon_data_uri()
     st.markdown(clean_html(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -154,25 +168,34 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Prominent Theme Toggle Button ───────────────────────────────── */
+    /* ── Prominent Theme Toggle Button (Sun/Moon Split Icon) ─────────── */
     div[data-testid="column"]:last-child .stButton > button,
     button[key="ac_theme_toggle"] {{
-        background: {t["theme_btn_bg"]} !important;
-        color: {t["theme_btn_text"]} !important;
-        border: 2px solid {t["theme_btn_border"]} !important;
-        border-radius: 50px !important;
-        font-size: 0.95rem !important;
-        font-weight: 700 !important;
-        padding: 9px 24px !important;
+        width: 58px !important;
+        height: 58px !important;
+        min-width: 58px !important;
+        max-width: 58px !important;
+        border-radius: 50% !important;
+        background-color: {t["surface"]} !important;
+        background-image: url('{theme_icon_uri}') !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        background-size: 38px 38px !important;
+        border: 2px solid {t["border"]} !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
         cursor: pointer !important;
-        letter-spacing: 0.02em !important;
-        transition: all 0.2s ease !important;
+        padding: 0 !important;
+        margin: 0 0 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
     }}
     div[data-testid="column"]:last-child .stButton > button:hover,
     button[key="ac_theme_toggle"]:hover {{
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 22px rgba(0,0,0,0.28) !important;
+        transform: scale(1.12) rotate(8deg) !important;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.28) !important;
+        border-color: {t["accent"]} !important;
     }}
 
     /* ── Sign In button override ──────────────────────────────────────── */
@@ -191,16 +214,23 @@ def _inject_css(t: dict):
     }}
 
     /* ── Typography ───────────────────────────────────────────────────── */
-    .ac-brand-name {{
-        font-size: clamp(2.6rem, 5.5vw, 4.5rem);
-        font-weight: 900;
-        letter-spacing: -0.025em;
-        line-height: 1.08;
-        background: linear-gradient(135deg, {t["accent"]} 0%, {t["gold"]} 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0;
+    .ac-brand-title {{
+        font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+        font-size: clamp(2.6rem, 5.8vw, 4.4rem);
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        line-height: 1.1;
+        margin: 0 auto 8px;
+        text-align: center;
+        display: inline-block;
+    }}
+    .ac-brand-ascend {{
+        color: {t["brand_ascend_color"]};
+        text-shadow: 0 2px 16px {t["brand_ascend_glow"]};
+    }}
+    .ac-brand-career {{
+        color: {t["brand_career_color"]};
+        text-shadow: 0 2px 16px {t["brand_career_glow"]};
     }}
     .ac-tagline-main {{
         font-size: clamp(1rem, 2.2vw, 1.35rem);
@@ -602,19 +632,10 @@ def _render_hero(t: dict):
                                 drop-shadow(0 2px 10px rgba(212,175,55,0.25));" />
         </div>
 
-        <!-- Brand name — stylish Cinzel/serif with indigo→purple→gold gradient -->
-        <div style="
-            font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-            font-size: clamp(2.6rem, 5.8vw, 4.4rem);
-            font-weight: 700;
-            letter-spacing: 0.07em;
-            line-height: 1.1;
-            background: linear-gradient(135deg, {t['accent']} 0%, #7C3AED 35%, {t['gold']} 70%, #F59E0B 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0;
-        ">AscendCareer</div>
+        <!-- Brand name — stylish Cinzel dual-tone (Ascend in indigo/lavender, Career in radiant gold) -->
+        <div class="ac-brand-title">
+            <span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span>
+        </div>
 
         <!-- Tagline 1: Ascend with Preparation -->
         <div style="
@@ -832,12 +853,11 @@ def render_landing() -> dict:
     # ── Animated background ──────────────────────────────────────────────────
     _animated_background(theme_key)
 
-    # ── Top Bar: Prominent Theme Switcher ────────────────────────────────────
-    top_col_spacer, top_col_theme = st.columns([65, 35])
+    # ── Top Bar: Prominent Theme Switcher (Sun/Moon Split Icon) ──────────────
+    top_col_spacer, top_col_theme = st.columns([86, 14])
     with top_col_theme:
-        st.markdown("<div style='padding-top:16px; padding-bottom:8px; text-align:right;'>", unsafe_allow_html=True)
-        theme_btn_label = "🌙 Switch to Dark Theme" if theme_key == "light" else "☀️ Switch to Light Theme"
-        if st.button(theme_btn_label, key="ac_theme_toggle", use_container_width=True):
+        st.markdown("<div style='padding-top:14px; padding-bottom:6px; display:flex; justify-content:flex-end;'>", unsafe_allow_html=True)
+        if st.button("", key="ac_theme_toggle", help="Toggle Light / Dark Theme"):
             st.session_state["ac_theme"] = other_key
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)

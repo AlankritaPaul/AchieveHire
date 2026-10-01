@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40">
+  <!-- Left Side: Sun in radiant sun color -->
+  <g fill="#F59E0B" stroke="#F59E0B">
+    <!-- Half Sun Circle -->
+    <path d="M 44 22 A 28 28 0 0 0 44 78 Z" stroke="none" />
+    <!-- 3 Sun Rays -->
+    <line x1="20" y1="26" x2="8" y2="15" stroke-width="7" stroke-linecap="round" />
+    <line x1="12" y1="50" x2="2" y2="50" stroke-width="7" stroke-linecap="round" />
+    <line x1="20" y1="74" x2="8" y2="85" stroke-width="7" stroke-linecap="round" />
+  </g>
+
+  <!-- Center vertical divider line -->
+  <line x1="50" y1="10" x2="50" y2="90" stroke="#64748B" stroke-width="6" stroke-linecap="round" />
+
+  <!-- Right Side: Crescent Moon in Navy Blue -->
+  <g fill="#1E3A8A">
+    <!-- Crescent Moon curving right -->
+    <path d="M 56 22 C 75 22 90 35 90 50 C 90 65 75 78 56 78 C 72 70 80 58 80 50 C 80 42 72 30 56 22 Z" />
+    <!-- Small star inside the navy blue moon area -->
+    <!-- 4-pointed star centered at (65, 50) -->
+    <path d="M 66 50 Q 69 50 69 47 Q 69 50 72 50 Q 69 50 69 53 Q 69 50 66 50 Z" fill="#FCD34D" stroke="none" />
+  </g>
+</svg>
