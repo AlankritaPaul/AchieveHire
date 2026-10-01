@@ -8,7 +8,6 @@ The Sign In button is an entry-point placeholder — sign-in logic
 is implemented separately in the next step.
 """
 
-import textwrap
 import streamlit as st
 import streamlit.components.v1 as components
 from modules.landing.content import (
@@ -16,6 +15,16 @@ from modules.landing.content import (
     PRIVACY_STATEMENT,
     PRIVACY_SECTIONS,
 )
+
+
+def clean_html(html_str: str) -> str:
+    """
+    Strips 100% of leading & trailing whitespace from every line.
+    This guarantees that Markdown parsers NEVER see 4 or more leading spaces,
+    preventing any HTML block from being rendered as a preformatted code block.
+    """
+    return "\n".join(line.strip() for line in html_str.splitlines() if line.strip())
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -81,7 +90,7 @@ THEMES = {
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _inject_css(t: dict):
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
