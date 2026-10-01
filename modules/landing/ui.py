@@ -220,9 +220,8 @@ def _inject_css(t: dict):
         display: none !important;
     }}
 
-    /* ── Pink Sign In Option (Vibrant & Visible in both themes — NEVER white) ─ */
+    /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
     div[data-testid="column"]:has(#ac-top-signin-marker) button,
-    div[data-testid="column"]:has(#ac-bottom-signin-marker) button,
     .ac-pink-signin-btn,
     button[data-testid="baseButton-primary"] {{
         background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
@@ -235,10 +234,6 @@ def _inject_css(t: dict):
         box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
         cursor: pointer !important;
         transition: all 0.22s ease !important;
-    }}
-    
-    /* Top bar specific button sizing */
-    div[data-testid="column"]:has(#ac-top-signin-marker) button {{
         padding: 9px 22px !important;
         font-size: 0.98rem !important;
         min-height: 48px !important;
@@ -249,17 +244,7 @@ def _inject_css(t: dict):
         margin-top: 6px !important;
     }}
 
-    /* Bottom CTA button sizing */
-    div[data-testid="column"]:has(#ac-bottom-signin-marker) button {{
-        padding: 14px 32px !important;
-        font-size: 1.08rem !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-
     div[data-testid="column"]:has(#ac-top-signin-marker) button:hover,
-    div[data-testid="column"]:has(#ac-bottom-signin-marker) button:hover,
     .ac-pink-signin-btn:hover,
     button[data-testid="baseButton-primary"]:hover {{
         background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
@@ -271,7 +256,6 @@ def _inject_css(t: dict):
     }}
 
     div[data-testid="column"]:has(#ac-top-signin-marker) button *,
-    div[data-testid="column"]:has(#ac-bottom-signin-marker) button *,
     .ac-pink-signin-btn *,
     button[data-testid="baseButton-primary"] * {{
         color: #FFFFFF !important;
@@ -789,37 +773,7 @@ def _render_hero(t: dict):
 
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Section: Sign In CTA
-# ─────────────────────────────────────────────────────────────────────────────
 
-def _render_signin_cta(t: dict) -> bool:
-    st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding:0 24px 20px;">
-        <hr class="ac-divider" style="max-width:300px; margin:0 auto 28px;" />
-        <p style="font-size:1.12rem; color:{t['text_muted']}; margin-bottom:18px; font-weight: 500;">
-            Your personalised career preparation journey starts here.
-        </p>
-    </div>
-    """), unsafe_allow_html=True)
-
-    col_l, col_m, col_r = st.columns([1.1, 1.3, 1.1])
-    with col_m:
-        st.markdown('<div id="ac-bottom-signin-marker"></div>', unsafe_allow_html=True)
-        clicked = st.button("👤  Sign In to AscendCareer",
-                            key="ac_signin_btn",
-                            type="primary",
-                            use_container_width=True)
-
-    st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding:8px 24px 0;">
-        <p style="font-size:0.95rem; color:{t['text_muted']}; margin-top:8px; font-weight: 500;">
-            By signing in, you agree to our Privacy &amp; Trust principles outlined below.
-        </p>
-    </div>
-    """), unsafe_allow_html=True)
-
-    return clicked
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -973,12 +927,11 @@ def render_landing() -> dict:
 
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
-    cta_signin_clicked = _render_signin_cta(t)
     _render_core_principle(t)
     _render_privacy_trust(t)
     _render_footer(t)
 
     return {
-        "proceed": top_signin_clicked or cta_signin_clicked,
+        "proceed": top_signin_clicked,
         "theme":   theme_key,
     }
