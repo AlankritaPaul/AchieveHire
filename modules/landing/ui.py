@@ -972,9 +972,9 @@ def _render_hero(t: dict):
         <p style="margin:24px auto 0; max-width:680px;
                   font-family:'DM Sans','Inter',system-ui,sans-serif;
                   font-size:1.22rem; color:{t['text_secondary']}; line-height:1.90; font-weight: 500;">
-            A comprehensive, AI-powered interview preparation and career-readiness platform —
-            realistic voice-to-voice interaction, multi-persona panels,
-            adaptive difficulty, and deep role &amp; company tailoring.
+            A comprehensive, AI-powered career-readiness platform — build, analyse, and refine
+            your resume with smart suggestions, and prepare for interviews with realistic
+            voice-to-voice practice, multi-persona panels, and adaptive difficulty.
         </p>
 
         <!-- Feature pills -->
