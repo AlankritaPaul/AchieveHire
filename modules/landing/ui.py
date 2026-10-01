@@ -141,7 +141,7 @@ def _inject_css(t: dict):
     st.markdown(
         '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">',
+        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
         unsafe_allow_html=True,
     )
     st.markdown(clean_html(f"""
@@ -390,7 +390,8 @@ def _inject_css(t: dict):
         font-weight: 500;
     }}
     .ac-section-title {{
-        font-size: 1.35rem;
+        font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif !important;
+        font-size: 1.55rem;
         font-weight: 800;
         color: {t["text_primary"]};
         letter-spacing: -0.01em;
@@ -524,8 +525,9 @@ def _inject_css(t: dict):
         border-left: 5px solid {t["accent"]};
         border-radius: 12px;
         padding: 24px 28px;
-        font-size: 1.08rem;
-        line-height: 1.85;
+        font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-size: 1.15rem;
+        line-height: 1.90;
         color: {t["text_secondary"]};
         box-shadow: {t["card_shadow"]};
     }}
@@ -597,7 +599,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-readiness {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.88rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: {metal_secondary} !important;
         line-height: 1.45;
@@ -611,14 +613,14 @@ def _inject_css(t: dict):
     }}
     .ac-footer-copy {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.82rem;
+        font-size: 0.88rem;
         font-weight: 600;
         color: {metal_secondary} !important;
         line-height: 1.4;
     }}
     .ac-footer-rights {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.74rem;
+        font-size: 0.80rem;
         font-weight: 400;
         color: {metal_muted} !important;
         line-height: 1.35;
@@ -633,7 +635,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-brand {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 1.20rem;
+        font-size: 1.30rem;
         font-weight: 800;
         color: {metal_primary} !important;
         letter-spacing: 0.02em;
@@ -641,7 +643,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-tagline {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.80rem;
+        font-size: 0.86rem;
         font-weight: 400;
         color: {metal_muted} !important;
         line-height: 1.45;
@@ -656,7 +658,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-creator {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.86rem;
+        font-size: 0.92rem;
         font-weight: 500;
         color: {metal_secondary} !important;
         line-height: 1.45;
@@ -968,7 +970,8 @@ def _render_hero(t: dict):
 
         <!-- Description: Bottle Green in light, Off-Cream in dark, larger font size -->
         <p style="margin:24px auto 0; max-width:680px;
-                  font-size:1.15rem; color:{t['text_secondary']}; line-height:1.85; font-weight: 500;">
+                  font-family:'DM Sans','Inter',system-ui,sans-serif;
+                  font-size:1.22rem; color:{t['text_secondary']}; line-height:1.90; font-weight: 500;">
             A comprehensive, AI-powered interview preparation and career-readiness platform —
             realistic voice-to-voice interaction, multi-persona panels,
             adaptive difficulty, and deep role &amp; company tailoring.
@@ -1002,7 +1005,7 @@ def _render_core_principle(t: dict):
         <hr class="ac-divider" style="margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:20px;">
             <div class="ac-section-title">💡 Core Principle</div>
-            <p style="font-size:1.05rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
+            <p style="font-family:'DM Sans','Inter',system-ui,sans-serif; font-size:1.12rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
                 The philosophy behind everything AscendCareer does.
             </p>
         </div>
