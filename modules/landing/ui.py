@@ -172,34 +172,51 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Hide the raw unstyled button in the theme column completely ────────── */
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"],
-    div[data-testid="column"]:last-child div[data-testid="stButton"],
-    div:has(#ac-theme-toggle-box) + div[data-testid="stButton"],
-    div:has(#ac-theme-toggle-box) ~ div[data-testid="stButton"],
-    button[aria-label*="Theme"],
-    button[aria-label*="theme"],
-    button:not([data-testid="baseButton-primary"]):not(.ac-pink-signin-btn) {{
-        display: none !important;
-        opacity: 0 !important;
-        position: absolute !important;
-        pointer-events: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
+    /* ── Theme column relative layout ──────────────────────────────────────── */
+    div[data-testid="stColumn"]:last-child,
+    div[data-testid="column"]:last-child,
+    div[data-testid="stHorizontalBlock"] > div:last-child {{
+        position: relative !important;
     }}
 
-    /* ── Custom Theme Toggle Icon (Exact reference image, 100% transparent) ── */
-    #ac-custom-theme-btn {{
-        cursor: pointer !important;
-        transition: transform 0.22s ease !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+    /* ── Make theme toggle button overlay the icon directly ────────────────── */
+    div[data-testid="stColumn"]:last-child [data-testid="stButton"],
+    div[data-testid="column"]:last-child [data-testid="stButton"],
+    div[data-testid="stHorizontalBlock"] > div:last-child [data-testid="stButton"] {{
+        position: absolute !important;
+        top: 4px !important;
+        right: 0 !important;
+        width: 48px !important;
+        height: 48px !important;
+        z-index: 10 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
-    #ac-custom-theme-btn:hover {{
+
+    div[data-testid="stColumn"]:last-child button,
+    div[data-testid="column"]:last-child button,
+    div[data-testid="stHorizontalBlock"] > div:last-child button,
+    button:not([data-testid="baseButton-primary"]):not(.ac-pink-signin-btn) {{
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+        z-index: 10 !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }}
+
+    /* ── Hover animation on the theme icon ─────────────────────────────────── */
+    div[data-testid="stColumn"]:last-child:hover #ac-theme-icon-layer,
+    div[data-testid="column"]:last-child:hover #ac-theme-icon-layer,
+    div[data-testid="stHorizontalBlock"] > div:last-child:hover #ac-theme-icon-layer {{
         transform: scale(1.18) rotate(8deg) !important;
     }}
 
@@ -639,31 +656,7 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
         f"""
         <script>
         (function run() {{
-            // Wire the custom theme icon to trigger the hidden theme toggle button
-            function wireThemeToggle() {{
-                try {{
-                    const doc = window.parent.document;
-                    if (!doc) return;
-                    const customBtn = doc.getElementById('ac-custom-theme-btn');
-                    if (customBtn && !customBtn.dataset.wired) {{
-                        customBtn.dataset.wired = "true";
-                        customBtn.addEventListener('click', function(e) {{
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const btns = doc.querySelectorAll('button');
-                            for (const b of btns) {{
-                                const txt = (b.innerText || '').trim();
-                                if (!txt.includes('Sign In')) {{
-                                    b.click();
-                                    break;
-                                }}
-                            }}
-                        }});
-                    }}
-                }} catch(e) {{}}
-            }}
-            wireThemeToggle();
-            setInterval(wireThemeToggle, 100);
+
 
             // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
@@ -896,9 +889,9 @@ def render_landing() -> dict:
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
         st.markdown(clean_html(f"""
-        <div id="ac-theme-toggle-box" style="display:flex; justify-content:flex-end; align-items:center; padding-top:6px;">
-            <div id="ac-custom-theme-btn" style="width:48px; height:48px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:transform 0.22s ease;" title="Toggle Light / Dark Theme">
-                <img src="{theme_icon_uri}" alt="Toggle Theme" style="width:46px; height:46px; display:block; pointer-events:none; user-select:none;" />
+        <div style="position:relative; width:48px; height:48px; margin: 4px 0 0 auto;">
+            <div id="ac-theme-icon-layer" style="position:absolute; top:0; left:0; width:48px; height:48px; pointer-events:none; z-index:1; display:flex; align-items:center; justify-content:center; transition:transform 0.22s ease;">
+                <img src="{theme_icon_uri}" alt="Toggle Theme" style="width:44px; height:44px; display:block; pointer-events:none; user-select:none;" />
             </div>
         </div>
         """), unsafe_allow_html=True)
