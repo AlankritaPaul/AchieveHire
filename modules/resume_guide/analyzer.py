@@ -201,7 +201,7 @@ class ResumeAnalyzer:
         if not projects_text.strip():
             return {
                 "has_projects": False,
-                "score": 40,
+                "score": 0,
                 "skills_in_projects": [],
                 "has_metrics": False,
                 "has_links": False,
@@ -215,14 +215,19 @@ class ResumeAnalyzer:
         has_metrics = bool(re.search(r"\b\d+([%kKmM\+]|\s*(users|requests|ms|seconds|fps|stars|downloads|efficiency))\b", projects_text))
         has_github_or_demo = bool(re.search(r"(github\.com|gitlab\.com|demo|deployed|live|link|http)", text_lower))
 
-        score = 60
+        score = 50
         if skills_in_projects:
-            score += min(25, len(skills_in_projects) * 5)
+            score += min(30, len(skills_in_projects) * 6)
         if has_metrics:
             score += 10
         if has_github_or_demo:
-            score += 5
-        score = min(100, score)
+            score += 10
+
+        proj_weak = [wv for wv in WEAK_VERBS_MAP.keys() if re.search(r"\b" + re.escape(wv) + r"\b", text_lower)]
+        if proj_weak:
+            score -= min(15, len(proj_weak) * 5)
+
+        score = max(20, min(100, score))
 
         summary = f"Projects demonstrate application of {len(skills_in_projects)} relevant technologies."
         if has_metrics:
@@ -243,11 +248,11 @@ class ResumeAnalyzer:
         if not exp_text.strip():
             return {
                 "has_experience": False,
-                "score": 50,
+                "score": 0,
                 "weak_verb_count": 0,
                 "found_weak_verbs": [],
                 "has_metrics": False,
-                "summary": "No professional experience section found. (If applying as entry-level/fresher, highlight project outcomes and internships)."
+                "summary": "No professional experience section was identified in the resume."
             }
 
         text_lower = exp_text.lower()
@@ -266,7 +271,7 @@ class ResumeAnalyzer:
             score += 15
         else:
             score -= min(20, len(found_weak_verbs) * 5)
-        score = max(30, min(100, score))
+        score = max(20, min(100, score))
 
         summary = "Experience highlights professional contributions."
         if found_weak_verbs:

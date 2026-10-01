@@ -184,6 +184,18 @@ def render_resume_analysis_flow():
                     st.error("Could not extract readable text from document. Please ensure it is not password protected.")
                     return
 
+                # CLEAN SLATE: Purge previous inputs, decisions, and cached improvements
+                # to guarantee absolute isolation between different resumes, users, or review cycles.
+                stale_keys = [
+                    "ui_p_name", "ui_p_desc", "ui_p_tools", "ui_p_outcome",
+                    "ui_e_comp", "ui_e_role", "ui_e_dates", "ui_e_bullets",
+                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_s_text",
+                    "missing_proj_choice", "missing_exp_choice", "missing_skills_choice", "missing_edu_choice", "missing_sum_choice",
+                    "final_resume_text", "final_resume_generated", "improvements_list", "user_decisions", "show_improvements", "show_suggestions"
+                ]
+                for k in stale_keys:
+                    st.session_state.pop(k, None)
+
                 sections = parse_resume_sections(raw_text)
                 analyzer = ResumeAnalyzer(
                     job_role=st.session_state.selected_job_role,
@@ -254,10 +266,16 @@ def render_resume_analysis_flow():
         st.markdown("#### Relevance Assessment")
         col_r1, col_r2 = st.columns(2)
         with col_r1:
-            st.markdown(f"**Project Relevance:** ({res['project_relevance']['score']}/100)")
+            if res["project_relevance"]["has_projects"]:
+                st.markdown(f"**Project Relevance:** ({res['project_relevance']['score']}/100)")
+            else:
+                st.markdown("**Project Relevance:** 0/100 *(Section Not Present)*")
             st.write(res["project_relevance"]["summary"])
         with col_r2:
-            st.markdown(f"**Experience Relevance:** ({res['experience_relevance']['score']}/100)")
+            if res["experience_relevance"]["has_experience"]:
+                st.markdown(f"**Experience Relevance:** ({res['experience_relevance']['score']}/100)")
+            else:
+                st.markdown("**Experience Relevance:** 0/100 *(Section Not Present)*")
             st.write(res["experience_relevance"]["summary"])
 
         # Step 2: What is Already Well-Structured & Correct
@@ -546,6 +564,20 @@ def render_resume_analysis_flow():
                 st.rerun()
         with col_next:
             if st.button("Start Over", key="btn_nav_next_step5", use_container_width=True):
+                # Clean slate for next user/session: purge all analysis, inputs, and selections
+                keys_to_purge = [
+                    "analysis_result", "raw_resume_text", "parsed_sections", "show_suggestions",
+                    "show_improvements", "improvements_list", "user_decisions", "final_resume_generated",
+                    "final_resume_text", "selected_job_role", "selected_company", "selected_jd",
+                    "analysis_role_mode", "analysis_comp_mode", "analysis_role_custom", "analysis_comp_custom",
+                    "analysis_role_select", "analysis_comp_select", "analysis_jd_textarea", "analysis_uploader_page",
+                    "missing_proj_choice", "missing_exp_choice", "missing_skills_choice", "missing_edu_choice", "missing_sum_choice",
+                    "ui_p_name", "ui_p_desc", "ui_p_tools", "ui_p_outcome",
+                    "ui_e_comp", "ui_e_role", "ui_e_dates", "ui_e_bullets",
+                    "ui_s_tech", "ui_s_non_tech", "ui_ed_deg", "ui_ed_inst", "ui_ed_year", "ui_s_text"
+                ]
+                for k in keys_to_purge:
+                    st.session_state.pop(k, None)
                 st.session_state.analysis_step = 1
                 st.session_state.analysis_complete = False
                 st.rerun()

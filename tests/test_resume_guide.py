@@ -291,6 +291,27 @@ class TestResumeGuide(unittest.TestCase):
         self.assertNotIn("PROFESSIONAL SUMMARY", final_text)
         self.assertIn("IIT Delhi", final_text)
 
+    def test_missing_project_and_experience_gives_zero_score(self):
+        """Test that when projects or experience are absent, the score is strictly 0 (never arbitrary 40 or 50)."""
+        resume_no_projects = (
+            "Jane Doe\n"
+            "Software Developer | jane@email.com\n\n"
+            "EDUCATION\n"
+            "B.S. in Computer Science | 2024\n\n"
+            "TECHNICAL SKILLS\n"
+            "Python, SQL, Git\n"
+        )
+        sections = parse_resume_sections(resume_no_projects)
+        analyzer = ResumeAnalyzer(job_role="Software Developer", company="Google")
+        res = analyzer.analyze(resume_no_projects, sections)
+
+        # Strictly 0, never arbitrary 40 or 50
+        self.assertFalse(res["project_relevance"]["has_projects"])
+        self.assertEqual(res["project_relevance"]["score"], 0)
+
+        self.assertFalse(res["experience_relevance"]["has_experience"])
+        self.assertEqual(res["experience_relevance"]["score"], 0)
+
     def test_exporter_pdf_and_docx(self):
         """Test export utilities output valid PDF and DOCX binary payloads."""
         pdf_bytes = export_resume_to_pdf(self.well_aligned_text, "Elena Rostova Resume")
