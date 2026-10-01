@@ -85,6 +85,11 @@ def main():
         from modules.legal.terms_ui import render_terms_page
         render_terms_page()
 
+    # ── Application Settings Page ────────────────────────────────────────────
+    elif screen == "settings":
+        from modules.settings.ui import render_settings_page
+        render_settings_page()
+
     # ── Main Application (legacy fallback) ───────────────────────────────────
     elif screen == "app":
         _render_main_app()

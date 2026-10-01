@@ -10,6 +10,7 @@ from modules.auth.user_service import (
     set_active_user,
     get_current_user,
     sign_out,
+    delete_user_account,
 )
 from modules.auth.signin_ui import render_signin_flow
 
@@ -22,5 +23,6 @@ __all__ = [
     "set_active_user",
     "get_current_user",
     "sign_out",
+    "delete_user_account",
     "render_signin_flow",
 ]

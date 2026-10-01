@@ -130,6 +130,30 @@ class TestNavigationStructure(unittest.TestCase):
         self.assertIn("ALANKRITA PAL", src)
         self.assertIn("💛", src)
 
+    def test_settings_page_and_options(self):
+        from modules.settings.ui import render_settings_page
+        from modules.auth.user_service import register_user, delete_user_account, get_user_by_id
+        import inspect
+
+        self.assertTrue(callable(render_settings_page))
+
+        # Check source of render_settings_page contains all 3 requested options with logos
+        src = inspect.getsource(render_settings_page)
+        self.assertIn("Notification Preferences", src)
+        self.assertIn("🔔", src)
+        self.assertIn("Add AscendCareer to Desktop", src)
+        self.assertIn("🖥️", src)
+        self.assertIn("Delete Account", src)
+        self.assertIn("🗑️", src)
+
+        # Test account deletion logic
+        test_user = register_user("Delete Target User", "Both")
+        uid = test_user["user_id"]
+        self.assertIsNotNone(get_user_by_id(uid))
+
+        delete_user_account(uid)
+        self.assertIsNone(get_user_by_id(uid))
+
 
 if __name__ == "__main__":
     unittest.main()

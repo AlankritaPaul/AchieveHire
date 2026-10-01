@@ -164,3 +164,13 @@ def sign_out() -> None:
     st.session_state["is_signed_in"] = False
     st.session_state["user_profile_pic"] = None
     st.session_state["ac_screen"] = "landing"
+
+
+def delete_user_account(user_id: str) -> bool:
+    """Permanently deletes the user record from the persistent registry and resets session."""
+    users = _ensure_data_store()
+    if user_id in users:
+        del users[user_id]
+        _save_all_users(users)
+    sign_out()
+    return True

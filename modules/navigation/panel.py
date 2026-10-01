@@ -316,12 +316,13 @@ def render_navigation_drawer(t: dict):
         padding-left: 28px !important;
     }}
 
-    /* Profile, FAQ, Privacy, Terms, Home items */
+    /* Profile, FAQ, Privacy, Terms, Home, Settings items */
     .st-key-nav_btn_profile button,
     .st-key-nav_btn_faq button,
     .st-key-nav_btn_privacy button,
     .st-key-nav_btn_terms button,
-    .st-key-nav_btn_home button {{
+    .st-key-nav_btn_home button,
+    .st-key-nav_btn_settings button {{
         background: transparent !important;
         border: 1px solid {t["border"]} !important;
         color: {t["text_primary"]} !important;
@@ -478,9 +479,15 @@ def render_navigation_drawer(t: dict):
             st.session_state["nav_open"] = False
             st.rerun()
 
-        # ── 6. Home / Landing Screen ──
+        # ── 7. Home / Landing Screen ──
         st.markdown("<hr style='border:none; border-top:1px solid " + t["border"] + "; margin:16px 0 12px;'>", unsafe_allow_html=True)
         if st.button("🏠  AscendCareer Home", key="nav_btn_home", use_container_width=True):
             st.session_state["ac_screen"] = "landing"
+            st.session_state["nav_open"] = False
+            st.rerun()
+
+        # ── 8. Platform Settings (at the very end) ──
+        if st.button("⚙️  Settings", key="nav_btn_settings", use_container_width=True):
+            st.session_state["ac_screen"] = "settings"
             st.session_state["nav_open"] = False
             st.rerun()
