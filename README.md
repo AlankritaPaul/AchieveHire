@@ -6,6 +6,8 @@
 
   <p align="center">
     <img src="assets/tagline.png" alt="Better Preparation. Stronger Presentation." height="68" />
+    <br/>
+    <img src="assets/subtagline.png" alt="Prepare for the opportunity you've been waiting for" height="42" />
     <br/><br/>
     <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>
@@ -28,10 +30,10 @@
 
 <img src="assets/logo.png" align="right" width="150" alt="AscendCareer Logo" />
 
-**AscendCareer** is an intelligent, end-to-end career acceleration platform designed to empower job seekers at every stage of the hiring pipeline. It bridges the gap between raw candidate qualifications and competitive industry hiring standards through a two-pillar system:
+**AscendCareer** is an intelligent, end-to-end career acceleration platform designed to empower job seekers at every stage of the hiring pipeline. It bridges the gap between raw candidate qualifications and competitive industry hiring standards through an integrated preparation ecosystem:
 
-1. **Intelligent Resume Suite**: Comprehensive AI-driven resume analysis, ATS optimization, and an accuracy-first resume builder with 10 professional, industry-tailored templates.
-2. **Realistic Voice-to-Voice Interview Simulation**: Multi-persona interview panels, adaptive difficulty ladders, and deep role/company tailoring replicating the real-world pressure of live hiring rounds.
+- **Intelligent Resume Suite**: Comprehensive AI-driven resume analysis, ATS optimization, and an accuracy-first resume builder equipped with a curated collection of industry-tailored, ATS-friendly templates.
+- **Realistic Voice-to-Voice Interview Simulation**: Multi-persona interview panels, adaptive difficulty ladders, and deep role/company tailoring replicating the real-world pressure of live hiring rounds.
 
 The platform follows a continuous **Audit → Optimize → Train → Re-practice → Verification → Placement Readiness** cycle to ensure candidates achieve measurable career growth.
 
@@ -60,7 +62,7 @@ A structured, professional resume creation suite calibrated for high-impact pres
   - **Work Experience & Projects**: Guided entry with real-time weak verb warnings and instant strong action verb recommendations.
   - **Professional Formal Finishing**: Includes formal declaration of accuracy, place and date stamps, flexible photo display (uploaded portrait, photo placeholder box, or none), and signature options (typed cursive, uploaded signature image, or blank line for physical signing).
   - **Dynamic Custom Sections**: Easily add custom categories for certifications, publications, honors & awards, volunteer leadership, and languages.
-- **10 Industry-Calibrated, ATS-Friendly Templates**:
+- **Curated, ATS-Friendly Professional Templates**:
   - **Classic**: Timeless, elegant serif layout ideal for corporate, finance, legal, and academic roles.
   - **Modern**: Sleek two-tone header bar with crisp typography, tailored for tech companies and startups.
   - **Minimal**: Clean, whitespace-optimized design maximizing reading efficiency and scanability.
@@ -125,7 +127,7 @@ A structured, professional resume creation suite calibrated for high-impact pres
 - **Current Implementation**:
   - **Frontend & App Framework**: Streamlit
   - **Document & PDF Processing**: ReportLab, PyPDF2 / pdfplumber, Pillow, NumPy
-  - **Modular Architecture**: Rule-based & heuristic resume analysis, 10 ATS-friendly layout engines, structured weak-verb database
+  - **Modular Architecture**: Rule-based & heuristic resume analysis, versatile ATS-friendly layout engines, structured weak-verb database
 - **Proposed Scaled Production Stack**:
   - **Frontend**: Next.js / React, Tailwind CSS, Web Audio API / WebRTC
   - **Backend / Services**: FastAPI / Python, Node.js
