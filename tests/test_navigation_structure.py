@@ -62,5 +62,39 @@ class TestNavigationStructure(unittest.TestCase):
         self.assertTrue(any("Competency" in t for t in round_titles))
 
 
+    def test_faq_items_and_ordering(self):
+        from modules.legal.faq_ui import FAQ_ITEMS, render_faq_page
+        from modules.legal import render_faq_page, render_privacy_page, render_terms_page
+        from modules.landing.content import PRIVACY_SECTIONS
+
+        # 1. Check all 8 FAQ items are present
+        self.assertEqual(len(FAQ_ITEMS), 8)
+        self.assertEqual(FAQ_ITEMS[0]["q"], "How does AscendCareer work?")
+        self.assertEqual(FAQ_ITEMS[1]["q"], "How do I create a resume?")
+        self.assertEqual(FAQ_ITEMS[2]["q"], "Can I edit my resume after creating it?")
+        self.assertEqual(FAQ_ITEMS[3]["q"], "How does Resume Analysis work?")
+        self.assertEqual(FAQ_ITEMS[4]["q"], "Can I delete my account?")
+        self.assertEqual(FAQ_ITEMS[5]["q"], "What happens to my resume and profile after account deletion?")
+        self.assertEqual(FAQ_ITEMS[6]["q"], "Is AscendCareer free?")
+        self.assertEqual(FAQ_ITEMS[7]["q"], "How does Interview Practice work?")
+
+        # 2. Terms & Conditions does NOT contain Account Deletion
+        terms_sections = [s for s in PRIVACY_SECTIONS if "Terms" in s["title"]]
+        self.assertEqual(len(terms_sections), 1)
+        terms_qa_titles = [qa["q"] for qa in terms_sections[0]["qa"]]
+        self.assertFalse(any("delete" in q.lower() for q in terms_qa_titles))
+
+        # 3. Privacy includes Account Deletion
+        privacy_sections = [s for s in PRIVACY_SECTIONS if "Terms" not in s["title"]]
+        section_titles = [s["title"] for s in privacy_sections]
+        self.assertIn("Account Deletion", section_titles)
+        self.assertIn("Privacy Policy", section_titles)
+
+        # 4. Render functions are callable
+        self.assertTrue(callable(render_faq_page))
+        self.assertTrue(callable(render_privacy_page))
+        self.assertTrue(callable(render_terms_page))
+
+
 if __name__ == "__main__":
     unittest.main()

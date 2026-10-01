@@ -65,6 +65,11 @@ def main():
         from modules.profile.ui import render_user_profile
         render_user_profile()
 
+    # ── FAQ Page ─────────────────────────────────────────────────────────────
+    elif screen == "faq":
+        from modules.legal.faq_ui import render_faq_page
+        render_faq_page()
+
     # ── Privacy Policy Section ────────────────────────────────────────────────
     elif screen == "privacy":
         from modules.legal.privacy_ui import render_privacy_page

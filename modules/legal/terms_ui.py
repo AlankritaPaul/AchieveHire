@@ -44,8 +44,8 @@ def render_terms_page():
     </div>
     """), unsafe_allow_html=True)
 
-    # Find the Terms section from PRIVACY_SECTIONS
-    terms_sections = [s for s in PRIVACY_SECTIONS if "Terms" in s["title"] or "Account Deletion" in s["title"]]
+    # Find the Terms section from PRIVACY_SECTIONS (Account Deletion is kept strictly under Privacy)
+    terms_sections = [s for s in PRIVACY_SECTIONS if "Terms" in s["title"]]
 
     for section in terms_sections:
         st.markdown(clean_html(f"""

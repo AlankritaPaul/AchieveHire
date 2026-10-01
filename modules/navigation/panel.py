@@ -306,8 +306,9 @@ def render_navigation_drawer(t: dict):
         padding-left: 28px !important;
     }}
 
-    /* Profile, Privacy, Terms, Home items */
+    /* Profile, FAQ, Privacy, Terms, Home items */
     .st-key-nav_btn_profile button,
+    .st-key-nav_btn_faq button,
     .st-key-nav_btn_privacy button,
     .st-key-nav_btn_terms button,
     .st-key-nav_btn_home button {{
@@ -436,13 +437,19 @@ def render_navigation_drawer(t: dict):
 
         st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px;">Platform Policies</div>', unsafe_allow_html=True)
 
-        # ── 4. Privacy ──
+        # ── 4. FAQ ──
+        if st.button("❓  FAQ", key="nav_btn_faq", use_container_width=True):
+            st.session_state["ac_screen"] = "faq"
+            st.session_state["nav_open"] = False
+            st.rerun()
+
+        # ── 5. Privacy Policy ──
         if st.button("🔒  Privacy Policy", key="nav_btn_privacy", use_container_width=True):
             st.session_state["ac_screen"] = "privacy"
             st.session_state["nav_open"] = False
             st.rerun()
 
-        # ── 5. Terms and Conditions ──
+        # ── 6. Terms and Conditions ──
         if st.button("📜  Terms & Conditions", key="nav_btn_terms", use_container_width=True):
             st.session_state["ac_screen"] = "terms"
             st.session_state["nav_open"] = False
