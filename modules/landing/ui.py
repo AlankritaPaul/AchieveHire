@@ -152,7 +152,7 @@ def _inject_css(t: dict):
     }}
 
     /* Hide default Streamlit chrome on landing */
-    #MainMenu, footer, [data-testid="stToolbar"],
+    #MainMenu, [data-testid="stFooter"], [data-testid="stToolbar"],
     [data-testid="stSidebarNav"], header {{
         display: none !important;
     }}
@@ -997,7 +997,7 @@ def _render_core_principle(t: dict):
 
 def _render_footer(t: dict):
     st.markdown(clean_html(f"""
-    <footer class="ac-content ac-footer-container">
+    <div class="ac-content ac-footer-container" role="contentinfo">
         <div class="ac-footer-inner">
             <!-- 1 & 2. Left Group: Career Readiness Line & Copyright -->
             <div class="ac-footer-col ac-footer-left">
@@ -1019,7 +1019,7 @@ def _render_footer(t: dict):
                 <div class="ac-footer-creator">The brainchild of <span class="ac-footer-creator-name">ALANKRITA PAL</span> 💛</div>
             </div>
         </div>
-    </footer>
+    </div>
     """), unsafe_allow_html=True)
 
 
