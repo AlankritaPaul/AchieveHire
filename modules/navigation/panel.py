@@ -425,25 +425,38 @@ def render_navigation_drawer(t: dict):
                 st.session_state["nav_open"] = False
                 st.rerun()
 
-        st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px;">Candidate Account</div>', unsafe_allow_html=True)
+        user_id = st.session_state.get("user_id")
+        user_purpose = st.session_state.get("user_purpose")
 
         # ── 3. User Profile Area ──
         st.markdown(f"""
         <div class="ac-nav-profile-card">
             <img src="{avatar_uri}" alt="{username}" class="ac-nav-avatar" />
-            <div style="overflow:hidden;">
+            <div style="overflow:hidden; flex:1;">
                 <div style="font-weight:700; font-size:0.95rem; color:{t['text_primary']}; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
                     {username}
                 </div>
-                <div style="font-size:0.75rem; color:{t['text_muted']};">Profile & Settings</div>
+                <div style="font-size:0.75rem; font-family:'Consolas', monospace; font-weight:600; color:{t['accent']}; margin-top:2px;">
+                    {f"ID: {user_id}" if user_id else "Guest · No ID Set"}
+                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("👤  View Complete Profile", key="nav_btn_profile", use_container_width=True):
-            st.session_state["ac_screen"] = "profile"
-            st.session_state["nav_open"] = False
-            st.rerun()
+        if user_id:
+            if st.button("👤  View Complete Profile", key="nav_btn_profile", use_container_width=True):
+                st.session_state["ac_screen"] = "profile"
+                st.session_state["nav_open"] = False
+                st.rerun()
+            if st.button("🔄  Switch / New User ID", key="nav_btn_switch_user", use_container_width=True):
+                st.session_state["ac_screen"] = "signin"
+                st.session_state["nav_open"] = False
+                st.rerun()
+        else:
+            if st.button("✨  Generate Unique User ID", key="nav_btn_generate_id_drawer", use_container_width=True):
+                st.session_state["ac_screen"] = "signin"
+                st.session_state["nav_open"] = False
+                st.rerun()
 
         st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px;">Platform Policies</div>', unsafe_allow_html=True)
 

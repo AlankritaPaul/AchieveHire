@@ -26,9 +26,14 @@ def main():
     if screen == "landing":
         result = render_landing()
         if result["proceed"]:
-            # Sign In clicked → maintain screen (user specified: what will come after clicking sign in option I will tell you later)
-            st.session_state["ac_screen"] = "landing"
+            # Sign In clicked → route to Candidate Setup & User ID Generation flow
+            st.session_state["ac_screen"] = "signin"
             st.rerun()
+
+    # ── Candidate Sign In & User ID Generation Flow ───────────────────────────
+    elif screen == "signin":
+        from modules.auth.signin_ui import render_signin_flow
+        render_signin_flow()
 
     # ── Resume Create Flow ────────────────────────────────────────────────────
     elif screen == "resume_create":
