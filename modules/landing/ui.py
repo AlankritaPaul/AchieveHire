@@ -195,22 +195,18 @@ def _inject_css(t: dict):
     }}
 
     /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
-    .st-key-ac_top_signin_btn,
-    div:has(#ac-top-signin-marker) {{
+    .st-key-ac_top_signin_btn {{
         display: flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
         width: 100% !important;
     }}
 
-    .st-key-ac_top_signin_btn div[data-testid="stButton"],
-    div:has(#ac-top-signin-marker) div[data-testid="stButton"] {{
+    .st-key-ac_top_signin_btn div[data-testid="stButton"] {{
         width: 100% !important;
     }}
 
-    .st-key-ac_top_signin_btn button,
-    div:has(#ac-top-signin-marker) button,
-    button[data-testid="baseButton-primary"] {{
+    .st-key-ac_top_signin_btn button {{
         background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
         background-color: #DB2777 !important;
         color: #FFFFFF !important;
@@ -221,22 +217,18 @@ def _inject_css(t: dict):
         box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
         cursor: pointer !important;
         transition: all 0.22s ease !important;
-        padding: 10px 24px !important;
+        padding: 8px 22px !important;
         font-size: 0.98rem !important;
         min-height: 44px !important;
         height: 44px !important;
         width: 100% !important;
-        min-width: 130px !important;
-        max-width: 180px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        margin: 0 0 0 auto !important;
+        margin: 0 !important;
     }}
 
-    .st-key-ac_top_signin_btn button:hover,
-    div:has(#ac-top-signin-marker) button:hover,
-    button[data-testid="baseButton-primary"]:hover {{
+    .st-key-ac_top_signin_btn button:hover {{
         background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
         background-color: #E11D48 !important;
         color: #FFFFFF !important;
@@ -245,9 +237,7 @@ def _inject_css(t: dict):
         border-color: #FDA4AF !important;
     }}
 
-    .st-key-ac_top_signin_btn button *,
-    div:has(#ac-top-signin-marker) button *,
-    button[data-testid="baseButton-primary"] * {{
+    .st-key-ac_top_signin_btn button * {{
         color: #FFFFFF !important;
         font-weight: 700 !important;
         font-size: 0.98rem !important;
@@ -257,16 +247,14 @@ def _inject_css(t: dict):
     }}
 
     /* ── Instant Theme Toggle Button (Exact reference icon, 100% transparent) ── */
-    .st-key-ac_theme_toggle_btn,
-    div:has(#ac-theme-toggle-anchor) {{
+    .st-key-ac_theme_toggle_btn {{
         display: flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
         width: auto !important;
     }}
 
-    .st-key-ac_theme_toggle_btn div[data-testid="stButton"],
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] {{
+    .st-key-ac_theme_toggle_btn div[data-testid="stButton"] {{
         display: inline-flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
@@ -276,8 +264,7 @@ def _inject_css(t: dict):
         height: 48px !important;
     }}
 
-    .st-key-ac_theme_toggle_btn button,
-    div:has(#ac-theme-toggle-anchor) button {{
+    .st-key-ac_theme_toggle_btn button {{
         width: 48px !important;
         height: 48px !important;
         min-width: 48px !important;
@@ -301,8 +288,7 @@ def _inject_css(t: dict):
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }}
 
-    .st-key-ac_theme_toggle_btn button:hover,
-    div:has(#ac-theme-toggle-anchor) button:hover {{
+    .st-key-ac_theme_toggle_btn button:hover {{
         transform: scale(1.15) !important;
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
@@ -311,9 +297,7 @@ def _inject_css(t: dict):
     }}
 
     .st-key-ac_theme_toggle_btn button:focus,
-    .st-key-ac_theme_toggle_btn button:active,
-    div:has(#ac-theme-toggle-anchor) button:focus,
-    div:has(#ac-theme-toggle-anchor) button:active {{
+    .st-key-ac_theme_toggle_btn button:active {{
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
         border: none !important;
@@ -322,8 +306,7 @@ def _inject_css(t: dict):
     }}
 
     /* Completely hide any inner text / icon inside ONLY the theme toggle button */
-    .st-key-ac_theme_toggle_btn button *,
-    div:has(#ac-theme-toggle-anchor) button * {{
+    .st-key-ac_theme_toggle_btn button * {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -946,12 +929,10 @@ def render_landing() -> dict:
     _animated_background(theme_key, theme_icon_uri)
 
     # ── Top Bar: Sign In (Top Right-Hand Side) & Split Sun/Moon Theme Switcher ──
-    top_col_spacer, top_col_signin, top_col_theme = st.columns([66, 23, 11])
+    top_col_spacer, top_col_signin, top_col_theme = st.columns([72, 19, 9])
     with top_col_signin:
-        st.markdown('<div id="ac-top-signin-marker"></div>', unsafe_allow_html=True)
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
-        st.markdown('<div id="ac-theme-toggle-anchor"></div>', unsafe_allow_html=True)
         if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
             st.session_state["ac_theme"] = other_key
             st.query_params["theme"] = other_key
