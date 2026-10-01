@@ -61,7 +61,7 @@ def render_specialized_interview():
     t = THEMES[theme_key]
 
     render_navigation_drawer(t)
-    render_top_nav_bar(t, title="Interview › Specialized Interview", show_signin=True)
+    render_top_nav_bar(t, title="Interview › Specialized Interview")
 
     st.markdown(clean_html(f"""
     <div style="max-width:1080px; margin: 24px auto; padding: 0 16px;">

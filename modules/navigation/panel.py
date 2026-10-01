@@ -26,16 +26,15 @@ def _get_avatar_uri() -> str:
     return f"data:image/svg+xml;base64,{encoded}"
 
 
-def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = True):
+def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show_theme: bool = False):
     """
-    Renders top navigation header row across all screens:
+    Renders top navigation header row across pages:
     - Left: Hamburger Menu Icon (3 horizontal lines)
-    - Center: Optional Screen Title / Breadcrumb
-    - Right: Pink Sign In button + Sun/Moon Theme Toggle icon
+    - Center/Right: Screen Title / Breadcrumb
+    - Optional (Home page only): Sign In button + Sun/Moon Theme Toggle icon
     """
     theme_key = st.session_state.get("ac_theme", "light")
     other_key = "dark" if theme_key == "light" else "light"
-    theme_icon_uri = _get_theme_icon_data_uri()
 
     st.markdown(clean_html(f"""
     <style>
@@ -94,35 +93,46 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = True):
     </style>
     """), unsafe_allow_html=True)
 
-    col_h, col_title, col_signin, col_theme = st.columns([6, 66, 19, 9])
-
-    with col_h:
-        if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
-            st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
-            st.rerun()
-
-    with col_title:
-        if title:
-            st.markdown(f"""
-            <div style="display:flex; align-items:center; height:100%; padding-top:8px;">
-                <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
-                    <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-
-    with col_signin:
-        if show_signin:
+    if show_signin and show_theme:
+        col_h, col_title, col_signin, col_theme = st.columns([6, 66, 19, 9])
+        with col_h:
+            if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
+                st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
+                st.rerun()
+        with col_title:
+            if title:
+                st.markdown(f"""
+                <div style="display:flex; align-items:center; height:100%; padding-top:8px;">
+                    <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
+                        <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
+        with col_signin:
             top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
             if top_signin_clicked:
                 st.session_state["ac_screen"] = "app"
                 st.rerun()
-
-    with col_theme:
-        if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
-            st.session_state["ac_theme"] = other_key
-            st.query_params["theme"] = other_key
-            st.rerun()
+        with col_theme:
+            if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+                st.session_state["ac_theme"] = other_key
+                st.query_params["theme"] = other_key
+                st.rerun()
+    else:
+        col_h, col_title = st.columns([6, 94])
+        with col_h:
+            if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
+                st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
+                st.rerun()
+        with col_title:
+            if title:
+                st.markdown(f"""
+                <div style="display:flex; align-items:center; height:100%; padding-top:8px;">
+                    <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
+                        <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
 
 
 def render_navigation_drawer(t: dict):

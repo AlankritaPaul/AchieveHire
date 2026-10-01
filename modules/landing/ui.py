@@ -13,11 +13,7 @@ from pathlib import Path
 import textwrap
 import streamlit as st
 import streamlit.components.v1 as components
-from modules.landing.content import (
-    CORE_PRINCIPLE,
-    PRIVACY_STATEMENT,
-    PRIVACY_SECTIONS,
-)
+from modules.landing.content import CORE_PRINCIPLE
 
 
 _CACHED_LOGO_URI = ""
@@ -854,68 +850,6 @@ def _render_core_principle(t: dict):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Section: Privacy & Trust
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _build_qa_html(qa_list: list, t: dict) -> str:
-    """Build the HTML for a list of Q&A items using native <details>/<summary>."""
-    items_html = ""
-    for item in qa_list:
-        q = item["q"].replace("'", "&#39;").replace('"', "&quot;")
-        a = item["a"].replace("'", "&#39;").replace('"', "&quot;")
-        items_html += f"""
-        <details class="ac-qa-item">
-            <summary>
-                <span>{q}</span>
-                <span class="ac-qa-icon">+</span>
-            </summary>
-            <div class="ac-qa-answer">{a}</div>
-        </details>
-        """
-    return items_html
-
-
-def _render_privacy_trust(t: dict):
-    st.markdown(clean_html(f"""
-    <div class="ac-content" style="padding: 0 24px;">
-        <hr class="ac-divider" style="margin-top:32px; margin-bottom:32px;" />
-        <div style="text-align:center; margin-bottom:22px;">
-            <div class="ac-section-title">🔒 Privacy &amp; Trust</div>
-            <p style="font-size:1.05rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
-                How AscendCareer handles your information — honestly and clearly.
-            </p>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
-    # Wrap in a div for top-level expander styling
-    st.markdown('<div class="ac-content ac-privacy-top" style="padding: 0 24px;">', unsafe_allow_html=True)
-
-    with st.expander("🔒  Privacy & Trust — Click to read", expanded=False):
-        # Statement banner at top
-        st.markdown(clean_html(f"""
-        <div class="ac-privacy-statement">
-            💬 {PRIVACY_STATEMENT}
-        </div>
-        """), unsafe_allow_html=True)
-
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
-
-        # Each of the 7 sections as a nested expander
-        for section in PRIVACY_SECTIONS:
-            label = f"{section['number']}.  {section['title']}"
-            with st.expander(label, expanded=False):
-                qa_html = _build_qa_html(section["qa"], t)
-                st.markdown(clean_html(f"""
-                <div style="padding: 4px 0;">
-                    {qa_html}
-                </div>
-                """), unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Footer
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -993,7 +927,6 @@ def render_landing() -> dict:
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
     _render_core_principle(t)
-    _render_privacy_trust(t)
     _render_footer(t)
 
     return {

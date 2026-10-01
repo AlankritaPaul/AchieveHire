@@ -95,6 +95,19 @@ class TestNavigationStructure(unittest.TestCase):
         self.assertTrue(callable(render_privacy_page))
         self.assertTrue(callable(render_terms_page))
 
+    def test_top_nav_bar_and_landing_structure(self):
+        from modules.landing.ui import render_landing, THEMES
+        from modules.navigation.panel import render_top_nav_bar
+        import inspect
+
+        # Check render_top_nav_bar signature defaults
+        sig = inspect.signature(render_top_nav_bar)
+        self.assertFalse(sig.parameters["show_signin"].default)
+        self.assertFalse(sig.parameters["show_theme"].default)
+
+        # Check render_landing is callable
+        self.assertTrue(callable(render_landing))
+
 
 if __name__ == "__main__":
     unittest.main()

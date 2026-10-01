@@ -16,7 +16,7 @@ def render_privacy_page():
     t = THEMES[theme_key]
 
     render_navigation_drawer(t)
-    render_top_nav_bar(t, title="Platform Policies › Privacy Policy", show_signin=True)
+    render_top_nav_bar(t, title="Platform Policies › Privacy Policy")
 
     st.markdown(clean_html(f"""
     <div style="max-width:960px; margin: 24px auto; padding: 0 16px;">

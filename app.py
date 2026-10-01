@@ -37,7 +37,7 @@ def main():
         from modules.resume_guide.ui_builder import render_create_resume_flow
         t = THEMES[st.session_state.get("ac_theme", "light")]
         render_navigation_drawer(t)
-        render_top_nav_bar(t, title="Resume › Resume Create", show_signin=True)
+        render_top_nav_bar(t, title="Resume › Resume Create")
         render_create_resume_flow()
 
     # ── Resume Analysis Flow ──────────────────────────────────────────────────
@@ -47,7 +47,7 @@ def main():
         from modules.resume_guide.ui_analysis import render_resume_analysis_flow
         t = THEMES[st.session_state.get("ac_theme", "light")]
         render_navigation_drawer(t)
-        render_top_nav_bar(t, title="Resume › Resume Analysis", show_signin=True)
+        render_top_nav_bar(t, title="Resume › Resume Analysis")
         render_resume_analysis_flow()
 
     # ── Specialized Interview Flow ────────────────────────────────────────────
