@@ -7,11 +7,84 @@ Bottom navigation consistently provides:
 """
 
 import streamlit as st
+import plotly.graph_objects as go
 from modules.constants import SUGGESTED_JOB_ROLES, SUGGESTED_COMPANIES
 from modules.resume_guide.parser import extract_text_from_file, parse_resume_sections
 from modules.resume_guide.analyzer import ResumeAnalyzer
 from modules.resume_guide.optimizer import ResumeOptimizer
 from modules.resume_guide.exporter import export_resume_to_pdf, export_resume_to_docx
+
+def render_section_improvement_pie_chart(res):
+    """
+    Renders an interactive visual pie/donut graph summarizing the improvement status
+    of what is written in each evaluated resume section.
+    """
+    already_correct = res.get("already_correct", [])
+    needs_imp = res.get("needs_improvement_sections", [])
+    missing_info = res.get("missing_info_sections", [])
+
+    labels = []
+    values = []
+    colors = []
+    hover_texts = []
+
+    if already_correct:
+        labels.append("Well-Structured & Retain")
+        values.append(len(already_correct))
+        colors.append("#10B981")  # Emerald Green
+        sec_names = "<br>• ".join([s["title"] for s in already_correct])
+        hover_texts.append(f"Sections:<br>• {sec_names}")
+
+    if needs_imp:
+        labels.append("Can Be Improved Directly")
+        values.append(len(needs_imp))
+        colors.append("#F59E0B")  # Amber / Warm Gold
+        sec_names = "<br>• ".join([s["title"] for s in needs_imp])
+        hover_texts.append(f"Sections:<br>• {sec_names}")
+
+    if missing_info:
+        labels.append("Information Missing (Action Required)")
+        values.append(len(missing_info))
+        colors.append("#EF4444")  # Crimson Red
+        sec_names = "<br>• ".join([s["title"] for s in missing_info])
+        hover_texts.append(f"Sections:<br>• {sec_names}")
+
+    if not values:
+        return
+
+    col_chart, col_summary = st.columns([1.1, 1])
+
+    with col_chart:
+        fig = go.Figure(data=[go.Pie(
+            labels=labels,
+            values=values,
+            hole=0.48,
+            marker=dict(colors=colors, line=dict(color='#FFFFFF', width=2.5)),
+            textinfo='percent+label',
+            textposition='inside',
+            hovertext=hover_texts,
+            hovertemplate='<b>%{label}</b><br>%{hovertext}<br><b>Count:</b> %{value} of ' + str(sum(values)) + ' sections (%{percent})<extra></extra>',
+            pull=[0.02] * len(values)
+        )])
+
+        fig.update_layout(
+            showlegend=True,
+            legend=dict(orientation='h', yanchor='bottom', y=-0.28, xanchor='center', x=0.5),
+            margin=dict(t=15, b=65, l=15, r=15),
+            height=340,
+            annotations=[dict(text=f'<b>{sum(values)}</b><br><span style="font-size:11px;color:#718096;">Sections</span>', x=0.5, y=0.5, font_size=17, showarrow=False)]
+        )
+        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+
+    with col_summary:
+        st.markdown("##### Written Section Status Summary")
+        for sec in already_correct:
+            st.markdown(f"🟢 **{sec['title']}**: *Well-Structured* — No changes needed.")
+        for sec in needs_imp:
+            st.markdown(f"🟡 **{sec['title']}**: *Needs Polish* — {sec['action']}")
+        for sec in missing_info:
+            opt_tag = "*(Optional for Freshers)*" if sec.get("is_optional") else "*(Action Required)*"
+            st.markdown(f"🔴 **{sec['title']}**: *Information Missing* {opt_tag} — Details needed.")
 
 def render_resume_analysis_flow():
     """Render the step-by-step page-wise flow for Resume Analysis."""
@@ -294,6 +367,12 @@ def render_resume_analysis_flow():
         if res["is_well_aligned"]:
             st.success("### “Your resume is well-aligned with this job role and effectively highlights the skills and experience required.”")
             st.info("No unnecessary improvement message is shown because the resume does not require meaningful changes.")
+            
+            # Visual Pie Graph: Section Improvement Summary
+            st.markdown("---")
+            st.markdown("### 📊 Section Improvement Summary")
+            st.caption("Visual pie graph summarizing the written analysis across all evaluated resume sections.")
+            render_section_improvement_pie_chart(res)
         else:
             st.warning("### “Your resume needs some improvements to better match this job role.”")
             
@@ -314,6 +393,12 @@ def render_resume_analysis_flow():
                 for sec in missing_info:
                     opt_note = " *(Optional - can be skipped)*" if sec.get("is_optional") else " *(Recommended / Essential)*"
                     st.markdown(f"• **{sec['title']}**{opt_note}: {sec['observation']}")
+
+            # Visual Pie Graph: Section Improvement Summary
+            st.markdown("---")
+            st.markdown("### 📊 Section Improvement Summary")
+            st.caption("Visual pie graph summarizing the written analysis across all evaluated resume sections.")
+            render_section_improvement_pie_chart(res)
 
             # Step 4, 6, 10: Interactive Missing Information Form (User Remains in Control)
             user_provided_info: Dict[str, Any] = {"declined_sections": []}
