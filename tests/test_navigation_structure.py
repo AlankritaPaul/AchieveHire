@@ -108,6 +108,29 @@ class TestNavigationStructure(unittest.TestCase):
         # Check render_landing is callable
         self.assertTrue(callable(render_landing))
 
+    def test_footer_content_and_structure(self):
+        from modules.landing.ui import _render_footer, THEMES
+        import inspect
+
+        # Inspect the source code of _render_footer
+        src = inspect.getsource(_render_footer)
+
+        # 1. Career Readiness Line
+        self.assertIn("AI-Powered Career Readiness Audit, Optimise, Train", src)
+
+        # 2. Copyright & Rights
+        self.assertIn("© 2026 AscendCareer", src)
+        self.assertIn("All rights reserved", src)
+
+        # 3. Brand Statement
+        self.assertIn("AscendCareer", src)
+        self.assertIn("Built for candidates serious about their next step.", src)
+
+        # 4. Creator Credit
+        self.assertIn("The brainchild of", src)
+        self.assertIn("ALANKRITA PAL", src)
+        self.assertIn("💛", src)
+
 
 if __name__ == "__main__":
     unittest.main()

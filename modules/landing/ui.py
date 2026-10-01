@@ -556,12 +556,154 @@ def _inject_css(t: dict):
         vertical-align: middle;
     }}
 
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    .ac-footer-container {{
+        width: 100%;
+        border-top: 1px solid {t["divider"]};
+        padding: 44px 24px 52px;
+        margin-top: 48px;
+        box-sizing: border-box;
+    }}
+    .ac-footer-inner {{
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        box-sizing: border-box;
+    }}
+    .ac-footer-col {{
+        box-sizing: border-box;
+    }}
+    .ac-footer-left {{
+        flex: 1 1 0;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }}
+    .ac-footer-readiness {{
+        font-size: 0.94rem;
+        font-weight: 500;
+        color: {t["text_secondary"]};
+        line-height: 1.45;
+        letter-spacing: 0.01em;
+    }}
+    .ac-footer-copyright-group {{
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }}
+    .ac-footer-copy {{
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: {t["text_secondary"]};
+        line-height: 1.4;
+    }}
+    .ac-footer-rights {{
+        font-size: 0.78rem;
+        font-weight: 400;
+        color: {t["text_muted"]};
+        line-height: 1.35;
+    }}
+    .ac-footer-center {{
+        flex: 1 1 0;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }}
+    .ac-footer-brand {{
+        font-size: 1.28rem;
+        font-weight: 800;
+        color: {t["text_primary"]};
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+    }}
+    .ac-footer-tagline {{
+        font-size: 0.88rem;
+        font-weight: 400;
+        color: {t["text_muted"]};
+        line-height: 1.45;
+    }}
+    .ac-footer-right {{
+        flex: 1 1 0;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+    }}
+    .ac-footer-creator {{
+        font-size: 0.94rem;
+        font-weight: 500;
+        color: {t["text_secondary"]};
+        line-height: 1.45;
+        white-space: nowrap;
+    }}
+    .ac-footer-creator-name {{
+        font-weight: 700;
+        color: {t["text_primary"]};
+        letter-spacing: 0.02em;
+    }}
+
     /* ── Mobile responsiveness ───────────────────────────────────────── */
+    @media (max-width: 880px) and (min-width: 641px) {{
+        .ac-footer-inner {{
+            gap: 16px;
+        }}
+        .ac-footer-creator {{
+            white-space: normal;
+        }}
+    }}
     @media (max-width: 640px) {{
         .ac-brand-name {{ font-size: 2.4rem; }}
         .ac-principle-block {{ padding: 16px 18px; font-size: 0.87rem; }}
         .ac-qa-item summary {{ font-size: 0.83rem; padding: 10px 13px; }}
         .ac-qa-answer {{ font-size: 0.82rem; padding: 10px 13px; }}
+
+        /* Stacked centered footer on mobile in exact required order */
+        .ac-footer-container {{
+            padding: 36px 16px 44px;
+            margin-top: 36px;
+        }}
+        .ac-footer-inner {{
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+            gap: 22px;
+        }}
+        .ac-footer-left {{
+            text-align: center;
+            align-items: center;
+            order: 1;
+            width: 100%;
+            gap: 6px;
+        }}
+        .ac-footer-copyright-group {{
+            align-items: center;
+            gap: 2px;
+        }}
+        .ac-footer-center {{
+            text-align: center;
+            align-items: center;
+            order: 2;
+            width: 100%;
+            gap: 4px;
+        }}
+        .ac-footer-right {{
+            text-align: center;
+            align-items: center;
+            order: 3;
+            width: 100%;
+        }}
+        .ac-footer-creator {{
+            white-space: normal;
+            text-align: center;
+        }}
     }}
     </style>
     """), unsafe_allow_html=True)
@@ -855,21 +997,29 @@ def _render_core_principle(t: dict):
 
 def _render_footer(t: dict):
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="
-        text-align:center;
-        padding: 40px 24px 56px;
-        border-top: 1px solid {t['divider']};
-        margin-top: 40px;
-    ">
-        <div style="font-size:1.02rem; color:{t['text_muted']}; font-weight: 500;">
-            <strong style="color:{t['text_primary']};">AscendCareer</strong>
-            &nbsp;·&nbsp; AI-Powered Career Readiness
-            &nbsp;·&nbsp; Audit → Optimize → Train → Verify → Placement Readiness
+    <footer class="ac-content ac-footer-container">
+        <div class="ac-footer-inner">
+            <!-- 1 & 2. Left Group: Career Readiness Line & Copyright -->
+            <div class="ac-footer-col ac-footer-left">
+                <div class="ac-footer-readiness">AI-Powered Career Readiness Audit, Optimise, Train</div>
+                <div class="ac-footer-copyright-group">
+                    <div class="ac-footer-copy">© 2026 AscendCareer</div>
+                    <div class="ac-footer-rights">All rights reserved</div>
+                </div>
+            </div>
+
+            <!-- 3. Center Group: Brand Statement -->
+            <div class="ac-footer-col ac-footer-center">
+                <div class="ac-footer-brand">AscendCareer</div>
+                <div class="ac-footer-tagline">Built for candidates serious about their next step.</div>
+            </div>
+
+            <!-- 4. Right Group: Creator Credit -->
+            <div class="ac-footer-col ac-footer-right">
+                <div class="ac-footer-creator">The brainchild of <span class="ac-footer-creator-name">ALANKRITA PAL</span> 💛</div>
+            </div>
         </div>
-        <div style="font-size:0.92rem; color:{t['text_muted']}; margin-top:8px; font-weight: 400;">
-            © AscendCareer — Built for the candidate who is serious about their next step.
-        </div>
-    </div>
+    </footer>
     """), unsafe_allow_html=True)
 
 
