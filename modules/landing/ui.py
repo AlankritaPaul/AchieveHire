@@ -8,6 +8,8 @@ The Sign In button is an entry-point placeholder — sign-in logic
 is implemented separately in the next step.
 """
 
+import base64
+from pathlib import Path
 import textwrap
 import streamlit as st
 import streamlit.components.v1 as components
@@ -16,6 +18,15 @@ from modules.landing.content import (
     PRIVACY_STATEMENT,
     PRIVACY_SECTIONS,
 )
+
+
+def _get_logo_data_uri() -> str:
+    """Return inline base64 data URI of the transparent logo so it always renders without 404s."""
+    p = Path(__file__).resolve().parent.parent.parent / "assets" / "logo.png"
+    if p.exists():
+        encoded = base64.b64encode(p.read_bytes()).decode("utf-8")
+        return f"data:image/png;base64,{encoded}"
+    return ""
 
 
 def clean_html(html_str: str) -> str:
@@ -34,14 +45,14 @@ def clean_html(html_str: str) -> str:
 
 THEMES = {
     "light": {
-        "label": "🌙 Dark",           # label shows what you'll SWITCH TO
+        "label": "🌙 Switch to Dark Theme",
         "bg": "#F8FAFF",
         "surface": "#FFFFFF",
         "surface2": "#F0F4FF",
         "border": "#DDE3F0",
         "text_primary": "#1A1F36",
-        "text_secondary": "#4A5568",
-        "text_muted": "#718096",
+        "text_secondary": "#0B4619",        # Bottle Green (user specified)
+        "text_muted": "#145A32",            # Clear medium Bottle Green (user specified)
         "accent": "#4F46E5",
         "accent_hover": "#4338CA",
         "accent_soft": "#EEF2FF",
@@ -51,22 +62,25 @@ THEMES = {
         "btn_text": "#FFFFFF",
         "tag_bg": "#EEF2FF",
         "tag_text": "#4F46E5",
-        "divider": "#E2E8F0",
+        "divider": "#DDE3F0",
         "qa_bg": "#F8FAFF",
         "qa_hover": "#EEF2FF",
         "qa_answer_bg": "#F0F4FF",
         "qa_border": "#DDE3F0",
-        "principle_border": "#C7D2FE",
+        "principle_border": "#A7F3D0",
+        "theme_btn_bg": "#0F172A",
+        "theme_btn_text": "#FFFFFF",
+        "theme_btn_border": "#334155",
     },
     "dark": {
-        "label": "☀️ Light",          # label shows what you'll SWITCH TO
+        "label": "☀️ Switch to Light Theme",
         "bg": "#0D0F1A",
         "surface": "#141827",
         "surface2": "#1C2035",
         "border": "#2D3450",
-        "text_primary": "#E8ECF7",
-        "text_secondary": "#A0AABF",
-        "text_muted": "#6B7599",
+        "text_primary": "#FFFFFF",
+        "text_secondary": "#FDFBF7",        # Off Cream (user specified)
+        "text_muted": "#EAE5D9",            # Soft warm Off Cream (user specified)
         "accent": "#818CF8",
         "accent_hover": "#A5B4FC",
         "accent_soft": "#1E2347",
@@ -82,6 +96,9 @@ THEMES = {
         "qa_answer_bg": "#1A1F36",
         "qa_border": "#2D3450",
         "principle_border": "#3730A3",
+        "theme_btn_bg": "#FFFFFF",
+        "theme_btn_text": "#0F172A",
+        "theme_btn_border": "#CBD5E1",
     },
 }
 
@@ -137,22 +154,25 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Theme toggle & top bar ───────────────────────────────────────── */
-    .stButton > button {{
-        background: {t["surface2"]} !important;
-        color: {t["text_primary"]} !important;
-        border: 1.5px solid {t["border"]} !important;
+    /* ── Prominent Theme Toggle Button ───────────────────────────────── */
+    div[data-testid="column"]:last-child .stButton > button,
+    button[key="ac_theme_toggle"] {{
+        background: {t["theme_btn_bg"]} !important;
+        color: {t["theme_btn_text"]} !important;
+        border: 2px solid {t["theme_btn_border"]} !important;
         border-radius: 50px !important;
-        font-size: 0.82rem !important;
-        font-weight: 600 !important;
-        padding: 6px 18px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        padding: 9px 24px !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+        cursor: pointer !important;
+        letter-spacing: 0.02em !important;
         transition: all 0.2s ease !important;
-        white-space: nowrap !important;
     }}
-    .stButton > button:hover {{
-        border-color: {t["accent"]} !important;
-        color: {t["accent"]} !important;
-        background: {t["accent_soft"]} !important;
+    div[data-testid="column"]:last-child .stButton > button:hover,
+    button[key="ac_theme_toggle"]:hover {{
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 22px rgba(0,0,0,0.28) !important;
     }}
 
     /* ── Sign In button override ──────────────────────────────────────── */
@@ -189,17 +209,17 @@ def _inject_css(t: dict):
         letter-spacing: 0.01em;
     }}
     .ac-tagline-sub {{
-        font-size: clamp(0.82rem, 1.6vw, 1.02rem);
+        font-size: clamp(1.05rem, 2vw, 1.3rem);
         color: {t["text_secondary"]};
         font-style: italic;
-        font-weight: 400;
+        font-weight: 500;
     }}
     .ac-section-title {{
-        font-size: 1.25rem;
+        font-size: 1.35rem;
         font-weight: 800;
         color: {t["text_primary"]};
         letter-spacing: -0.01em;
-        margin: 0 0 4px;
+        margin: 0 0 6px;
     }}
     .ac-divider {{
         border: none;
@@ -306,17 +326,17 @@ def _inject_css(t: dict):
         background: {t["qa_hover"]};
     }}
     .ac-qa-answer {{
-        padding: 12px 16px 14px;
-        font-size: 0.855rem;
+        padding: 14px 18px 16px;
+        font-size: 1.05rem;
         color: {t["text_secondary"]};
-        line-height: 1.7;
+        line-height: 1.85;
         background: {t["qa_answer_bg"]};
         border-top: none;
     }}
 
     /* ── Privacy & Trust top-level expander — larger header ─────────── */
     .ac-privacy-top > [data-testid="stExpander"] > details > summary {{
-        font-size: 1.1rem !important;
+        font-size: 1.15rem !important;
         font-weight: 800 !important;
         padding: 16px 20px !important;
         background: {t["surface2"]} !important;
@@ -326,11 +346,11 @@ def _inject_css(t: dict):
     .ac-principle-block {{
         background: {t["surface"]};
         border: 1px solid {t["principle_border"]};
-        border-left: 4px solid {t["accent"]};
+        border-left: 5px solid {t["accent"]};
         border-radius: 12px;
-        padding: 22px 26px;
-        font-size: 0.92rem;
-        line-height: 1.8;
+        padding: 24px 28px;
+        font-size: 1.08rem;
+        line-height: 1.85;
         color: {t["text_secondary"]};
         box-shadow: {t["card_shadow"]};
     }}
@@ -340,12 +360,12 @@ def _inject_css(t: dict):
         background: {t["accent_soft"]};
         border: 1px solid {t["accent"]};
         border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 0.9rem;
+        padding: 16px 20px;
+        font-size: 1.05rem;
         font-weight: 600;
         color: {t["text_primary"]};
-        margin-bottom: 16px;
-        line-height: 1.6;
+        margin-bottom: 18px;
+        line-height: 1.65;
     }}
 
     /* ── Section number badge ────────────────────────────────────────── */
@@ -569,23 +589,23 @@ def _animated_background(theme_key: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_hero(t: dict):
+    logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 56px 24px 36px;">
+    <div class="ac-content" style="text-align:center; padding: 48px 24px 36px;">
 
-        <!-- Logo — transparent background, larger -->
-        <div style="margin-bottom:22px;">
-            <img src="app/static/logo.png"
+        <!-- Logo — transparent background with base64 data URI -->
+        <div style="margin-bottom:24px;">
+            <img src="{logo_data_uri}"
                  alt="AscendCareer Logo"
-                 onerror="this.style.display='none'"
-                 style="height:92px; width:auto;
-                        filter: drop-shadow(0 6px 22px rgba(79,70,229,0.28))
-                                drop-shadow(0 2px 8px rgba(212,175,55,0.20));" />
+                 style="height:125px; width:auto;
+                        filter: drop-shadow(0 8px 24px rgba(79,70,229,0.30))
+                                drop-shadow(0 2px 10px rgba(212,175,55,0.25));" />
         </div>
 
         <!-- Brand name — stylish Cinzel/serif with indigo→purple→gold gradient -->
         <div style="
             font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-            font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+            font-size: clamp(2.6rem, 5.8vw, 4.4rem);
             font-weight: 700;
             letter-spacing: 0.07em;
             line-height: 1.1;
@@ -599,13 +619,12 @@ def _render_hero(t: dict):
         <!-- Tagline 1: Ascend with Preparation -->
         <div style="
             font-family: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
-            font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+            font-size: clamp(0.95rem, 2.0vw, 1.25rem);
             font-weight: 600;
             letter-spacing: 0.16em;
             color: {t['text_primary']};
             margin-top: 14px;
             text-transform: uppercase;
-            opacity: 0.9;
         ">Ascend with Preparation</div>
 
         <!-- Tagline 2: Where Preparation Meets Opportunity -->
@@ -615,25 +634,25 @@ def _render_hero(t: dict):
                 background: {t['gold_soft']};
                 color: {t['gold']};
                 border-radius: 50px;
-                padding: 5px 24px;
-                font-size: clamp(0.78rem, 1.5vw, 0.92rem);
+                padding: 6px 26px;
+                font-size: clamp(0.85rem, 1.6vw, 1.05rem);
                 font-weight: 600;
                 letter-spacing: 0.05em;
                 font-style: italic;
             ">Where Preparation Meets Opportunity.</span>
         </div>
 
-        <!-- Description -->
-        <p style="margin:22px auto 0; max-width:560px;
-                  font-size:0.92rem; color:{t['text_secondary']}; line-height:1.75;">
+        <!-- Description: Bottle Green in light, Off-Cream in dark, larger font size -->
+        <p style="margin:24px auto 0; max-width:680px;
+                  font-size:1.15rem; color:{t['text_secondary']}; line-height:1.85; font-weight: 500;">
             A comprehensive, AI-powered interview preparation and career-readiness platform —
             realistic voice-to-voice interaction, multi-persona panels,
             adaptive difficulty, and deep role &amp; company tailoring.
         </p>
 
         <!-- Feature pills -->
-        <div style="margin-top:18px; display:flex; flex-wrap:wrap;
-                    gap:7px; justify-content:center;">
+        <div style="margin-top:22px; display:flex; flex-wrap:wrap;
+                    gap:8px; justify-content:center;">
             <span class="ac-tag">📄 Resume Analysis</span>
             <span class="ac-tag">🏗️ Resume Builder</span>
             <span class="ac-tag">🎙️ Voice Interviews</span>
@@ -654,7 +673,7 @@ def _render_signin_cta(t: dict) -> bool:
     st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding:0 24px 20px;">
         <hr class="ac-divider" style="max-width:300px; margin:0 auto 28px;" />
-        <p style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:18px;">
+        <p style="font-size:1.12rem; color:{t['text_muted']}; margin-bottom:18px; font-weight: 500;">
             Your personalised career preparation journey starts here.
         </p>
     </div>
@@ -667,8 +686,8 @@ def _render_signin_cta(t: dict) -> bool:
                             use_container_width=True)
 
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding:6px 24px 0;">
-        <p style="font-size:0.75rem; color:{t['text_muted']}; margin-top:8px;">
+    <div class="ac-content" style="text-align:center; padding:8px 24px 0;">
+        <p style="font-size:0.95rem; color:{t['text_muted']}; margin-top:8px; font-weight: 500;">
             By signing in, you agree to our Privacy &amp; Trust principles outlined below.
         </p>
     </div>
@@ -685,9 +704,9 @@ def _render_core_principle(t: dict):
     st.markdown(clean_html(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-bottom:32px;" />
-        <div style="text-align:center; margin-bottom:18px;">
+        <div style="text-align:center; margin-bottom:20px;">
             <div class="ac-section-title">💡 Core Principle</div>
-            <p style="font-size:0.83rem; color:{t['text_muted']}; margin-top:4px;">
+            <p style="font-size:1.05rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
                 The philosophy behind everything AscendCareer does.
             </p>
         </div>
@@ -724,9 +743,9 @@ def _render_privacy_trust(t: dict):
     st.markdown(clean_html(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-top:32px; margin-bottom:32px;" />
-        <div style="text-align:center; margin-bottom:20px;">
+        <div style="text-align:center; margin-bottom:22px;">
             <div class="ac-section-title">🔒 Privacy &amp; Trust</div>
-            <p style="font-size:0.83rem; color:{t['text_muted']}; margin-top:4px;">
+            <p style="font-size:1.05rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
                 How AscendCareer handles your information — honestly and clearly.
             </p>
         </div>
@@ -768,16 +787,16 @@ def _render_footer(t: dict):
     st.markdown(clean_html(f"""
     <div class="ac-content" style="
         text-align:center;
-        padding: 36px 24px 52px;
+        padding: 40px 24px 56px;
         border-top: 1px solid {t['divider']};
-        margin-top: 36px;
+        margin-top: 40px;
     ">
-        <div style="font-size:0.8rem; color:{t['text_muted']};">
-            <strong style="color:{t['text_secondary']};">AscendCareer</strong>
+        <div style="font-size:1.02rem; color:{t['text_muted']}; font-weight: 500;">
+            <strong style="color:{t['text_primary']};">AscendCareer</strong>
             &nbsp;·&nbsp; AI-Powered Career Readiness
             &nbsp;·&nbsp; Audit → Optimize → Train → Verify → Placement Readiness
         </div>
-        <div style="font-size:0.73rem; color:{t['text_muted']}; margin-top:5px;">
+        <div style="font-size:0.92rem; color:{t['text_muted']}; margin-top:8px; font-weight: 400;">
             © AscendCareer — Built for the candidate who is serious about their next step.
         </div>
     </div>
@@ -810,16 +829,18 @@ def render_landing() -> dict:
     # ── CSS ──────────────────────────────────────────────────────────────────
     _inject_css(t)
 
-    # ── Theme toggle — top-right ─────────────────────────────────────────────
-    _, top_right = st.columns([8, 1])
-    with top_right:
-        st.markdown("<div style='padding-top:10px;'></div>", unsafe_allow_html=True)
-        if st.button(THEMES[other_key]["label"], key="ac_theme_toggle"):
-            st.session_state["ac_theme"] = other_key
-            st.rerun()
-
     # ── Animated background ──────────────────────────────────────────────────
     _animated_background(theme_key)
+
+    # ── Top Bar: Prominent Theme Switcher ────────────────────────────────────
+    top_col_spacer, top_col_theme = st.columns([65, 35])
+    with top_col_theme:
+        st.markdown("<div style='padding-top:16px; padding-bottom:8px; text-align:right;'>", unsafe_allow_html=True)
+        theme_btn_label = "🌙 Switch to Dark Theme" if theme_key == "light" else "☀️ Switch to Light Theme"
+        if st.button(theme_btn_label, key="ac_theme_toggle", use_container_width=True):
+            st.session_state["ac_theme"] = other_key
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
