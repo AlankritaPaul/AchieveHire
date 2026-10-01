@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+  <!-- Left Side: Sun in radiant sun color (#F59E0B) -->
+  <g fill="#F59E0B" stroke="#F59E0B">
+    <!-- Half Sun Circle -->
+    <path d="M 48 24 A 26 26 0 0 0 48 76 Z" stroke="none" />
+    <!-- 3 Sun Rays with rounded caps matching reference -->
+    <line x1="22" y1="26" x2="10" y2="15" stroke-width="6.5" stroke-linecap="round" />
+    <line x1="14" y1="50" x2="2" y2="50" stroke-width="6.5" stroke-linecap="round" />
+    <line x1="22" y1="74" x2="10" y2="85" stroke-width="6.5" stroke-linecap="round" />
+  </g>
+
+  <!-- Center Vertical Line with Center Capsule Opening matching reference -->
+  <g stroke="#F59E0B" stroke-width="6" stroke-linecap="round">
+    <line x1="49" y1="8" x2="49" y2="34" />
+    <line x1="49" y1="66" x2="49" y2="92" />
+  </g>
+  <g stroke="#1E3A8A" stroke-width="6" stroke-linecap="round">
+    <line x1="51" y1="8" x2="51" y2="34" />
+    <line x1="51" y1="66" x2="51" y2="92" />
+  </g>
+
+  <!-- Right Side: Crescent Moon in Navy Blue (#1E3A8A) -->
+  <g fill="#1E3A8A">
+    <!-- Crescent Moon curving right -->
+    <path d="M 52 24 C 73 24 88 36 88 50 C 88 64 73 76 52 76 C 68 68 76 58 76 50 C 76 42 68 32 52 24 Z" />
+    <!-- One Small Star inside the Moon -->
+    <!-- 5-pointed star centered at (72, 36) in the upper curve of the crescent -->
+    <polygon points="72,31 73.5,34.5 77,34.5 74,36.8 75.2,40.5 72,38.2 68.8,40.5 70,36.8 67,34.5 70.5,34.5" fill="#FCD34D" stroke="none" />
+  </g>
+</svg>

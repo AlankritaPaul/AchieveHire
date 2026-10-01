@@ -1,0 +1,458 @@
+{
+  "SESSIONUSER-425212": {
+    "user_id": "SESSIONUSER-425212",
+    "name": "Session User",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:18:52.224166",
+    "headline": "Candidate · Both",
+    "email": "sessionuser@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEA-935923": {
+    "user_id": "CANDIDATEA-935923",
+    "name": "Candidate A",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:18:52.235571",
+    "headline": "Senior Fullstack Engineer",
+    "email": "candidatea@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEB-371383": {
+    "user_id": "CANDIDATEB-371383",
+    "name": "Candidate B",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:18:52.242181",
+    "headline": "Candidate · Interview Preparation",
+    "email": "candidateb@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-300178": {
+    "user_id": "USERALPHA-300178",
+    "name": "User Alpha",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:18:52.253575",
+    "headline": "Candidate · Resume Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-263546": {
+    "user_id": "USERALPHA-263546",
+    "name": "User Alpha",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:18:52.258791",
+    "headline": "Candidate · Interview Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERGAMMA-339318": {
+    "user_id": "USERGAMMA-339318",
+    "name": "User Gamma",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:18:52.263325",
+    "headline": "Candidate · Both",
+    "email": "usergamma@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "SESSIONUSER-914975": {
+    "user_id": "SESSIONUSER-914975",
+    "name": "Session User",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:21:38.695576",
+    "headline": "Candidate · Both",
+    "email": "sessionuser@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEA-815538": {
+    "user_id": "CANDIDATEA-815538",
+    "name": "Candidate A",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:21:38.707825",
+    "headline": "Senior Fullstack Engineer",
+    "email": "candidatea@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEB-307207": {
+    "user_id": "CANDIDATEB-307207",
+    "name": "Candidate B",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:21:38.713273",
+    "headline": "Candidate · Interview Preparation",
+    "email": "candidateb@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-428436": {
+    "user_id": "USERALPHA-428436",
+    "name": "User Alpha",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:21:38.726606",
+    "headline": "Candidate · Resume Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-703444": {
+    "user_id": "USERALPHA-703444",
+    "name": "User Alpha",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:21:38.732031",
+    "headline": "Candidate · Interview Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERGAMMA-185272": {
+    "user_id": "USERGAMMA-185272",
+    "name": "User Gamma",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:21:38.738177",
+    "headline": "Candidate · Both",
+    "email": "usergamma@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "SESSIONUSER-691274": {
+    "user_id": "SESSIONUSER-691274",
+    "name": "Session User",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:25:56.350133",
+    "headline": "Candidate · Both",
+    "email": "sessionuser@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEA-624471": {
+    "user_id": "CANDIDATEA-624471",
+    "name": "Candidate A",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:25:56.362673",
+    "headline": "Senior Fullstack Engineer",
+    "email": "candidatea@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEB-117812": {
+    "user_id": "CANDIDATEB-117812",
+    "name": "Candidate B",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:25:56.369023",
+    "headline": "Candidate · Interview Preparation",
+    "email": "candidateb@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-854612": {
+    "user_id": "USERALPHA-854612",
+    "name": "User Alpha",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:25:56.395888",
+    "headline": "Candidate · Resume Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-970773": {
+    "user_id": "USERALPHA-970773",
+    "name": "User Alpha",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:25:56.401706",
+    "headline": "Candidate · Interview Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERGAMMA-855708": {
+    "user_id": "USERGAMMA-855708",
+    "name": "User Gamma",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:25:56.408110",
+    "headline": "Candidate · Both",
+    "email": "usergamma@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "SESSIONUSER-964326": {
+    "user_id": "SESSIONUSER-964326",
+    "name": "Session User",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:30:50.395655",
+    "headline": "Candidate · Both",
+    "email": "sessionuser@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEA-311012": {
+    "user_id": "CANDIDATEA-311012",
+    "name": "Candidate A",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:30:50.412439",
+    "headline": "Senior Fullstack Engineer",
+    "email": "candidatea@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "CANDIDATEB-709773": {
+    "user_id": "CANDIDATEB-709773",
+    "name": "Candidate B",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:30:50.419950",
+    "headline": "Candidate · Interview Preparation",
+    "email": "candidateb@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-413776": {
+    "user_id": "USERALPHA-413776",
+    "name": "User Alpha",
+    "purpose": "Resume Preparation",
+    "created_at": "2026-10-02T00:30:50.476260",
+    "headline": "Candidate · Resume Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Resume Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERALPHA-320212": {
+    "user_id": "USERALPHA-320212",
+    "name": "User Alpha",
+    "purpose": "Interview Preparation",
+    "created_at": "2026-10-02T00:30:50.483720",
+    "headline": "Candidate · Interview Preparation",
+    "email": "useralpha@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Interview Preparation on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  },
+  "USERGAMMA-317734": {
+    "user_id": "USERGAMMA-317734",
+    "name": "User Gamma",
+    "purpose": "Both",
+    "created_at": "2026-10-02T00:30:50.490873",
+    "headline": "Candidate · Both",
+    "email": "usergamma@ascendcareer.ai",
+    "location": "India",
+    "bio": "Registered for Both on AscendCareer.",
+    "profile_pic": null,
+    "stats": {
+      "resumes_created": 0,
+      "resumes_analyzed": 0,
+      "interviews_practiced": 0
+    },
+    "resumes": [],
+    "interview_attempts": [],
+    "reports": []
+  }
+}
