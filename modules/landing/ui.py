@@ -172,52 +172,35 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Exact Theme Toggle Symbol (Transparent background, no white capsule) ── */
-    div[data-testid="column"]:has(#ac-theme-toggle-marker) button,
-    .ac-theme-toggle-btn {{
-        width: 48px !important;
-        height: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        background-image: url('{theme_icon_uri}') !important;
-        background-repeat: no-repeat !important;
-        background-position: center !important;
-        background-size: contain !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        cursor: pointer !important;
+    /* ── Hide the raw unstyled button in the theme column completely ────────── */
+    div[data-testid="stColumn"]:last-child div[data-testid="stButton"],
+    div[data-testid="column"]:last-child div[data-testid="stButton"],
+    div:has(#ac-theme-toggle-box) + div[data-testid="stButton"],
+    div:has(#ac-theme-toggle-box) ~ div[data-testid="stButton"],
+    button[aria-label*="Theme"],
+    button[aria-label*="theme"],
+    button:not([data-testid="baseButton-primary"]):not(.ac-pink-signin-btn) {{
+        display: none !important;
+        opacity: 0 !important;
+        position: absolute !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
         padding: 0 !important;
-        margin: 6px 0 0 auto !important;
-        display: flex !important;
+        border: none !important;
+    }}
+
+    /* ── Custom Theme Toggle Icon (Exact reference image, 100% transparent) ── */
+    #ac-custom-theme-btn {{
+        cursor: pointer !important;
+        transition: transform 0.22s ease !important;
+        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        transition: transform 0.22s ease !important;
     }}
-    div[data-testid="column"]:has(#ac-theme-toggle-marker) button:hover,
-    .ac-theme-toggle-btn:hover {{
+    #ac-custom-theme-btn:hover {{
         transform: scale(1.18) rotate(8deg) !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        background-image: url('{theme_icon_uri}') !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }}
-    div[data-testid="column"]:has(#ac-theme-toggle-marker) button:active,
-    div[data-testid="column"]:has(#ac-theme-toggle-marker) button:focus {{
-        background: transparent !important;
-        background-color: transparent !important;
-        background-image: url('{theme_icon_uri}') !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }}
-    /* Hide any text inside the theme toggle button so only the icon shows */
-    div[data-testid="column"]:has(#ac-theme-toggle-marker) button * {{
-        display: none !important;
     }}
 
     /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
@@ -656,38 +639,31 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
         f"""
         <script>
         (function run() {{
-            // Style theme toggle button directly via marker element
-            function styleThemeToggle() {{
+            // Wire the custom theme icon to trigger the hidden theme toggle button
+            function wireThemeToggle() {{
                 try {{
                     const doc = window.parent.document;
                     if (!doc) return;
-                    const marker = doc.getElementById('ac-theme-toggle-marker');
-                    if (marker) {{
-                        const col = marker.closest('[data-testid="column"]') || marker.parentElement;
-                        const btn = col ? col.querySelector('button') : null;
-                        if (btn) {{
-                            btn.style.setProperty('background', 'transparent', 'important');
-                            btn.style.setProperty('background-color', 'transparent', 'important');
-                            btn.style.setProperty('background-image', 'url("{theme_icon_uri}")', 'important');
-                            btn.style.setProperty('background-repeat', 'no-repeat', 'important');
-                            btn.style.setProperty('background-position', 'center', 'important');
-                            btn.style.setProperty('background-size', 'contain', 'important');
-                            btn.style.setProperty('border', 'none', 'important');
-                            btn.style.setProperty('box-shadow', 'none', 'important');
-                            btn.style.setProperty('outline', 'none', 'important');
-                            btn.style.setProperty('width', '48px', 'important');
-                            btn.style.setProperty('height', '48px', 'important');
-                            btn.style.setProperty('min-width', '48px', 'important');
-                            btn.style.setProperty('cursor', 'pointer', 'important');
-                            btn.style.setProperty('padding', '0', 'important');
-                            const inner = btn.querySelectorAll('*');
-                            inner.forEach(el => {{ el.style.display = 'none'; }});
-                        }}
+                    const customBtn = doc.getElementById('ac-custom-theme-btn');
+                    if (customBtn && !customBtn.dataset.wired) {{
+                        customBtn.dataset.wired = "true";
+                        customBtn.addEventListener('click', function(e) {{
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const btns = doc.querySelectorAll('button');
+                            for (const b of btns) {{
+                                const txt = (b.innerText || '').trim();
+                                if (!txt.includes('Sign In')) {{
+                                    b.click();
+                                    break;
+                                }}
+                            }}
+                        }});
                     }}
                 }} catch(e) {{}}
             }}
-            styleThemeToggle();
-            setInterval(styleThemeToggle, 120);
+            wireThemeToggle();
+            setInterval(wireThemeToggle, 100);
 
             // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
@@ -919,7 +895,13 @@ def render_landing() -> dict:
         st.markdown('<div id="ac-top-signin-marker"></div>', unsafe_allow_html=True)
         top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
     with top_col_theme:
-        st.markdown('<div id="ac-theme-toggle-marker"></div>', unsafe_allow_html=True)
+        st.markdown(clean_html(f"""
+        <div id="ac-theme-toggle-box" style="display:flex; justify-content:flex-end; align-items:center; padding-top:6px;">
+            <div id="ac-custom-theme-btn" style="width:48px; height:48px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:transform 0.22s ease;" title="Toggle Light / Dark Theme">
+                <img src="{theme_icon_uri}" alt="Toggle Theme" style="width:46px; height:46px; display:block; pointer-events:none; user-select:none;" />
+            </div>
+        </div>
+        """), unsafe_allow_html=True)
         theme_clicked = st.button(" ", key="ac_theme_toggle", help="Toggle Light / Dark Theme")
         if theme_clicked:
             st.session_state["ac_theme"] = other_key
