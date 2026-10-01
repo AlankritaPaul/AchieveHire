@@ -191,33 +191,93 @@ def _inject_css(t: dict):
     /* ── Header Row Alignment ─────────────────────────────────────────── */
     div[data-testid="stHorizontalBlock"]:first-of-type {{
         align-items: center !important;
-        padding: 8px 12px 0 !important;
+        padding: 8px 16px 0 !important;
     }}
 
-    /* ── Instant Theme Toggle Button (Exact reference icon, 100% transparent) ── */
-    div:has(#ac-theme-toggle-anchor),
-    div[data-testid="stColumn"]:last-child {{
+    /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
+    .st-key-ac_top_signin_btn,
+    div:has(#ac-top-signin-marker) {{
         display: flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
+        width: 100% !important;
     }}
 
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"],
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] {{
+    .st-key-ac_top_signin_btn div[data-testid="stButton"],
+    div:has(#ac-top-signin-marker) div[data-testid="stButton"] {{
+        width: 100% !important;
+    }}
+
+    .st-key-ac_top_signin_btn button,
+    div:has(#ac-top-signin-marker) button,
+    button[data-testid="baseButton-primary"] {{
+        background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
+        background-color: #DB2777 !important;
+        color: #FFFFFF !important;
+        border: 1.5px solid #F472B6 !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
+        cursor: pointer !important;
+        transition: all 0.22s ease !important;
+        padding: 10px 24px !important;
+        font-size: 0.98rem !important;
+        min-height: 44px !important;
+        height: 44px !important;
+        width: 100% !important;
+        min-width: 130px !important;
+        max-width: 180px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 0 0 auto !important;
+    }}
+
+    .st-key-ac_top_signin_btn button:hover,
+    div:has(#ac-top-signin-marker) button:hover,
+    button[data-testid="baseButton-primary"]:hover {{
+        background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
+        background-color: #E11D48 !important;
+        color: #FFFFFF !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 24px rgba(236, 72, 153, 0.65) !important;
+        border-color: #FDA4AF !important;
+    }}
+
+    .st-key-ac_top_signin_btn button *,
+    div:has(#ac-top-signin-marker) button *,
+    button[data-testid="baseButton-primary"] * {{
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 0.98rem !important;
+        display: inline !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }}
+
+    /* ── Instant Theme Toggle Button (Exact reference icon, 100% transparent) ── */
+    .st-key-ac_theme_toggle_btn,
+    div:has(#ac-theme-toggle-anchor) {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: auto !important;
+    }}
+
+    .st-key-ac_theme_toggle_btn div[data-testid="stButton"],
+    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] {{
         display: inline-flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: auto !important;
+        width: 48px !important;
+        height: 48px !important;
     }}
 
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button,
-    div:has(#ac-theme-toggle-anchor) button,
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button,
-    div[data-testid="column"]:last-child div[data-testid="stButton"] > button,
-    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button,
-    button[key="ac_theme_toggle_btn"] {{
+    .st-key-ac_theme_toggle_btn button,
+    div:has(#ac-theme-toggle-anchor) button {{
         width: 48px !important;
         height: 48px !important;
         min-width: 48px !important;
@@ -241,12 +301,8 @@ def _inject_css(t: dict):
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }}
 
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:hover,
-    div:has(#ac-theme-toggle-anchor) button:hover,
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:hover,
-    div[data-testid="column"]:last-child div[data-testid="stButton"] > button:hover,
-    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button:hover,
-    button[key="ac_theme_toggle_btn"]:hover {{
+    .st-key-ac_theme_toggle_btn button:hover,
+    div:has(#ac-theme-toggle-anchor) button:hover {{
         transform: scale(1.15) !important;
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
@@ -254,12 +310,10 @@ def _inject_css(t: dict):
         box-shadow: none !important;
     }}
 
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:focus,
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button:active,
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:focus,
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:active,
-    button[key="ac_theme_toggle_btn"]:focus,
-    button[key="ac_theme_toggle_btn"]:active {{
+    .st-key-ac_theme_toggle_btn button:focus,
+    .st-key-ac_theme_toggle_btn button:active,
+    div:has(#ac-theme-toggle-anchor) button:focus,
+    div:has(#ac-theme-toggle-anchor) button:active {{
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
         border: none !important;
@@ -267,64 +321,12 @@ def _inject_css(t: dict):
         outline: none !important;
     }}
 
-    /* Hide any text inside the theme toggle button so only the icon shows */
-    div:has(#ac-theme-toggle-anchor) div[data-testid="stButton"] > button *,
-    div:has(#ac-theme-toggle-anchor) button *,
-    div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button *,
-    div[data-testid="column"]:last-child div[data-testid="stButton"] > button *,
-    button[key="ac_theme_toggle_btn"] * {{
+    /* Completely hide any inner text / icon inside ONLY the theme toggle button */
+    .st-key-ac_theme_toggle_btn button *,
+    div:has(#ac-theme-toggle-anchor) button * {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
-    }}
-
-    /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
-    div:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
-    div[data-testid="stColumn"]:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
-    div[data-testid="column"]:has(#ac-top-signin-marker) div[data-testid="stButton"] > button,
-    .ac-pink-signin-btn,
-    button[data-testid="baseButton-primary"] {{
-        background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
-        background-color: #DB2777 !important;
-        color: #FFFFFF !important;
-        border: 1.5px solid #F472B6 !important;
-        border-radius: 50px !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.03em !important;
-        box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
-        cursor: pointer !important;
-        transition: all 0.22s ease !important;
-        padding: 9px 22px !important;
-        font-size: 0.98rem !important;
-        min-height: 48px !important;
-        height: 48px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin-top: 6px !important;
-    }}
-
-    div[data-testid="column"]:has(#ac-top-signin-marker) button:hover,
-    .ac-pink-signin-btn:hover,
-    button[data-testid="baseButton-primary"]:hover {{
-        background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
-        background-color: #E11D48 !important;
-        color: #FFFFFF !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 24px rgba(236, 72, 153, 0.65) !important;
-        border-color: #FDA4AF !important;
-    }}
-
-    div[data-testid="column"]:has(#ac-top-signin-marker) button *,
-    .ac-pink-signin-btn *,
-    button[data-testid="baseButton-primary"] * {{
-        color: #FFFFFF !important;
-        font-weight: 700 !important;
-    }}
-
-    /* Ensure no button has ugly sharp corners */
-    div[data-testid="stButton"] button {{
-        border-radius: 50px !important;
     }}
 
     /* ── Typography ───────────────────────────────────────────────────── */
@@ -332,7 +334,7 @@ def _inject_css(t: dict):
         font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
         font-size: clamp(2.6rem, 5.8vw, 4.4rem);
         font-weight: 800;
-        letter-spacing: 0.07em;
+        letter-spacing: 0em !important;
         line-height: 1.1;
         margin: 0 auto 8px;
         text-align: center;
@@ -341,10 +343,12 @@ def _inject_css(t: dict):
     .ac-brand-ascend {{
         color: {t["brand_ascend_color"]};
         text-shadow: 0 2px 16px {t["brand_ascend_glow"]};
+        letter-spacing: 0em !important;
     }}
     .ac-brand-career {{
         color: {t["brand_career_color"]};
         text-shadow: 0 2px 16px {t["brand_career_glow"]};
+        letter-spacing: 0em !important;
     }}
     .ac-tagline-main {{
         font-size: clamp(1rem, 2.2vw, 1.35rem);
@@ -716,38 +720,6 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
         f"""
         <script>
         (function run() {{
-
-
-            // Ensure theme toggle button has transparent icon styling applied
-            function applyThemeIcon() {{
-                try {{
-                    const doc = window.parent.document;
-                    if (!doc) return;
-                    const anchor = doc.getElementById('ac-theme-toggle-anchor');
-                    if (anchor) {{
-                        const col = anchor.closest('[data-testid="stColumn"], [data-testid="column"], div') || anchor.parentElement;
-                        const btn = col ? col.querySelector('button') : null;
-                        if (btn) {{
-                            btn.style.setProperty('background', 'transparent url("{theme_icon_uri}") no-repeat center center / contain', 'important');
-                            btn.style.setProperty('background-color', 'transparent', 'important');
-                            btn.style.setProperty('border', 'none', 'important');
-                            btn.style.setProperty('box-shadow', 'none', 'important');
-                            btn.style.setProperty('outline', 'none', 'important');
-                            btn.style.setProperty('width', '46px', 'important');
-                            btn.style.setProperty('height', '46px', 'important');
-                            btn.style.setProperty('cursor', 'pointer', 'important');
-                            btn.style.setProperty('padding', '0', 'important');
-                            const inner = btn.querySelectorAll('*');
-                            inner.forEach(el => {{ el.style.display = 'none'; }});
-                        }}
-                    }}
-                }} catch(e) {{}}
-            }}
-            applyThemeIcon();
-            setTimeout(applyThemeIcon, 40);
-            setTimeout(applyThemeIcon, 120);
-            setTimeout(applyThemeIcon, 250);
-
             // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
             if (!canvas) {{ setTimeout(run, 50); return; }}
@@ -779,9 +751,7 @@ def _render_hero(t: dict):
         </div>
 
         <!-- Brand name — stylish Cinzel dual-tone (Ascend in indigo/lavender, Career in radiant gold) -->
-        <div class="ac-brand-title">
-            <span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span>
-        </div>
+        <div class="ac-brand-title"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
 
         <!-- Tagline 1: Ascend with Preparation -->
         <div style="
