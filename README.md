@@ -1,10 +1,30 @@
-# AscendCareer
+<div align="center">
 
-> A comprehensive, voice-based interview preparation and career-readiness platform designed to help candidates prepare for real interviews through a realistic, progressive, and personalized experience.
+  <img src="assets/ascendcareer_banner.gif" alt="AscendCareer — AI-Powered Interview & Career Readiness Platform" width="100%" />
+
+  <br/><br/>
+
+  <p align="center">
+    <strong>A comprehensive, AI-powered interview preparation and career-readiness platform.</strong><br/>
+    <em>Dynamic multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
+  </p>
+
+  <p align="center">
+    <a href="#-key-features">Key Features</a> •
+    <a href="#1-resume--job-description-intelligence">Resume Intelligence</a> •
+    <a href="#2-realistic-voice-to-voice-interview-environment">Voice AI</a> •
+    <a href="#3-interview-panels--specialized-modes">Interview Panels</a> •
+    <a href="#4-6-stage-progressive-ladder">Progressive Ladder</a> •
+    <a href="#-tech-stack-proposed">Tech Stack</a>
+  </p>
+
+</div>
 
 ---
 
 ## 🌟 Overview
+
+<img src="assets/logo.png" align="right" width="150" alt="AscendCareer Logo" />
 
 **AscendCareer** is an intelligent career acceleration platform that moves beyond traditional text-based chatbots. By combining realistic real-time speech conversation, multi-persona interview panels, adaptive difficulty ladders, and deep resume/job-description alignment analysis, AscendCareer replicates the dynamics and pressure of real interviews.
 
