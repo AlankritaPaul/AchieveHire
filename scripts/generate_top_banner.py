@@ -31,15 +31,32 @@ def create_banner():
     logo_pos_x = int(45 * SCALE)
     logo_pos_y = int(30 * SCALE)
 
-    # 3. Static Title 'AscendCareer' in Pure 2nd Font (NO swoosh, NO animation)
+    # 3. Static Title 'AscendCareer' in stylish dual-tone luxury serif
+    asc_w = font_title.getlength('Ascend')
+
+    # Soft dark drop shadow for luxury depth and clean separation
+    title_shadow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    ts_draw = ImageDraw.Draw(title_shadow)
+    ts_draw.text((start_x + int(2 * SCALE), base_y + int(3 * SCALE)), 'Ascend', font=font_title, fill=(0, 0, 0, 130))
+    ts_draw.text((start_x + asc_w + int(2 * SCALE), base_y + int(3 * SCALE)), 'Career', font=font_title, fill=(0, 0, 0, 130))
+    title_shadow = title_shadow.filter(ImageFilter.GaussianBlur(int(2.5 * SCALE)))
+
+    # Soft warm ambient bloom behind Career
+    title_glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    tgldraw = ImageDraw.Draw(title_glow)
+    tgldraw.text((start_x + asc_w, base_y), 'Career', font=font_title, fill=(245, 158, 11, 75))
+    title_glow = title_glow.filter(ImageFilter.GaussianBlur(int(6 * SCALE)))
+
+    # Pure crisp dual-tone title
     title_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     tdraw = ImageDraw.Draw(title_layer)
-    # Luxury champagne / ivory tone matching image 2
-    tdraw.text((start_x, base_y), 'AscendCareer', font=font_title, fill=(248, 244, 236, 255))
-    tdraw.text((start_x, base_y - int(1 * SCALE)), 'AscendCareer', font=font_title, fill=(255, 255, 255, 140))
+    # Ascend in pearl white
+    tdraw.text((start_x, base_y), 'Ascend', font=font_title, fill=(255, 255, 255, 255))
+    # Career in luminous champagne gold
+    tdraw.text((start_x + asc_w, base_y), 'Career', font=font_title, fill=(250, 195, 60, 255))
 
-    # 4. Tagline: 'Where Preparation Meets Opportunity.' in understandable font with golden glowing glitter
-    tagline_text = "Where Preparation Meets Opportunity."
+    # 4. Tagline: 'Better Preparation. Stronger Presentation.' in understandable font with golden glowing glitter
+    tagline_text = "Better Preparation. Stronger Presentation."
 
     # Soft golden halo / bloom
     tag_glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -53,9 +70,9 @@ def create_banner():
     tmdraw.text((start_x, tag_y), tagline_text, font=font_tagline, fill=255)
 
     grad = np.zeros((H, W, 4), dtype=np.uint8)
-    top_c = np.array([255, 245, 160, 255])
+    top_c = np.array([255, 248, 180, 255])
     mid_c = np.array([255, 215, 0, 255])
-    bot_c = np.array([218, 165, 28, 255])
+    bot_c = np.array([218, 160, 25, 255])
     for y in range(H):
         ny = (y - tag_y) / float(40 * SCALE)
         ny = max(0.0, min(1.0, ny))
@@ -70,16 +87,16 @@ def create_banner():
     # Specular edge highlight
     tag_spec = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     tsdraw = ImageDraw.Draw(tag_spec)
-    tsdraw.text((start_x, tag_y - int(1 * SCALE)), tagline_text, font=font_tagline, fill=(255, 255, 210, 180))
+    tsdraw.text((start_x, tag_y - int(1 * SCALE)), tagline_text, font=font_tagline, fill=(255, 255, 220, 180))
 
     # Glitter twinkle positions across tagline
     sparkle_bases = [
-        (start_x + int(12 * SCALE), tag_y + int(6 * SCALE), 0.0),
-        (start_x + int(135 * SCALE), tag_y + int(20 * SCALE), 0.35),
-        (start_x + int(270 * SCALE), tag_y + int(8 * SCALE), 0.7),
-        (start_x + int(420 * SCALE), tag_y + int(22 * SCALE), 0.15),
-        (start_x + int(560 * SCALE), tag_y + int(10 * SCALE), 0.55),
-        (start_x + int(670 * SCALE), tag_y + int(18 * SCALE), 0.85),
+        (start_x + int(15 * SCALE), tag_y + int(6 * SCALE), 0.0),
+        (start_x + int(210 * SCALE), tag_y + int(20 * SCALE), 0.35),
+        (start_x + int(548 * SCALE), tag_y + int(22 * SCALE), 0.7),
+        (start_x + int(585 * SCALE), tag_y + int(8 * SCALE), 0.15),
+        (start_x + int(860 * SCALE), tag_y + int(20 * SCALE), 0.55),
+        (start_x + int(1215 * SCALE), tag_y + int(22 * SCALE), 0.85),
     ]
 
     # 5. Monospace Feature Pills (Smart Resume • Realistic Interviews • Detailed Feedback)
@@ -154,7 +171,9 @@ def create_banner():
     # Composite static logo
     base_banner.alpha_composite(scaled_logo, (logo_pos_x, logo_pos_y))
 
-    # Composite static title
+    # Composite static title with soft shadow & warm glow
+    base_banner.alpha_composite(title_shadow)
+    base_banner.alpha_composite(title_glow)
     base_banner.alpha_composite(title_layer)
 
     # Composite tagline glow, core, spec
