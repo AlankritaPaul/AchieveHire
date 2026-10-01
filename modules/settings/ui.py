@@ -109,8 +109,8 @@ def render_settings_page():
 
     # ── 2. Add this to Desktop (with Logo) ──
     st.markdown(clean_html(f"""
-    <div style="max-width:880px; margin: 0 auto 20px; padding: 0 16px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <div style="max-width:880px; margin: 0 auto 12px; padding: 0 16px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
             <div style="width:38px; height:38px; border-radius:10px; background:{t['gold_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
                 🖥️
             </div>
@@ -118,37 +118,21 @@ def render_settings_page():
                 <h3 style="font-size:1.2rem; font-weight:700; color:{t['text_primary']}; margin:0;">
                     Add AscendCareer to Desktop
                 </h3>
-                <div style="font-size:0.85rem; color:{t['text_muted']};">
-                    Install AscendCareer as a standalone desktop app for fast, focused preparation.
-                </div>
             </div>
         </div>
     </div>
     """), unsafe_allow_html=True)
 
     with st.container(border=True):
-        st.markdown(f"""
-        <div style="font-size:0.92rem; color:{t['text_secondary']}; line-height:1.65; margin-bottom:14px;">
-            You can launch AscendCareer directly from your desktop, dock, or taskbar in its own distraction-free window without browser tabs.
-        </div>
-        <div style="background:{t['surface2']}; border:1px solid {t['border']}; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
-            <div style="font-weight:700; font-size:0.90rem; color:{t['text_primary']}; margin-bottom:8px;">
-                📌 How to Install to Desktop in 2 Steps:
-            </div>
-            <ol style="margin:0; padding-left:20px; font-size:0.86rem; color:{t['text_secondary']}; line-height:1.75;">
-                <li>In Chrome or Edge, click the <strong>Install / App icon</strong> (<span style="font-family:monospace;">⊕</span> or monitor symbol) on the right side of the URL address bar.</li>
-                <li>Or click browser <strong>Menu (⋮) → 'Cast, save, and share' / 'More tools' → 'Install AscendCareer' / 'Create shortcut...'</strong> and check <em>'Open as window'</em>.</li>
-            </ol>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col_d1, col_d2 = st.columns([50, 50])
-        with col_d1:
-            if st.button("💻  Bookmark App (Ctrl + D)", key="btn_bookmark_app", use_container_width=True):
-                st.info("💡 Press **Ctrl + D** (or **Cmd + D** on Mac) in your browser to instantly bookmark AscendCareer.")
-        with col_d2:
-            if st.button("🚀  Copy Platform Link", key="btn_copy_link", use_container_width=True):
-                st.success("✅ Platform URL: http://localhost:8501 (Ready for desktop shortcut)")
+        shortcut_data = "[InternetShortcut]\r\nURL=http://localhost:8501\r\nIconIndex=0\r\n"
+        st.download_button(
+            label="🖥️  Add to Desktop",
+            data=shortcut_data,
+            file_name="AscendCareer.url",
+            mime="application/x-mswinurl",
+            use_container_width=True,
+            type="primary"
+        )
 
     st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
 
