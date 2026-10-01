@@ -133,6 +133,10 @@ THEMES = {
 
 def _inject_css(t: dict):
     theme_icon_uri = _get_theme_icon_data_uri()
+    is_dark = (t.get("bg") == "#0D0F1A")
+    metal_primary = "#F1F5F9" if is_dark else "#334155"
+    metal_secondary = "#CBD5E1" if is_dark else "#475569"
+    metal_muted = "#94A3B8" if is_dark else "#64748B"
     # Fast asynchronous font loading (non-blocking)
     st.markdown(
         '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
@@ -559,21 +563,23 @@ def _inject_css(t: dict):
     /* ── Footer ──────────────────────────────────────────────────────── */
     .ac-footer-container {{
         width: 100% !important;
+        max-width: 100% !important;
         background: {t["surface"]} !important;
         border-top: 1px solid {t["border"]} !important;
         box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.06) !important;
-        padding: 32px 24px 36px !important;
+        padding: 32px 48px 36px !important;
         margin-top: 56px !important;
         box-sizing: border-box !important;
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-inner {{
-        max-width: 1200px;
+        width: 100% !important;
+        max-width: 100% !important;
         margin: 0 auto;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 28px;
+        gap: 32px;
         box-sizing: border-box;
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
@@ -593,7 +599,7 @@ def _inject_css(t: dict):
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 0.88rem;
         font-weight: 600;
-        color: {t["text_secondary"]};
+        color: {metal_secondary} !important;
         line-height: 1.45;
         letter-spacing: -0.01em;
     }}
@@ -607,14 +613,14 @@ def _inject_css(t: dict):
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 0.82rem;
         font-weight: 600;
-        color: {t["text_secondary"]};
+        color: {metal_secondary} !important;
         line-height: 1.4;
     }}
     .ac-footer-rights {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 0.74rem;
         font-weight: 400;
-        color: {t["text_muted"]};
+        color: {metal_muted} !important;
         line-height: 1.35;
     }}
     .ac-footer-center {{
@@ -629,7 +635,7 @@ def _inject_css(t: dict):
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 1.20rem;
         font-weight: 800;
-        color: {t["text_primary"]};
+        color: {metal_primary} !important;
         letter-spacing: 0.02em;
         line-height: 1.2;
     }}
@@ -637,7 +643,7 @@ def _inject_css(t: dict):
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 0.80rem;
         font-weight: 400;
-        color: {t["text_muted"]};
+        color: {metal_muted} !important;
         line-height: 1.45;
     }}
     .ac-footer-right {{
@@ -652,14 +658,14 @@ def _inject_css(t: dict):
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-size: 0.86rem;
         font-weight: 500;
-        color: {t["text_secondary"]};
+        color: {metal_secondary} !important;
         line-height: 1.45;
         white-space: nowrap;
     }}
     .ac-footer-creator-name {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
         font-weight: 800;
-        color: {t["text_primary"]};
+        color: {metal_primary} !important;
         letter-spacing: 0.02em;
     }}
 
@@ -678,44 +684,47 @@ def _inject_css(t: dict):
         .ac-qa-item summary {{ font-size: 0.83rem; padding: 10px 13px; }}
         .ac-qa-answer {{ font-size: 0.82rem; padding: 10px 13px; }}
 
-        /* Stacked centered footer on mobile in exact required order */
+        /* Stacked left-aligned footer on mobile */
         .ac-footer-container {{
-            padding: 30px 16px 36px !important;
+            padding: 28px 20px 32px !important;
             margin-top: 36px !important;
         }}
         .ac-footer-inner {{
-            flex-direction: column;
-            text-align: center;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column !important;
+            text-align: left !important;
+            align-items: flex-start !important;
+            gap: 20px !important;
+        }}
+        .ac-footer-col {{
+            width: 100% !important;
         }}
         .ac-footer-left {{
-            text-align: center;
-            align-items: center;
-            order: 1;
-            width: 100%;
-            gap: 6px;
+            text-align: left !important;
+            align-items: flex-start !important;
+            order: 1 !important;
+            width: 100% !important;
+            gap: 6px !important;
         }}
         .ac-footer-copyright-group {{
-            align-items: center;
-            gap: 2px;
+            align-items: flex-start !important;
+            gap: 2px !important;
         }}
         .ac-footer-center {{
-            text-align: center;
-            align-items: center;
-            order: 2;
-            width: 100%;
-            gap: 4px;
+            text-align: left !important;
+            align-items: flex-start !important;
+            order: 2 !important;
+            width: 100% !important;
+            gap: 4px !important;
         }}
         .ac-footer-right {{
-            text-align: center;
-            align-items: center;
-            order: 3;
-            width: 100%;
+            text-align: left !important;
+            align-items: flex-start !important;
+            order: 3 !important;
+            width: 100% !important;
         }}
         .ac-footer-creator {{
-            white-space: normal;
-            text-align: center;
+            white-space: normal !important;
+            text-align: left !important;
         }}
     }}
     </style>
