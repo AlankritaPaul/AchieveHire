@@ -260,23 +260,162 @@ def render_resume_analysis_flow():
             st.markdown(f"**Experience Relevance:** ({res['experience_relevance']['score']}/100)")
             st.write(res["experience_relevance"]["summary"])
 
-        # Section-wise feedback
-        st.markdown("#### Section-wise Feedback")
-        for sec_name, fb_text in res["section_feedback"].items():
-            with st.expander(f"Section: {sec_name}", expanded=False):
-                st.write(fb_text)
+        # Step 2: What is Already Well-Structured & Correct
+        st.markdown("---")
+        st.markdown("### ✅ What is Already Well-Structured & Correct")
+        st.caption("These sections meet professional standards and require no modification. All authentic content is strictly preserved.")
+        already_correct_list = res.get("already_correct", [])
+        if already_correct_list:
+            for sec in already_correct_list:
+                st.markdown(f"• **{sec['title']}**: {sec['observation']}")
+        else:
+            st.markdown("_No sections were identified as completely optimal yet._")
 
         # Outcome Branching
         st.markdown("---")
         if res["is_well_aligned"]:
             st.success("### “Your resume is well-aligned with this job role and effectively highlights the skills and experience required.”")
-            st.info("No unnecessary improvement message should be shown when the resume does not require meaningful changes.")
+            st.info("No unnecessary improvement message is shown because the resume does not require meaningful changes.")
         else:
             st.warning("### “Your resume needs some improvements to better match this job role.”")
-            if res["high_level_areas"]:
-                st.markdown("**Relevant Improvement Areas:**")
-                for area in res["high_level_areas"]:
-                    st.markdown(f"- **{area}**")
+            
+            # Step 3: Areas Requiring Attention (Distinguishing Needs Improvement vs Missing Information)
+            st.markdown("### 🔍 Areas Requiring Attention")
+            
+            needs_imp = res.get("needs_improvement_sections", [])
+            if needs_imp:
+                st.markdown("#### Sections That Can Be Improved Directly (Existing Information)")
+                st.caption("These sections contain usable information and can be refined directly without inventing new data.")
+                for sec in needs_imp:
+                    st.markdown(f"• **{sec['title']}**: {sec['observation']} *(Action: {sec['action']})*")
+
+            missing_info = res.get("missing_info_sections", [])
+            if missing_info:
+                st.markdown("#### Information Missing (Action Required)")
+                st.caption("These sections lack essential data. The system pauses improvement for these sections until you provide the details or choose to decline/skip.")
+                for sec in missing_info:
+                    opt_note = " *(Optional - can be skipped)*" if sec.get("is_optional") else " *(Recommended / Essential)*"
+                    st.markdown(f"• **{sec['title']}**{opt_note}: {sec['observation']}")
+
+            # Step 4, 6, 10: Interactive Missing Information Form (User Remains in Control)
+            user_provided_info: Dict[str, Any] = {"declined_sections": []}
+            if missing_info:
+                st.markdown("---")
+                st.markdown("### 📝 Provide Missing Information")
+                st.caption("Strict Accuracy Rule: We never generate placeholder, assumed, or fictional content. Provide the required information below, or choose to decline/skip if you do not have it.")
+
+                for sec in missing_info:
+                    sec_k = sec["key"]
+                    sec_t = sec["title"]
+
+                    if sec_k == "projects":
+                        with st.expander(f"📌 {sec_t} (Action Required)", expanded=True):
+                            st.write(sec["observation"])
+                            st.caption(f"Why needed: {sec['action']}")
+                            p_choice = st.radio(
+                                f"Choose option for {sec_t}:",
+                                options=["Provide Project Details", "Decline / I don't have projects (Skip)"],
+                                key="missing_proj_choice",
+                                horizontal=True
+                            )
+                            if p_choice == "Provide Project Details":
+                                p_name = st.text_input("Project Name *", key="ui_p_name", placeholder="e.g. Distributed Task Orchestrator")
+                                p_desc = st.text_area("Project Description *", key="ui_p_desc", placeholder="Describe what the project does, key features, and your role...")
+                                p_tools = st.text_input("Technologies or Tools Used", key="ui_p_tools", placeholder="e.g. Python, Docker, Redis, REST APIs")
+                                p_outcome = st.text_input("Key Contribution or Outcome (Optional/Measurable)", key="ui_p_outcome", placeholder="e.g. Handled 5,000 requests/sec with p99 latency < 20ms")
+                                if p_name or p_desc:
+                                    user_provided_info["projects"] = {
+                                        "name": p_name,
+                                        "description": p_desc,
+                                        "tools": p_tools,
+                                        "outcome": p_outcome
+                                    }
+                            else:
+                                user_provided_info["declined_sections"].append("projects")
+
+                    elif sec_k == "experience":
+                        with st.expander(f"📌 {sec_t} (Optional for Freshers)", expanded=True):
+                            st.write(sec["observation"])
+                            st.info("💡 **Students & Freshers:** Work experience is optional. Choose **'Decline / Skip'** below if you have no prior professional employment. You will not be penalized.")
+                            e_choice = st.radio(
+                                f"Choose option for {sec_t}:",
+                                options=["Decline / Skip (Entry-Level / Fresher)", "Provide Experience Details"],
+                                key="missing_exp_choice",
+                                horizontal=True
+                            )
+                            if e_choice == "Provide Experience Details":
+                                e_comp = st.text_input("Company / Organization Name *", key="ui_e_comp", placeholder="e.g. TechCorp Solutions")
+                                e_role = st.text_input("Job Title / Role *", key="ui_e_role", placeholder="e.g. Software Engineer Intern")
+                                e_dates = st.text_input("Duration / Dates", key="ui_e_dates", placeholder="e.g. Jun 2023 - Aug 2023")
+                                e_bullets = st.text_area("Key Responsibilities & Achievements (one per line)", key="ui_e_bullets", placeholder="• Developed backend REST APIs using Python\n• Optimized database queries")
+                                if e_comp or e_role:
+                                    user_provided_info["experience"] = {
+                                        "company": e_comp,
+                                        "role": e_role,
+                                        "dates": e_dates,
+                                        "bullets": e_bullets
+                                    }
+                            else:
+                                user_provided_info["declined_sections"].append("experience")
+
+                    elif sec_k == "skills":
+                        with st.expander(f"📌 {sec_t} (Action Required)", expanded=True):
+                            st.write(sec["observation"])
+                            st.caption(f"Why needed: {sec['action']}")
+                            s_choice = st.radio(
+                                f"Choose option for {sec_t}:",
+                                options=["Provide Skills Details", "Decline / Skip"],
+                                key="missing_skills_choice",
+                                horizontal=True
+                            )
+                            if s_choice == "Provide Skills Details":
+                                s_tech = st.text_input("Technical Skills (Languages, Frameworks, Tools) *", key="ui_s_tech", placeholder="e.g. Python, SQL, Git, React, Docker")
+                                s_non_tech = st.text_input("Non-Technical / Functional Skills", key="ui_s_non_tech", placeholder="e.g. Problem Solving, Collaboration, Team Leadership")
+                                if s_tech or s_non_tech:
+                                    user_provided_info["skills"] = {
+                                        "technical": s_tech,
+                                        "non_technical": s_non_tech
+                                    }
+                            else:
+                                user_provided_info["declined_sections"].append("skills")
+
+                    elif sec_k == "education":
+                        with st.expander(f"📌 {sec_t} (Action Required)", expanded=True):
+                            st.write(sec["observation"])
+                            ed_choice = st.radio(
+                                f"Choose option for {sec_t}:",
+                                options=["Provide Education Details", "Decline / Skip"],
+                                key="missing_edu_choice",
+                                horizontal=True
+                            )
+                            if ed_choice == "Provide Education Details":
+                                ed_deg = st.text_input("Degree / Qualification *", key="ui_ed_deg", placeholder="e.g. B.S. in Computer Science")
+                                ed_inst = st.text_input("Institution / University *", key="ui_ed_inst", placeholder="e.g. State University")
+                                ed_year = st.text_input("Graduation Year / Dates", key="ui_ed_year", placeholder="e.g. 2024")
+                                if ed_deg or ed_inst:
+                                    user_provided_info["education"] = {
+                                        "degree": ed_deg,
+                                        "institution": ed_inst,
+                                        "year": ed_year
+                                    }
+                            else:
+                                user_provided_info["declined_sections"].append("education")
+
+                    elif sec_k == "summary":
+                        with st.expander(f"📌 {sec_t} (Optional)", expanded=False):
+                            st.write(sec["observation"])
+                            sum_choice = st.radio(
+                                f"Choose option for {sec_t}:",
+                                options=["Decline / Skip", "Provide Summary"],
+                                key="missing_sum_choice",
+                                horizontal=True
+                            )
+                            if sum_choice == "Provide Summary":
+                                s_text = st.text_area("Write a brief 2-3 sentence summary:", key="ui_s_text", placeholder="Briefly describe your background, technical focus, and goals for this role...")
+                                if s_text.strip():
+                                    user_provided_info["summary"] = s_text.strip()
+                            else:
+                                user_provided_info["declined_sections"].append("summary")
 
             col_b1, col_b2 = st.columns(2)
             with col_b1:
@@ -290,8 +429,9 @@ def render_resume_analysis_flow():
                         job_description=st.session_state.selected_jd
                     )
                     improvements = optimizer.generate_improvements(
-                        st.session_state.parsed_sections,
-                        res
+                        sections=st.session_state.parsed_sections,
+                        analysis_result=res,
+                        user_provided_info=user_provided_info
                     )
                     st.session_state.improvements_list = improvements
                     st.session_state.show_improvements = True
