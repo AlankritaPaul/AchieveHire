@@ -8,6 +8,7 @@ The Sign In button is an entry-point placeholder — sign-in logic
 is implemented separately in the next step.
 """
 
+import textwrap
 import streamlit as st
 import streamlit.components.v1 as components
 from modules.landing.content import (
@@ -568,7 +569,7 @@ def _animated_background(theme_key: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_hero(t: dict):
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding: 56px 24px 36px;">
 
         <!-- Logo — transparent background, larger -->
@@ -650,7 +651,7 @@ def _render_hero(t: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_signin_cta(t: dict) -> bool:
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding:0 24px 20px;">
         <hr class="ac-divider" style="max-width:300px; margin:0 auto 28px;" />
         <p style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:18px;">
@@ -665,7 +666,7 @@ def _render_signin_cta(t: dict) -> bool:
                             key="ac_signin_btn",
                             use_container_width=True)
 
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding:6px 24px 0;">
         <p style="font-size:0.75rem; color:{t['text_muted']}; margin-top:8px;">
             By signing in, you agree to our Privacy &amp; Trust principles outlined below.
@@ -681,7 +682,7 @@ def _render_signin_cta(t: dict) -> bool:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_core_principle(t: dict):
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:18px;">
@@ -720,7 +721,7 @@ def _build_qa_html(qa_list: list, t: dict) -> str:
 
 
 def _render_privacy_trust(t: dict):
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-top:32px; margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:20px;">
@@ -737,7 +738,7 @@ def _render_privacy_trust(t: dict):
 
     with st.expander("🔒  Privacy & Trust — Click to read", expanded=False):
         # Statement banner at top
-        st.markdown(textwrap.dedent(f"""
+        st.markdown(clean_html(f"""
         <div class="ac-privacy-statement">
             💬 {PRIVACY_STATEMENT}
         </div>
@@ -750,7 +751,7 @@ def _render_privacy_trust(t: dict):
             label = f"{section['number']}.  {section['title']}"
             with st.expander(label, expanded=False):
                 qa_html = _build_qa_html(section["qa"], t)
-                st.markdown(textwrap.dedent(f"""
+                st.markdown(clean_html(f"""
                 <div style="padding: 4px 0;">
                     {qa_html}
                 </div>
@@ -764,7 +765,7 @@ def _render_privacy_trust(t: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_footer(t: dict):
-    st.markdown(textwrap.dedent(f"""
+    st.markdown(clean_html(f"""
     <div class="ac-content" style="
         text-align:center;
         padding: 36px 24px 52px;
