@@ -57,6 +57,12 @@ def init_builder_state():
         st.session_state.builder_data["qualification_entries"] = []
     if "experience_entries" not in st.session_state.builder_data or not isinstance(st.session_state.builder_data.get("experience_entries"), list):
         st.session_state.builder_data["experience_entries"] = []
+    if "professional_headline" not in st.session_state.builder_data:
+        st.session_state.builder_data["professional_headline"] = ""
+    if "place_val" not in st.session_state.builder_data:
+        st.session_state.builder_data["place_val"] = ""
+    if "project_entries" not in st.session_state.builder_data or not isinstance(st.session_state.builder_data.get("project_entries"), list):
+        st.session_state.builder_data["project_entries"] = []
     if "builder_accepted" not in st.session_state:
         st.session_state.builder_accepted = False
 
@@ -69,23 +75,24 @@ def render_create_resume_flow():
         "1. Select Job Role",
         "2. Select Company",
         "3. Job Description",
-        "4. Personal & Photo",
-        "5. Education and Qualifications",
-        "6. Skills",
-        "7. Work Experience",
-        "8. Projects",
-        "9. Additional Information",
-        "10. Declaration & Signature",
-        "11. Template Selection",
-        "12. Resume Preview",
-        "13. Final Resume & Download"
+        "4. Personal Details & Photo",
+        "5. Professional Headline",
+        "6. Education and Qualifications",
+        "7. Skills",
+        "8. Work Experience",
+        "9. Technical Project",
+        "10. Additional Information",
+        "11. Declaration, Date and Signature",
+        "12. Template Selection",
+        "13. Resume Preview",
+        "14. Final Resume & Download"
     ]
 
     current_step = st.session_state.builder_step
     
     st.markdown("""
         <div style="background-color: #EDF2F7; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;">
-            <span style="font-size: 0.95rem; color: #2D3748; font-weight: 600;">Create Resume — Step %d of 13: %s</span>
+            <span style="font-size: 0.95rem; color: #2D3748; font-weight: 600;">Create Resume — Step %d of 14: %s</span>
         </div>
     """ % (current_step, steps_labels[current_step - 1]), unsafe_allow_html=True)
 
@@ -290,10 +297,49 @@ def render_create_resume_flow():
                 st.rerun()
 
     # -------------------------------------------------------------
-    # -------------------------------------------------------------
-    # STEP 5: EDUCATION AND QUALIFICATIONS
+    # STEP 5: PROFESSIONAL HEADLINE
     # -------------------------------------------------------------
     elif current_step == 5:
+        st.markdown("### Professional Headline")
+        st.caption("Provide a professional headline that defines your expertise or specialization. This field is completely user-controlled.")
+
+        data["professional_headline"] = st.text_input(
+            "Professional Headline (Optional):",
+            value=data.get("professional_headline", ""),
+            placeholder="e.g. Full-Stack Developer | Python & Cloud Solutions",
+            key="builder_prof_headline_input"
+        )
+
+        st.markdown(
+            f"""
+            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; padding: 14px 16px; border-radius: 6px; margin-top: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+                <strong>📌 Headline Placement & Header Logic:</strong>
+                <ul style="margin: 6px 0 0 16px; padding: 0;">
+                    <li><strong>Entered Headline:</strong> If provided, this exact headline appears directly below your name on your final resume.</li>
+                    <li><strong>Ongoing Experience Fallback:</strong> If left empty, the builder will look at your <em>Work Experience</em>. If you have an entry marked as <em>Currently Ongoing</em>, its job position title will be displayed.</li>
+                    <li><strong>Clean & Empty:</strong> If there is no headline and no ongoing experience, the space below your name remains completely clean and empty.</li>
+                    <li><strong>Target Isolation:</strong> Your interview preparation targets (Job Role: <em>{data.get('job_role', 'Not selected')}</em> and Target Company: <em>{data.get('company', 'Not selected')}</em>) remain strictly separate and will <strong>never</strong> be placed below your name.</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+        col_back, col_space, col_next = st.columns([1, 2, 1])
+        with col_back:
+            if st.button("← Back", key="btn_bld_back_5", use_container_width=True):
+                st.session_state.builder_step = 4
+                st.rerun()
+        with col_next:
+            if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
+                st.session_state.builder_step = 6
+                st.rerun()
+
+    # -------------------------------------------------------------
+    # STEP 6: EDUCATION AND QUALIFICATIONS
+    # -------------------------------------------------------------
+    elif current_step == 6:
         col_e_head, col_e_btn = st.columns([3, 1])
         with col_e_head:
             st.markdown("### Education and Qualifications")
@@ -543,11 +589,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_5", use_container_width=True):
-                st.session_state.builder_step = 4
+            if st.button("← Back", key="btn_bld_back_6", use_container_width=True):
+                st.session_state.builder_step = 5
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
+            if st.button("Next →", type="primary", key="btn_bld_next_6", use_container_width=True):
                 if data.get("education_entries"):
                     data["education_entries"] = ResumeBuilderModel.enhance_education_entries(data["education_entries"])
                 if data.get("qualification_entries"):
@@ -560,13 +606,13 @@ def render_create_resume_flow():
                     data["education"] = compiled
                 elif data.get("education", "").strip():
                     data["education"] = ResumeBuilderModel.enhance_qualifications(data["education"])
-                st.session_state.builder_step = 6
+                st.session_state.builder_step = 7
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 6: SKILLS
+    # STEP 7: SKILLS
     # -------------------------------------------------------------
-    elif current_step == 6:
+    elif current_step == 7:
         col_s_head, col_s_btn = st.columns([3, 1])
         with col_s_head:
             st.markdown("### Skills")
@@ -601,21 +647,20 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_6", use_container_width=True):
-                st.session_state.builder_step = 5
+            if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
+                st.session_state.builder_step = 6
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_6", use_container_width=True):
+            if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
                 if data.get("skills", "").strip():
                     data["skills"] = ResumeBuilderModel.enhance_skills(data["skills"])
-                st.session_state.builder_step = 7
+                st.session_state.builder_step = 8
                 st.rerun()
 
     # -------------------------------------------------------------
+    # STEP 8: WORK EXPERIENCE
     # -------------------------------------------------------------
-    # STEP 7: WORK EXPERIENCE
-    # -------------------------------------------------------------
-    elif current_step == 7:
+    elif current_step == 8:
         col_exp_head, col_exp_btn = st.columns([3, 1])
         with col_exp_head:
             st.markdown("### Work Experience")
@@ -843,12 +888,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
-                st.session_state.builder_step = 6
+            if st.button("← Back", key="btn_bld_back_8", use_container_width=True):
+                st.session_state.builder_step = 7
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
-                # Clean out any empty entries where no substantive details were entered
+            if st.button("Next →", type="primary", key="btn_bld_next_8", use_container_width=True):
                 valid_entries = [
                     e for e in data.get("experience_entries", [])
                     if any([
@@ -864,39 +908,96 @@ def render_create_resume_flow():
                     data["experience"] = ResumeBuilderModel.compile_experience_entries(data["experience_entries"])
                 else:
                     data["experience"] = ""
-                st.session_state.builder_step = 8
+                st.session_state.builder_step = 9
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 8: PROJECTS
+    # STEP 9: TECHNICAL PROJECT
     # -------------------------------------------------------------
-    elif current_step == 8:
+    elif current_step == 9:
         col_proj_head, col_proj_btn = st.columns([3, 1])
         with col_proj_head:
-            st.markdown("### Projects")
-            st.caption("Provide projects that showcase your hands-on ability and problem-solving skills.")
+            st.markdown("### Technical Project")
+            st.caption("Provide technical projects that showcase your hands-on engineering, architecture, and problem-solving abilities.")
         with col_proj_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_proj", use_container_width=True, help="Upgrade project descriptions to strong technical phrasing"):
-                if data.get("projects", "").strip():
+                if data.get("project_entries"):
+                    data["project_entries"] = ResumeBuilderModel.enhance_project_entries(data["project_entries"])
+                    data["projects"] = ResumeBuilderModel.compile_project_entries(data["project_entries"])
+                    st.success("✅ Technical project descriptions enhanced with strong technical phrasing!")
+                    st.rerun()
+                elif data.get("projects", "").strip():
                     data["projects"] = ResumeBuilderModel.enhance_projects(data["projects"])
                     st.success("✅ Project descriptions enhanced with strong technical phrasing!")
                     st.rerun()
                 else:
                     st.warning("Please enter your project details first before enhancing.")
 
-        data["projects"] = st.text_area(
-            "Project Details:",
-            value=data.get("projects", ""),
-            height=180,
-            placeholder="• E-Commerce Web App | Tech Stack: Python, FastAPI, SQLite\n  - Built an online store with product catalog and checkout cart.\n  - Deployed live demo at github.com/username/project.",
-            key="builder_proj_input"
-        )
+        if "project_entries" not in data or not isinstance(data.get("project_entries"), list) or not data["project_entries"]:
+            data["project_entries"] = [
+                {"name": "", "tech_stack": "", "description": ""}
+            ]
+
+        del_proj_indices = []
+        for p_idx, proj in enumerate(data["project_entries"]):
+            proj_title = proj.get("name", "").strip() or f"Technical Project #{p_idx + 1}"
+            with st.container():
+                cp_head, cp_del = st.columns([5, 1])
+                with cp_head:
+                    st.markdown(f"**💻 {proj_title}**")
+                with cp_del:
+                    if len(data["project_entries"]) > 1:
+                        if st.button("🗑️ Remove", key=f"btn_del_proj_{p_idx}"):
+                            del_proj_indices.append(p_idx)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    proj["name"] = st.text_input(
+                        "Project Name:",
+                        value=proj.get("name", ""),
+                        placeholder="e.g. Distributed Task Queue",
+                        key=f"proj_name_{p_idx}"
+                    )
+                with c2:
+                    proj["tech_stack"] = st.text_input(
+                        "Tech Stack / Technologies (Optional):",
+                        value=proj.get("tech_stack", ""),
+                        placeholder="e.g. Python, Redis, Docker, FastAPI",
+                        key=f"proj_stack_{p_idx}"
+                    )
+
+                proj["description"] = st.text_area(
+                    "Project Description (Rendered as normal paragraph below heading):",
+                    value=proj.get("description", ""),
+                    height=95,
+                    placeholder="Describe what the project does, key features, and your technical implementation. It will appear as a clean normal paragraph below the project name.",
+                    key=f"proj_desc_{p_idx}"
+                )
+                st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
+
+        if del_proj_indices:
+            for di in sorted(del_proj_indices, reverse=True):
+                data["project_entries"].pop(di)
+            st.rerun()
+
+        if st.button("➕ Add Another Project", key="btn_add_another_proj"):
+            data["project_entries"].append({
+                "name": "",
+                "tech_stack": "",
+                "description": ""
+            })
+            st.rerun()
+
+        # Compile project entries into data["projects"]
+        compiled_proj = ResumeBuilderModel.compile_project_entries(data.get("project_entries", []))
+        if compiled_proj:
+            data["projects"] = compiled_proj
 
         st.markdown(
             """
             <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Impactful Technical Bullet Points:</strong> Clicking <strong>'✨ Enhance Writing'</strong> refines project descriptions to highlight design, engineering, and architecture without inventing false technologies or metrics.
+                <strong>💡 Professional Formatting:</strong> On the final resume paper, each Project Name appears as a bullet-point-style heading (<code>• Project Name</code>). The project description appears as a clean normal paragraph directly below the project name without extra bullet points.
             </div>
             """,
             unsafe_allow_html=True
@@ -905,20 +1006,26 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_8", use_container_width=True):
-                st.session_state.builder_step = 7
+            if st.button("← Back", key="btn_bld_back_9", use_container_width=True):
+                st.session_state.builder_step = 8
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_8", use_container_width=True):
-                if data.get("projects", "").strip():
-                    data["projects"] = ResumeBuilderModel.enhance_projects(data["projects"])
-                st.session_state.builder_step = 9
+            if st.button("Next →", type="primary", key="btn_bld_next_9", use_container_width=True):
+                valid_projs = [
+                    p for p in data.get("project_entries", [])
+                    if any([p.get("name", "").strip(), p.get("description", "").strip()])
+                ]
+                data["project_entries"] = valid_projs
+                if valid_projs:
+                    data["project_entries"] = ResumeBuilderModel.enhance_project_entries(valid_projs)
+                    data["projects"] = ResumeBuilderModel.compile_project_entries(data["project_entries"])
+                st.session_state.builder_step = 10
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 9: ADDITIONAL INFORMATION & CUSTOM SECTIONS
+    # STEP 10: ADDITIONAL INFORMATION & CUSTOM SECTIONS
     # -------------------------------------------------------------
-    elif current_step == 9:
+    elif current_step == 10:
         col_cert_head, col_cert_btn = st.columns([3, 1])
         with col_cert_head:
             st.markdown("### Additional Information")
@@ -1016,18 +1123,18 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_9", use_container_width=True):
-                st.session_state.builder_step = 8
+            if st.button("← Back", key="btn_bld_back_10", use_container_width=True):
+                st.session_state.builder_step = 9
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_9", use_container_width=True):
-                st.session_state.builder_step = 10
+            if st.button("Next →", type="primary", key="btn_bld_next_10", use_container_width=True):
+                st.session_state.builder_step = 11
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 10: DECLARATION, DATE & SIGNATURE
+    # STEP 11: DECLARATION, DATE & SIGNATURE
     # -------------------------------------------------------------
-    elif current_step == 10:
+    elif current_step == 11:
         st.markdown("### Declaration, Date and Signature")
         st.caption("Every generated resume includes a professional declaration section.")
 
@@ -1041,13 +1148,17 @@ def render_create_resume_flow():
 
         col_d, col_s = st.columns([1, 1])
         with col_d:
-            st.markdown("#### Date")
-            data["date_val"] = st.text_input("Date:", value=data.get("date_val", ""), placeholder="e.g. October 15, 2026")
+            st.markdown("#### Date & Place")
+            data["date_val"] = st.text_input("Date:", value=data.get("date_val", ""), placeholder="e.g. October 15, 2026", key="bld_date_input")
             if not data["date_val"]:
                 st.caption("Will render as: `Date: ____________________`")
 
+            data["place_val"] = st.text_input("Place / City:", value=data.get("place_val", data.get("location", "")), placeholder="e.g. San Francisco, CA / New Delhi", key="bld_place_input")
+            if not data["place_val"]:
+                st.caption("Will render as: `Place: ____________________`")
+
         with col_s:
-            st.markdown("#### Signature")
+            st.markdown("#### Signature & Name")
             
             sig_choices = [
                 "Write the signature",
@@ -1133,25 +1244,28 @@ def render_create_resume_flow():
             else:
                 data["signature_mode"] = "blank"
                 data["sig_val"] = ""
-                st.info("A blank signature line (`Signature: ____________________`) will be included for physical hand signing after printing.")
+                st.info("A clean single signature line (`Signature: ____________________`) will be included for physical hand signing after printing.")
+
+            # Full Name Display
+            st.markdown(f"<div style='margin-top: 10px; font-size: 0.9rem; color: #4A5568;'><strong>Candidate Name:</strong> {data.get('full_name', 'Not provided')}</div>", unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_10", use_container_width=True):
-                st.session_state.builder_step = 9
+            if st.button("← Back", key="btn_bld_back_11", use_container_width=True):
+                st.session_state.builder_step = 10
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_10", use_container_width=True):
-                st.session_state.builder_step = 11
+            if st.button("Next →", type="primary", key="btn_bld_next_11", use_container_width=True):
+                st.session_state.builder_step = 12
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 11: TEMPLATE SELECTION
+    # STEP 12: TEMPLATE SELECTION (10 ATS-FRIENDLY TEMPLATES)
     # -------------------------------------------------------------
-    elif current_step == 11:
+    elif current_step == 12:
         st.markdown("### Template Selection")
-        st.caption("Select your preferred resume template. Each template displays its picture preview and name.")
+        st.caption("Select from 10 professionally designed templates. Each template displays its picture preview and name directly below.")
 
         current_tpl = data.get("template_name", "Modern")
 
@@ -1161,6 +1275,7 @@ def render_create_resume_flow():
             with col_target:
                 st.markdown(f"#### {tpl_info['name']}")
                 st.markdown(tpl_info["preview_svg"], unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size: 0.85rem; font-weight: 600; color: #2D3748; margin-top: 6px; margin-bottom: 2px;'>{tpl_info['name']} Template</div>", unsafe_allow_html=True)
                 st.caption(tpl_info["description"])
 
                 is_selected = (current_tpl == tpl_key)
@@ -1175,20 +1290,20 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_11", use_container_width=True):
-                st.session_state.builder_step = 10
+            if st.button("← Back", key="btn_bld_back_12", use_container_width=True):
+                st.session_state.builder_step = 11
                 st.rerun()
         with col_next:
-            if st.button("Next: Create & Preview Resume →", type="primary", key="btn_bld_next_11", use_container_width=True):
+            if st.button("Next: Create & Preview Resume →", type="primary", key="btn_bld_next_12", use_container_width=True):
                 tailored = ResumeBuilderModel.tailor_content(data)
                 st.session_state.builder_data.update(tailored)
-                st.session_state.builder_step = 12
+                st.session_state.builder_step = 13
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 12: RESUME PREVIEW & REVIEW CONTROLS
+    # STEP 13: RESUME PREVIEW & REVIEW CONTROLS
     # -------------------------------------------------------------
-    elif current_step == 12:
+    elif current_step == 13:
         st.markdown("### Resume Preview")
         st.caption(f"Previewing resume using the {data.get('template_name', 'Modern')} template.")
 
@@ -1200,12 +1315,12 @@ def render_create_resume_flow():
                 st.rerun()
         with col_act2:
             if st.button("🎨 Change Template", use_container_width=True):
-                st.session_state.builder_step = 11
+                st.session_state.builder_step = 12
                 st.rerun()
         with col_act3:
             if st.button("✅ Accept Resume", type="primary", use_container_width=True):
                 st.session_state.builder_accepted = True
-                st.session_state.builder_step = 13
+                st.session_state.builder_step = 14
                 st.rerun()
 
         st.markdown("")
@@ -1219,19 +1334,19 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_12", use_container_width=True):
-                st.session_state.builder_step = 11
+            if st.button("← Back", key="btn_bld_back_13", use_container_width=True):
+                st.session_state.builder_step = 12
                 st.rerun()
         with col_next:
-            if st.button("Next: Finalize & Download →", type="primary", key="btn_bld_next_12", use_container_width=True):
+            if st.button("Next: Finalize & Download →", type="primary", key="btn_bld_next_13", use_container_width=True):
                 st.session_state.builder_accepted = True
-                st.session_state.builder_step = 13
+                st.session_state.builder_step = 14
                 st.rerun()
 
     # -------------------------------------------------------------
-    # STEP 13: FINAL RESUME & DOWNLOADS
+    # STEP 14: FINAL RESUME & DOWNLOADS
     # -------------------------------------------------------------
-    elif current_step == 13:
+    elif current_step == 14:
         st.markdown("### Final Resume")
         if data.get("job_description"):
             st.success("### “Your resume has been updated based on your selected job role, company, and job description.”")
@@ -1273,12 +1388,12 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back to Edit", key="btn_bld_back_13", use_container_width=True):
+            if st.button("← Back to Edit", key="btn_bld_back_14", use_container_width=True):
                 st.session_state.builder_step = 4
                 st.rerun()
         with col_next:
-            if st.button("Switch Template", key="btn_bld_next_13", use_container_width=True):
-                st.session_state.builder_step = 11
+            if st.button("Switch Template", key="btn_bld_next_14", use_container_width=True):
+                st.session_state.builder_step = 12
                 st.rerun()
 
         st.markdown("")

@@ -22,13 +22,16 @@ class ResumeBuilderModel:
             "company": "",
             "job_description": "",
             "full_name": "",
+            "professional_headline": "",
             "email": "",
             "phone": "",
             "location": "",
+            "place_val": "",
             "summary": "",
             "skills": "",
             "experience": "",
             "projects": "",
+            "project_entries": [],
             "education": "",
             "certifications": "",
             "custom_sections": [],
@@ -65,25 +68,39 @@ class ResumeBuilderModel:
         """
         Enhance educational qualifications using standard professional terminology
         without changing the candidate's actual institutions, degrees, or facts.
+        Preserves user's actual entered degree without redundant bracket duplicates.
         """
         if not raw_edu or not raw_edu.strip():
             return ""
 
         degree_map = [
-            (r"\bb\.?\s*tech\b|\bbachelor\s+of\s+technology\b", "B.Tech (Bachelor of Technology)"),
-            (r"\bb\.?\s*e\b|\bbachelor\s+of\s+engineering\b", "B.E. (Bachelor of Engineering)"),
-            (r"\bb\.?\s*sc\b|\bb\.?\s*s\b|\bbachelor\s+of\s+science\b", "B.S. (Bachelor of Science)"),
-            (r"\bm\.?\s*tech\b|\bmaster\s+of\s+technology\b", "M.Tech (Master of Technology)"),
-            (r"\bm\.?\s*sc\b|\bm\.?\s*s\b|\bmaster\s+of\s+science\b", "M.S. (Master of Science)"),
-            (r"\bbca\b|\bbachelor\s+of\s+computer\s+applications?\b", "BCA (Bachelor of Computer Applications)"),
-            (r"\bmca\b|\bmaster\s+of\s+computer\s+applications?\b", "MCA (Master of Computer Applications)"),
-            (r"\bmba\b|\bmaster\s+of\s+business\s+administration\b", "MBA (Master of Business Administration)"),
-            (r"\bbba\b|\bbachelor\s+of\s+business\s+administration\b", "BBA (Bachelor of Business Administration)"),
-            (r"\bb\.?\s*com\b|\bbachelor\s+of\s+commerce\b", "B.Com (Bachelor of Commerce)"),
-            (r"\bb\.?\s*a\b|\bbachelor\s+of\s+arts\b", "B.A. (Bachelor of Arts)"),
-            (r"\bph\.?d\b|\bdoctor\s+of\s+philosophy\b", "Ph.D. (Doctor of Philosophy)"),
-            (r"\b12th(\s*(?:grade|standard|class|pass))?\b|\bclass\s*12\b|\bhsc\b|\bintermediate\b", "Higher Secondary Certificate (Class XII)"),
-            (r"\b10th(\s*(?:grade|standard|class|pass))?\b|\bclass\s*10\b|\bssc\b|\bmatric(ulation)?\b", "Secondary School Certificate (Class X)"),
+            (r"\bb\.?\s*tech\b", "B.Tech"),
+            (r"\bbachelor\s+of\s+technology\b", "Bachelor of Technology"),
+            (r"\bb\.?\s*e\b", "B.E."),
+            (r"\bbachelor\s+of\s+engineering\b", "Bachelor of Engineering"),
+            (r"\bb\.?\s*sc\b", "B.Sc."),
+            (r"\bb\.?\s*s\b", "B.S."),
+            (r"\bbachelor\s+of\s+science\b", "Bachelor of Science"),
+            (r"\bm\.?\s*tech\b", "M.Tech"),
+            (r"\bmaster\s+of\s+technology\b", "Master of Technology"),
+            (r"\bm\.?\s*sc\b", "M.Sc."),
+            (r"\bm\.?\s*s\b", "M.S."),
+            (r"\bmaster\s+of\s+science\b", "Master of Science"),
+            (r"\bbca\b", "BCA"),
+            (r"\bbachelor\s+of\s+computer\s+applications?\b", "Bachelor of Computer Applications"),
+            (r"\bmca\b", "MCA"),
+            (r"\bmaster\s+of\s+computer\s+applications?\b", "Master of Computer Applications"),
+            (r"\bmba\b", "MBA"),
+            (r"\bmaster\s+of\s+business\s+administration\b", "Master of Business Administration"),
+            (r"\bbba\b", "BBA"),
+            (r"\bbachelor\s+of\s+business\s+administration\b", "Bachelor of Business Administration"),
+            (r"\bb\.?\s*com\b", "B.Com"),
+            (r"\bbachelor\s+of\s+commerce\b", "Bachelor of Commerce"),
+            (r"\bb\.?\s*a\b", "B.A."),
+            (r"\bbachelor\s+of\s+arts\b", "Bachelor of Arts"),
+            (r"\bph\.?d\b|\bdoctor\s+of\s+philosophy\b", "Ph.D."),
+            (r"\b12th(\s*(?:grade|standard|class|pass))?\b|\bclass\s*12\b|\bhsc\b|\bintermediate\b", "Class XII (Senior Secondary)"),
+            (r"\b10th(\s*(?:grade|standard|class|pass))?\b|\bclass\s*10\b|\bssc\b|\bmatric(ulation)?\b", "Class X (Secondary)"),
             (r"\bdiploma\b", "Diploma"),
         ]
 
@@ -305,16 +322,16 @@ class ResumeBuilderModel:
             # Date formatting based on independent status
             if status == "Currently Pursuing":
                 if start_yr and exp_grad_yr:
-                    meta.append(f"{start_yr} - Present (Expected: {exp_grad_yr})")
+                    meta.append(f"{start_yr} – Present | Expected Graduation: {exp_grad_yr}")
                 elif exp_grad_yr:
-                    meta.append(f"Expected: {exp_grad_yr}")
+                    meta.append(f"Expected Graduation: {exp_grad_yr}")
                 elif start_yr:
-                    meta.append(f"{start_yr} - Present")
+                    meta.append(f"{start_yr} – Present")
                 else:
                     meta.append("Currently Pursuing")
             else:  # Completed
                 if start_yr and end_yr:
-                    meta.append(f"{start_yr} - {end_yr}")
+                    meta.append(f"{start_yr} – {end_yr}")
                 elif end_yr:
                     meta.append(end_yr)
                 elif start_yr:
@@ -480,65 +497,112 @@ class ResumeBuilderModel:
             "leadership": ("Team Leadership", "concepts"),
         }
 
-        lines = [l.strip() for l in raw_skills.split("\n") if l.strip()]
-        if len(lines) > 1 and any(":" in l for l in lines):
-            polished_lines = []
-            for line in lines:
-                l_clean = line.lstrip("•-* ")
-                if ":" in l_clean:
-                    cat, skills_part = l_clean.split(":", 1)
-                    s_items = [s.strip() for s in re.split(r"[,;]", skills_part) if s.strip()]
-                    norm_items = []
-                    for item in s_items:
-                        lower_item = item.lower()
-                        if lower_item in tech_map:
-                            norm_items.append(tech_map[lower_item][0])
-                        else:
-                            norm_items.append(item.title() if len(item) > 3 else item.upper())
-                    polished_lines.append(f"• {cat.strip()}: {', '.join(norm_items)}")
-                else:
-                    polished_lines.append(f"• {l_clean}")
-            return "\n".join(polished_lines)
-
-        tokens = [s.strip(" •-*") for s in re.split(r"[,|\n;•\*]", raw_skills) if s.strip(" •-*")]
-        if not tokens:
-            return raw_skills.strip()
-
-        groups = {
-            "languages": [],
-            "frameworks": [],
-            "databases": [],
-            "cloud_tools": [],
-            "concepts": [],
-            "other": []
+        category_labels_map = {
+            "programming languages": "Programming Languages",
+            "programming language": "Programming Languages",
+            "languages": "Programming Languages",
+            "frameworks": "Frameworks & Libraries",
+            "frameworks & libraries": "Frameworks & Libraries",
+            "libraries": "Frameworks & Libraries",
+            "databases": "Databases",
+            "database": "Databases",
+            "tools": "Tools & Cloud Technologies",
+            "tools & technologies": "Tools & Cloud Technologies",
+            "cloud tools": "Tools & Cloud Technologies",
+            "cloud technologies": "Tools & Cloud Technologies",
+            "cloud & tools": "Tools & Cloud Technologies",
+            "core competencies": "Core Competencies & Methodologies",
+            "methodologies": "Core Competencies & Methodologies",
+            "concepts": "Core Competencies & Methodologies",
+            "technical skills": "Technical Skills",
+            "non-technical skills": "Non-Technical Skills",
+            "additional competencies": "Additional Competencies",
+            "additional competency": "Additional Competencies",
+            "soft skills": "Non-Technical Skills",
+            "skills": "Technical Skills"
         }
 
-        seen = set()
-        for tok in tokens:
-            lower = tok.lower()
-            if lower in seen:
-                continue
-            seen.add(lower)
-            if lower in tech_map:
-                name, cat = tech_map[lower]
-                groups[cat].append(name)
-            else:
-                formatted = tok.title() if len(tok) > 3 else tok.upper()
-                groups["other"].append(formatted)
+        raw_lines = [l.strip() for l in raw_skills.split("\n") if l.strip()]
+        cat_skills: Dict[str, List[str]] = {}
+        cat_order: List[str] = []
+        current_cat: Optional[str] = None
 
+        def add_skill(category: str, skill_name: str):
+            clean_c = category.strip()
+            low_c = clean_c.lower()
+            if low_c in category_labels_map:
+                clean_c = category_labels_map[low_c]
+            else:
+                clean_c = clean_c[0].upper() + clean_c[1:] if len(clean_c) > 1 else clean_c.upper()
+
+            if clean_c not in cat_skills:
+                cat_skills[clean_c] = []
+                cat_order.append(clean_c)
+
+            s_clean = skill_name.strip(" •-*")
+            if not s_clean:
+                return
+            lower_s = s_clean.lower()
+            if lower_s in tech_map:
+                norm_s = tech_map[lower_s][0]
+            elif any(v[0].lower() == lower_s for v in tech_map.values()):
+                norm_s = [v[0] for v in tech_map.values() if v[0].lower() == lower_s][0]
+            else:
+                norm_s = s_clean.title() if len(s_clean) > 3 else s_clean.upper()
+
+            if norm_s and norm_s not in cat_skills[clean_c]:
+                cat_skills[clean_c].append(norm_s)
+
+        for line in raw_lines:
+            l_clean = line.lstrip("•-* ").strip()
+            if not l_clean:
+                continue
+
+            # Case A: Line has a colon "Category: skill1, skill2"
+            if ":" in l_clean:
+                cat_part, s_part = l_clean.split(":", 1)
+                cat_name = cat_part.strip()
+                s_tokens = [s.strip(" •-*") for s in re.split(r"[,;]", s_part) if s.strip(" •-*")]
+                for s in s_tokens:
+                    add_skill(cat_name, s)
+                current_cat = cat_name
+            else:
+                # Check if this line is purely a category heading
+                low_line = l_clean.lower()
+                if low_line in category_labels_map:
+                    current_cat = category_labels_map[low_line]
+                else:
+                    # It's a skill or comma-separated list of skills
+                    tokens = [s.strip(" •-*") for s in re.split(r"[,;]", l_clean) if s.strip(" •-*")]
+                    for tok in tokens:
+                        if tok.lower() in category_labels_map:
+                            current_cat = category_labels_map[tok.lower()]
+                            continue
+                        if current_cat and current_cat != "Technical Skills":
+                            add_skill(current_cat, tok)
+                        else:
+                            # Map token to standard category via tech_map
+                            low_tok = tok.lower()
+                            if low_tok in tech_map:
+                                name, cat_key = tech_map[low_tok]
+                                cat_display = {
+                                    "languages": "Programming Languages",
+                                    "frameworks": "Frameworks & Libraries",
+                                    "databases": "Databases",
+                                    "cloud_tools": "Tools & Cloud Technologies",
+                                    "concepts": "Core Competencies & Methodologies",
+                                    "other": "Additional Competencies"
+                                }.get(cat_key, "Technical Skills")
+                                add_skill(cat_display, name)
+                            else:
+                                add_skill("Technical Skills", tok)
+
+        # Build clean output bullets - only non-empty categories, no duplicate category headings
         output_bullets = []
-        if groups["languages"]:
-            output_bullets.append(f"• Programming Languages: {', '.join(groups['languages'])}")
-        if groups["frameworks"]:
-            output_bullets.append(f"• Frameworks & Libraries: {', '.join(groups['frameworks'])}")
-        if groups["databases"]:
-            output_bullets.append(f"• Databases: {', '.join(groups['databases'])}")
-        if groups["cloud_tools"]:
-            output_bullets.append(f"• Tools & Cloud Technologies: {', '.join(groups['cloud_tools'])}")
-        if groups["concepts"]:
-            output_bullets.append(f"• Core Competencies & Methodologies: {', '.join(groups['concepts'])}")
-        if groups["other"]:
-            output_bullets.append(f"• Additional Competencies: {', '.join(groups['other'])}")
+        for cat in cat_order:
+            skills_list = cat_skills.get(cat, [])
+            if skills_list:
+                output_bullets.append(f"• {cat}: {', '.join(skills_list)}")
 
         return "\n".join(output_bullets) if output_bullets else raw_skills.strip()
 
@@ -725,10 +789,92 @@ class ResumeBuilderModel:
         return "\n\n".join(blocks)
 
     @staticmethod
+    def compile_project_entries(project_entries: List[Dict[str, Any]]) -> str:
+        """
+        Compile structured project entries into clean, realistic resume formatting
+        under the Technical Project section.
+        Project Name -> bullet-point-style heading (e.g. '• Project Name' or '• Project Name | Tech Stack: ...')
+        Project Description -> normal paragraph directly below project name (NOT a bullet point).
+        """
+        if not project_entries:
+            return ""
+
+        blocks = []
+        for proj in project_entries:
+            name = proj.get("name", "").strip()
+            stack = proj.get("tech_stack", "").strip()
+            desc = proj.get("description", "").strip()
+
+            if not any([name, stack, desc]):
+                continue
+
+            heading = f"• {name}" if name else "• Technical Project"
+            if stack:
+                heading += f" | Tech Stack: {stack}"
+
+            proj_lines = [heading]
+            if desc:
+                for line in desc.split("\n"):
+                    clean_d = line.strip().lstrip("•-* ").strip()
+                    if clean_d:
+                        proj_lines.append(f"  {clean_d}")
+
+            blocks.append("\n".join(proj_lines))
+
+        return "\n\n".join(blocks)
+
+    @staticmethod
+    def enhance_project_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Enhance structured project entries with strong technical phrasing
+        without turning descriptions into bullet points or fabricating false facts.
+        """
+        phrase_upgrades = [
+            (r"\bmade a website\b", "Architected and developed a responsive web application"),
+            (r"\bbuilt an app\b", "Engineered and deployed a full-stack application"),
+            (r"\bmade an app\b", "Engineered and deployed an application"),
+            (r"\bused python\b", "Leveraged Python to implement backend logic"),
+            (r"\bused react\b", "Utilized React.js to deliver modular UI components"),
+            (r"\bused machine learning\b", "Trained and evaluated machine learning models"),
+            (r"\badded authentication\b", "Implemented secure token-based user authentication"),
+            (r"\bcreated api\b", "Designed and deployed scalable RESTful APIs"),
+        ]
+
+        enhanced = []
+        for entry in entries:
+            p = dict(entry)
+            name = p.get("name", "").strip()
+            desc = p.get("description", "").strip()
+
+            if name:
+                p["name"] = name[0].upper() + name[1:] if len(name) > 1 else name.upper()
+
+            if desc:
+                p_lines = []
+                for line in desc.split("\n"):
+                    clean = line.strip().lstrip("•-* ").strip()
+                    if not clean:
+                        continue
+                    for pattern, rep in phrase_upgrades:
+                        clean = re.sub(pattern, rep, clean, flags=re.IGNORECASE)
+                    for weak_v, strong_options in WEAK_VERBS_MAP.items():
+                        pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
+                        if re.search(pattern, clean):
+                            strong_v = strong_options[0].capitalize()
+                            clean = re.sub(pattern, strong_v, clean, count=1)
+                    if clean:
+                        clean = clean[0].upper() + clean[1:]
+                    p_lines.append(clean)
+                p["description"] = "\n".join(p_lines)
+
+            enhanced.append(p)
+        return enhanced
+
+    @staticmethod
     def enhance_projects(raw_proj: str) -> str:
         """
-        Enhance project descriptions with strong technical phrasing and structured bullets
-        without fabricating false claims or technologies.
+        Enhance project descriptions with strong technical phrasing
+        without converting descriptions into bullet points or fabricating false claims.
         """
         if not raw_proj or not raw_proj.strip():
             return ""
@@ -774,7 +920,8 @@ class ResumeBuilderModel:
             if clean_line:
                 clean_line = clean_line[0].upper() + clean_line[1:]
 
-            upgraded_lines.append(f"  - {clean_line}" if (upgraded_lines and upgraded_lines[-1].startswith("•")) else f"• {clean_line}")
+            # Normal paragraph text below project title, indented without bullet point!
+            upgraded_lines.append(f"  {clean_line}" if (upgraded_lines and upgraded_lines[-1].startswith("•")) else f"• {clean_line}")
 
         return "\n".join(upgraded_lines)
 
@@ -846,7 +993,14 @@ class ResumeBuilderModel:
             tailored["experience"] = ResumeBuilderModel.enhance_experience(tailored["experience"])
 
         # 3. Polish Projects
-        if tailored.get("projects"):
+        if tailored.get("project_entries"):
+            tailored["project_entries"] = ResumeBuilderModel.enhance_project_entries(tailored["project_entries"])
+            compiled_proj = ResumeBuilderModel.compile_project_entries(tailored["project_entries"])
+            if compiled_proj:
+                tailored["projects"] = compiled_proj
+            else:
+                tailored["projects"] = ""
+        elif tailored.get("projects"):
             tailored["projects"] = ResumeBuilderModel.enhance_projects(tailored["projects"])
 
         # 4. Standardize Skills
@@ -877,15 +1031,24 @@ class ResumeBuilderModel:
         name = data.get("full_name", "").strip() or "YOUR NAME"
         parts.append(name.upper())
 
+        # Professional headline logic (never use target job_role or company)
+        headline = (data.get("professional_headline") or "").strip()
+        if not headline:
+            for exp in data.get("experience_entries", []):
+                if exp.get("status") == "Currently Ongoing":
+                    pos = (exp.get("position") or "").strip()
+                    if pos:
+                        headline = pos
+                        break
+        if headline:
+            parts.append(headline)
+
         contact = []
         if data.get("email"): contact.append(f"Email: {data['email']}")
         if data.get("phone"): contact.append(f"Phone: {data['phone']}")
         if data.get("location"): contact.append(f"Location: {data['location']}")
         if contact:
             parts.append(" | ".join(contact))
-
-        if data.get("job_role"):
-            parts.append(f"{data['job_role']} - {data.get('company', '')}" if data.get('company') else data['job_role'])
 
         parts.append("-" * 60)
 
@@ -899,7 +1062,7 @@ class ResumeBuilderModel:
             parts.append(f"WORK EXPERIENCE\n{data['experience']}\n")
 
         if data.get("projects"):
-            parts.append(f"PROJECTS\n{data['projects']}\n")
+            parts.append(f"TECHNICAL PROJECT\n{data['projects']}\n")
 
         if data.get("education"):
             parts.append(f"EDUCATION AND QUALIFICATIONS\n{data['education']}\n")
@@ -911,9 +1074,10 @@ class ResumeBuilderModel:
             if extra.get("title") and extra.get("content"):
                 parts.append(f"{extra['title'].upper()}\n{extra['content']}\n")
 
-        # Declaration & Signature
+        # Declaration & Signature (2-column format)
         dec = data.get("declaration", "").strip() or DEFAULT_DECLARATION
         date_v = data.get("date_val", "").strip() or "____________________"
+        place_v = data.get("place_val", "").strip() or (data.get("location", "").strip() or "____________________")
         sig_mode = data.get("signature_mode", "write")
         if sig_mode == "upload" and data.get("signature_img_b64"):
             sig_v = "[Digital Image Signature Uploaded]"
@@ -921,7 +1085,8 @@ class ResumeBuilderModel:
             sig_v = data.get("sig_val")
         else:
             sig_v = "____________________"
+        name_v = data.get("full_name", "").strip() or "____________________"
 
-        parts.append(f"DECLARATION\n{dec}\n\nDate: {date_v}                    Signature: {sig_v}")
+        parts.append(f"DECLARATION\n{dec}\n\nDate:  {date_v:<26} Signature: {sig_v}\nPlace: {place_v:<26} Name:      {name_v}")
 
         return "\n".join(parts)

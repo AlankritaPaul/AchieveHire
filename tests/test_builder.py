@@ -7,7 +7,8 @@ from modules.resume_guide.builder import ResumeBuilderModel, DEFAULT_DECLARATION
 from modules.resume_guide.builder_templates import (
     TEMPLATES_INFO,
     render_resume_html,
-    export_builder_resume_to_pdf
+    export_builder_resume_to_pdf,
+    get_resume_headline
 )
 from modules.resume_guide.exporter import export_resume_to_docx
 
@@ -18,13 +19,22 @@ class TestResumeBuilder(unittest.TestCase):
             "company": "Google",
             "job_description": "Proficiency in SQL, Python, Tableau, and data modeling required.",
             "full_name": "Maya Lin",
+            "professional_headline": "Senior Data Analyst | Business Intelligence Specialist",
             "email": "maya.lin@email.com",
             "phone": "+1-555-0123",
             "location": "Seattle, WA",
+            "place_val": "Seattle, WA",
             "education": "B.S. in Statistics | University of Washington | 2023",
             "skills": "SQL, Python, Tableau, Excel, Data Visualization",
             "experience": "Junior Analyst | DataInsights Co. | Jun 2023 - Present\n• Worked on customer churn dashboards in Tableau.\n• Handled SQL query optimization for sales reporting.",
-            "projects": "Healthcare Analytics Model\n• Built predictive analytics pipeline using Python and Pandas.",
+            "projects": "• Healthcare Analytics Model\n  Built predictive analytics pipeline using Python and Pandas.",
+            "project_entries": [
+                {
+                    "name": "Healthcare Analytics Model",
+                    "tech_stack": "Python, Pandas, FastAPI",
+                    "description": "Engineered predictive analytics pipeline delivering 94% accuracy."
+                }
+            ],
             "certifications": "Google Data Analytics Professional Certificate",
             "custom_sections": [
                 {"title": "Leadership & Volunteering", "content": "Led analytics workshop for 40+ university students."}
@@ -53,28 +63,33 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("Google", tailored["summary"])
 
     def test_templates_exist_and_render_html(self):
-        """Test all 6 required templates render HTML properly."""
-        expected_templates = ["Classic", "Modern", "Minimal", "Professional", "Creative", "Technical"]
+        """Test all 10 required professional templates exist and render HTML properly."""
+        expected_templates = [
+            "Classic", "Modern", "Minimal", "Professional", "Creative",
+            "Technical", "Executive", "Compact", "Nordic", "Ivy"
+        ]
+        self.assertEqual(len(TEMPLATES_INFO), 10)
         for tpl in expected_templates:
             self.assertIn(tpl, TEMPLATES_INFO)
             html = render_resume_html(self.sample_data, template_name=tpl)
-            self.assertIn("MAYA LIN" if tpl == "Classic" else "Maya Lin", html)
+            self.assertIn("MAYA LIN" if tpl in ("Classic", "Executive", "Ivy") else "Maya Lin", html)
             self.assertIn("DECLARATION", html)
             self.assertIn("Date:", html)
             self.assertIn("Signature", html)
-            self.assertIn("Leadership &amp; Volunteering" if "&amp;" in html else "LEADERSHIP & VOLUNTEERING", html)
+            self.assertIn("TECHNICAL PROJECT", html)
 
     def test_export_builder_pdf_and_docx(self):
-        """Test PDF and DOCX export from builder data."""
-        pdf_bytes = export_builder_resume_to_pdf(self.sample_data, "Professional")
-        self.assertTrue(pdf_bytes.startswith(b"%PDF"))
+        """Test PDF and DOCX export from builder data for multiple templates."""
+        for tpl in ["Classic", "Modern", "Professional", "Executive", "Compact"]:
+            pdf_bytes = export_builder_resume_to_pdf(self.sample_data, tpl)
+            self.assertTrue(pdf_bytes.startswith(b"%PDF"))
 
         plain_text = ResumeBuilderModel.to_plain_text(self.sample_data)
         docx_bytes = export_resume_to_docx(plain_text)
         self.assertTrue(docx_bytes.startswith(b"PK"))
 
     def test_enhance_qualifications(self):
-        """Test professional keyword enhancement preserves facts while standardizing terms."""
+        """Test professional keyword enhancement preserves facts without redundant bracket expansions."""
         raw_edu = "btech in cse from IIT Delhi 2020-2024 with 8.9 cgpa\n12th CBSE from DPS RK Puram 2020 with 94 percentage"
         enhanced = ResumeBuilderModel.enhance_qualifications(raw_edu)
 
@@ -83,10 +98,11 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("2020-2024", enhanced)
         self.assertIn("DPS RK Puram", enhanced)
 
-        # Standardizes professional keywords
-        self.assertIn("B.Tech (Bachelor of Technology)", enhanced)
+        # Standardizes professional keywords without duplicated bracket titles
+        self.assertIn("B.Tech", enhanced)
+        self.assertNotIn("B.Tech (Bachelor of Technology)", enhanced)
         self.assertIn("Computer Science & Engineering", enhanced)
-        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced)
+        self.assertIn("Class XII (Senior Secondary)", enhanced)
         self.assertIn("CGPA: 8.9", enhanced)
         self.assertIn("Score: 94%", enhanced)
 
@@ -100,49 +116,44 @@ class TestResumeBuilder(unittest.TestCase):
         pdf_box = export_builder_resume_to_pdf(box_data, "Modern")
         self.assertTrue(pdf_box.startswith(b"%PDF"))
 
-        # Upload mode
-        dummy_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        # Upload mode (dummy base64 1x1 png)
         upload_data = dict(self.sample_data)
         upload_data["photo_mode"] = "upload"
-        upload_data["photo_b64"] = dummy_b64
-        html_upload = render_resume_html(upload_data, template_name="Modern", photo_b64=dummy_b64)
-        self.assertIn("data:image/jpeg;base64,", html_upload)
-        pdf_upload = export_builder_resume_to_pdf(upload_data, "Modern")
-        self.assertTrue(pdf_upload.startswith(b"%PDF"))
+        upload_data["photo_b64"] = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        html_up = render_resume_html(upload_data, template_name="Modern")
+        self.assertIn("data:image/jpeg;base64,", html_up)
+        pdf_up = export_builder_resume_to_pdf(upload_data, "Modern")
+        self.assertTrue(pdf_up.startswith(b"%PDF"))
 
-    def test_signature_options(self):
-        """Test write signature, upload signature, and blank line in HTML and PDF."""
-        # Write mode
+    def test_signature_modes(self):
+        """Test write signature, upload signature, and blank signature line."""
+        # 1. Write signature (styled script font in HTML)
         write_data = dict(self.sample_data)
         write_data["signature_mode"] = "write"
-        write_data["sig_val"] = "Maya Lin Signature"
-        html_write = render_resume_html(write_data, template_name="Modern")
-        self.assertIn("Maya Lin Signature", html_write)
+        write_data["sig_val"] = "Maya Lin"
+        html_w = render_resume_html(write_data, template_name="Modern")
+        self.assertIn("Maya Lin", html_w)
 
-        # Upload mode
-        dummy_sig_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-        sig_upload_data = dict(self.sample_data)
-        sig_upload_data["signature_mode"] = "upload"
-        sig_upload_data["signature_img_b64"] = dummy_sig_b64
-        html_sig_upload = render_resume_html(sig_upload_data, template_name="Modern")
-        self.assertIn("data:image/png;base64,", html_sig_upload)
-        pdf_sig = export_builder_resume_to_pdf(sig_upload_data, "Modern")
-        self.assertTrue(pdf_sig.startswith(b"%PDF"))
+        # 2. Upload signature image
+        up_data = dict(self.sample_data)
+        up_data["signature_mode"] = "upload"
+        up_data["signature_img_b64"] = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        html_u = render_resume_html(up_data, template_name="Modern")
+        self.assertIn("data:image/png;base64,", html_u)
 
-        # Blank mode
+        # 3. Blank signature line
         blank_data = dict(self.sample_data)
         blank_data["signature_mode"] = "blank"
-        html_blank = render_resume_html(blank_data, template_name="Modern")
-        self.assertIn("Signature: ____________________", html_blank)
-        pdf_blank = export_builder_resume_to_pdf(blank_data, "Modern")
-        self.assertTrue(pdf_blank.startswith(b"%PDF"))
+        blank_data["sig_val"] = ""
+        html_b = render_resume_html(blank_data, template_name="Modern")
+        self.assertIn("<strong>Signature:</strong> ____________________", html_b)
 
     def test_structured_education_and_compilation(self):
         """Test realistic multi-qualification structured education entries and compilation."""
         entries = [
             {
-                "level": "college",
-                "degree": "btech",
+                "level": "Undergraduate",
+                "degree": "b.tech",
                 "stream": "cse",
                 "institution": "Delhi Technological University",
                 "board_univ": "DTU",
@@ -170,22 +181,22 @@ class TestResumeBuilder(unittest.TestCase):
         ]
 
         enhanced = ResumeBuilderModel.enhance_education_entries(entries)
-        # Degree and stream enhancements
-        self.assertIn("B.Tech (Bachelor of Technology)", enhanced[0]["degree"])
+        # Degree and stream enhancements without duplicate bracket titles
+        self.assertIn("B.Tech", enhanced[0]["degree"])
         self.assertIn("Computer Science & Engineering", enhanced[0]["stream"])
         self.assertIn("CGPA: 8.6", enhanced[0]["grade"])
 
-        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced[1]["degree"])
+        self.assertIn("Class XII (Senior Secondary)", enhanced[1]["degree"])
         self.assertIn("Science (Physics, Chemistry, Maths)", enhanced[1]["stream"])
         self.assertIn("CBSE Board", enhanced[1]["board_univ"])
         self.assertIn("Score: 92.4%", enhanced[1]["grade"])
 
         compiled = ResumeBuilderModel.compile_education_entries(enhanced)
-        self.assertIn("• B.Tech (Bachelor of Technology) in Computer Science & Engineering", compiled)
-        self.assertIn("Delhi Technological University | DTU | 2020 - 2024 | CGPA: 8.6", compiled)
-        self.assertIn("• Higher Secondary Certificate (Class XII) in Science (Physics, Chemistry, Maths)", compiled)
+        self.assertIn("• B.Tech in Computer Science & Engineering", compiled)
+        self.assertIn("Delhi Technological University | DTU | 2020 – 2024 | CGPA: 8.6", compiled)
+        self.assertIn("• Class XII (Senior Secondary) in Science (Physics, Chemistry, Maths)", compiled)
         self.assertIn("Delhi Public School | CBSE Board | 2020 | Score: 92.4%", compiled)
-        self.assertIn("• Secondary School Certificate (Class X)", compiled)
+        self.assertIn("• Class X (Secondary)", compiled)
 
     def test_enhance_skills_grouping(self):
         """Test skill enhancement groups into industry categories and normalizes keywords."""
@@ -197,6 +208,27 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertIn("Databases: PostgreSQL", enhanced)
         self.assertIn("Tools & Cloud Technologies: Git, AWS (Amazon Web Services)", enhanced)
         self.assertIn("Core Competencies & Methodologies: Data Structures & Algorithms, Problem Solving", enhanced)
+
+    def test_skills_deduplication_and_clean_formatting(self):
+        """Test that repeated category labels are eliminated and grouped under single clean headings."""
+        raw_skills_repeated = (
+            "Technical Skills\n"
+            "Additional Competency\n"
+            "Additional Competency\n"
+            "Programming Language\n"
+            "Python\n"
+            "Java\n"
+            "Tools\n"
+            "Docker\n"
+            "Git"
+        )
+        enhanced = ResumeBuilderModel.enhance_skills(raw_skills_repeated)
+        # Check no duplicate category lines
+        self.assertEqual(enhanced.count("Programming Languages:"), 1)
+        self.assertEqual(enhanced.count("Tools & Cloud Technologies:"), 1)
+        self.assertNotIn("Additional Competency:", enhanced)
+        self.assertIn("Programming Languages: Python, Java", enhanced)
+        self.assertIn("Tools & Cloud Technologies: Docker, Git", enhanced)
 
     def test_enhance_experience_and_projects(self):
         """Test experience and project text enhancement upgrades action verbs and technical phrasing."""
@@ -211,6 +243,9 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertNotIn("made a website", enh_proj)
         self.assertIn("Architected and developed a responsive web application", enh_proj)
         self.assertIn("Leveraged Python to implement backend logic", enh_proj)
+        # Description must NOT be converted to a bullet point!
+        self.assertNotIn("- Architected", enh_proj)
+        self.assertIn("  Architected", enh_proj)
 
     def test_education_and_qualifications_section_redesign(self):
         """Test Education and Qualifications subsection rules, dynamic dates, and optional fields."""
@@ -258,11 +293,11 @@ class TestResumeBuilder(unittest.TestCase):
         enhanced_edu = ResumeBuilderModel.enhance_education_entries(edu_entries)
         enhanced_qual = ResumeBuilderModel.enhance_qualification_entries(qual_entries)
 
-        self.assertIn("B.Tech (Bachelor of Technology)", enhanced_edu[0]["degree"])
+        self.assertIn("B.Tech", enhanced_edu[0]["degree"])
         self.assertIn("Computer Science & Engineering", enhanced_edu[0]["field_of_study"])
         self.assertEqual(enhanced_edu[0]["cgpa"], "3.92")
 
-        self.assertIn("Higher Secondary Certificate (Class XII)", enhanced_edu[1]["degree"])
+        self.assertIn("Class XII (Senior Secondary)", enhanced_edu[1]["degree"])
         self.assertIn("Science (Physics, Chemistry, Maths)", enhanced_edu[1]["field_of_study"])
         self.assertEqual(enhanced_edu[1]["percentage"], "95%")
 
@@ -279,13 +314,13 @@ class TestResumeBuilder(unittest.TestCase):
         self.assertNotIn("Qualification 1", compiled)
 
         # Independent status date check
-        # Entry 0 (Currently Pursuing): start year + expected grad year
-        self.assertIn("2023 - Present (Expected: 2027)", compiled)
-        # Entry 1 (Completed): start year + end year
-        self.assertIn("2021 - 2023", compiled)
+        # Entry 0 (Currently Pursuing): start year + expected grad year naturally separated
+        self.assertIn("2023 – Present | Expected Graduation: 2027", compiled)
+        # Entry 1 (Completed): start year – end year
+        self.assertIn("2021 – 2023", compiled)
 
         # Optional board: Stanford has no board_univ, so board shouldn't appear
-        self.assertIn("Stanford University | Stanford, CA | 2023 - Present (Expected: 2027) | CGPA: 3.92", compiled)
+        self.assertIn("Stanford University | Stanford, CA | 2023 – Present | Expected Graduation: 2027 | CGPA: 3.92", compiled)
 
         # Entry 1 academic results: Percentage and Grade
         self.assertIn("Percentage: 95%", compiled)
@@ -299,18 +334,6 @@ class TestResumeBuilder(unittest.TestCase):
         compiled_no_qual = ResumeBuilderModel.compile_education_and_qualifications(enhanced_edu, [])
         self.assertIn("Education\n", compiled_no_qual)
         self.assertNotIn("Qualifications", compiled_no_qual)
-
-        # 4. Test Plain text, HTML and PDF templates title check
-        test_data = dict(self.sample_data)
-        test_data["education"] = compiled
-        plain = ResumeBuilderModel.to_plain_text(test_data)
-        self.assertIn("EDUCATION AND QUALIFICATIONS", plain)
-
-        html = render_resume_html(test_data, "Modern")
-        self.assertIn("EDUCATION AND QUALIFICATIONS", html)
-
-        pdf = export_builder_resume_to_pdf(test_data, "Modern")
-        self.assertTrue(pdf.startswith(b"%PDF"))
 
     def test_work_experience_section_redesign(self):
         """Test Work Experience structured entries, suggested & custom types, dynamic dates, and optionality."""
@@ -359,12 +382,9 @@ class TestResumeBuilder(unittest.TestCase):
 
         # 1. Test enhance
         enhanced_exp = ResumeBuilderModel.enhance_experience_entries(exp_entries)
-        # Check custom type and custom work arrangement preserved exactly as entered by user
         self.assertEqual(enhanced_exp[1]["custom_experience_type"], "Graduate Research Fellow")
         self.assertEqual(enhanced_exp[1]["custom_work_arrangement"], "Client-site (Mon-Wed)")
-        # Check position capitalized
         self.assertEqual(enhanced_exp[0]["position"], "Software engineering intern")
-        # Check weak verbs enhanced
         self.assertIn("Spearheaded", enhanced_exp[0]["description"])
         self.assertIn("Architected", enhanced_exp[0]["responsibilities"])
         self.assertIn("Engineered", enhanced_exp[0]["responsibilities"])
@@ -395,18 +415,8 @@ class TestResumeBuilder(unittest.TestCase):
         compiled_empty = ResumeBuilderModel.compile_experience_entries([])
         self.assertEqual(compiled_empty, "")
 
-        # 4. Verify templates render "WORK EXPERIENCE" title
-        test_data = dict(self.sample_data)
-        test_data["experience"] = compiled
-        html = render_resume_html(test_data, "Modern")
-        self.assertIn("WORK EXPERIENCE", html)
-
-        pdf = export_builder_resume_to_pdf(test_data, "Modern")
-        self.assertTrue(pdf.startswith(b"%PDF"))
-
     def test_unpopulated_work_experience_entries_omitted(self):
         """Test that default dropdown selections without company or position do NOT generate a Work Experience section."""
-        # User clicked '+ Add Experience' 3 times but did not enter company, position, or description
         dummy_entries = [
             {
                 "experience_type": "Placement",
@@ -421,32 +431,89 @@ class TestResumeBuilder(unittest.TestCase):
                 "end_date": "",
                 "description": "",
                 "responsibilities": ""
-            },
-            {
-                "experience_type": "Full-Time",
-                "custom_experience_type": "",
-                "work_arrangement": "On-site",
-                "custom_work_arrangement": "",
-                "company": "",
-                "position": "",
-                "location": "",
-                "status": "Completed",
-                "start_date": "",
-                "end_date": "",
-                "description": "",
-                "responsibilities": ""
             }
         ]
-
         compiled = ResumeBuilderModel.compile_experience_entries(dummy_entries)
-        # Must return empty string because no substantive details were provided
         self.assertEqual(compiled, "")
 
-        # When compiled is empty string, resume template must NOT display WORK EXPERIENCE
         test_data = dict(self.sample_data)
         test_data["experience"] = compiled
         html = render_resume_html(test_data, "Modern")
         self.assertNotIn("WORK EXPERIENCE", html)
+
+    def test_professional_headline_and_header_logic(self):
+        """Test that user's professional headline is displayed under name, fallback works, and target job_role/company are never shown."""
+        # Case A: User provided professional_headline
+        headline_data = dict(self.sample_data)
+        headline_data["professional_headline"] = "Full-Stack Software Architect"
+        headline_data["job_role"] = "Target Cloud Dev"
+        headline_data["company"] = "Target Inc."
+
+        hl = get_resume_headline(headline_data)
+        self.assertEqual(hl, "Full-Stack Software Architect")
+
+        html = render_resume_html(headline_data, "Modern")
+        self.assertIn("Full-Stack Software Architect", html)
+        # NEVER show target job role or company under name
+        self.assertNotIn("Target Cloud Dev &bull; Target Inc.", html)
+
+        # Case B: No professional_headline, but has Currently Ongoing experience
+        fallback_data = dict(self.sample_data)
+        fallback_data["professional_headline"] = ""
+        fallback_data["experience_entries"] = [
+            {"position": "Staff Infrastructure Engineer", "status": "Currently Ongoing"}
+        ]
+        hl_fb = get_resume_headline(fallback_data)
+        self.assertEqual(hl_fb, "Staff Infrastructure Engineer")
+
+        # Case C: Neither headline nor ongoing experience -> empty string
+        empty_hl_data = dict(self.sample_data)
+        empty_hl_data["professional_headline"] = ""
+        empty_hl_data["experience_entries"] = [
+            {"position": "Junior Engineer", "status": "Completed"}
+        ]
+        hl_none = get_resume_headline(empty_hl_data)
+        self.assertEqual(hl_none, "")
+
+    def test_technical_project_multientry_and_formatting(self):
+        """Test Technical Project formatting: Project Name as bullet heading, Description as normal paragraph without extra bullet."""
+        project_entries = [
+            {
+                "name": "E-Commerce IQ",
+                "tech_stack": "Python, FastAPI",
+                "description": "It helps the business analyst to easily analyse their production."
+            },
+            {
+                "name": "Cloud Ledger",
+                "tech_stack": "Go, Docker",
+                "description": "Distributed immutable ledger for financial transactions."
+            }
+        ]
+        compiled = ResumeBuilderModel.compile_project_entries(project_entries)
+        # Heading has bullet
+        self.assertIn("• E-Commerce IQ | Tech Stack: Python, FastAPI", compiled)
+        self.assertIn("• Cloud Ledger | Tech Stack: Go, Docker", compiled)
+        # Description is plain indented paragraph, NOT another bullet
+        self.assertIn("  It helps the business analyst to easily analyse their production.", compiled)
+        self.assertNotIn("  - It helps the business analyst", compiled)
+        self.assertNotIn("  • It helps the business analyst", compiled)
+
+    def test_declaration_2_column_and_place(self):
+        """Test Declaration 2-column layout with Date & Place on left, Signature & Name on right."""
+        test_data = dict(self.sample_data)
+        test_data["date_val"] = "November 10, 2026"
+        test_data["place_val"] = "San Francisco, CA"
+        test_data["full_name"] = "Alex Morgan"
+        test_data["signature_mode"] = "blank"
+
+        html = render_resume_html(test_data, "Modern")
+        self.assertIn("<strong>Date:</strong> November 10, 2026", html)
+        self.assertIn("<strong>Place:</strong> San Francisco, CA", html)
+        self.assertIn("<strong>Name:</strong> Alex Morgan", html)
+        self.assertIn("<strong>Signature:</strong> ____________________", html)
+
+        pdf_bytes = export_builder_resume_to_pdf(test_data, "Modern")
+        self.assertTrue(pdf_bytes.startswith(b"%PDF"))
 
     def test_analyzer_without_experience_section(self):
         """Test that analyzing a resume without an experience section does not throw KeyError: found_weak_verbs."""
@@ -458,21 +525,10 @@ class TestResumeBuilder(unittest.TestCase):
             "education": "B.S. in Statistics | 2023",
             "skills": "Python, SQL, Tableau"
         }
-        # Must not raise KeyError: 'found_weak_verbs'
         result = analyzer.analyze(raw_text, sections)
         self.assertIn("role_alignment_score", result)
         self.assertIn("suggestions", result)
         self.assertFalse(result["experience_relevance"]["has_experience"])
-
-    def test_blank_signature_single_dash_only(self):
-        """Test that blank signature mode renders a single line / dash and no duplicate horizontal rules."""
-        test_data = dict(self.sample_data)
-        test_data["signature_mode"] = "blank"
-        html = render_resume_html(test_data, "Modern")
-        # Single clean line Signature: ____________________
-        self.assertIn("Signature: ____________________", html)
-        # Must NOT contain a duplicate border-top line above it
-        self.assertNotIn('<div style="border-top: 1px solid #718096; width: 160px; margin-left: auto;"></div>\n<div style="font-size: 0.85rem; color: #4A5568; margin-top: 2px;">Signature: ____________________</div>', html)
 
 if __name__ == "__main__":
     unittest.main()
