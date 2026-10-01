@@ -82,7 +82,7 @@ THEMES = {
 def _inject_css(t: dict):
     st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
     /* ── Reset & Base ─────────────────────────────────────────────────── */
     html, body,
@@ -561,33 +561,59 @@ def _render_hero(t: dict):
     st.markdown(f"""
     <div class="ac-content" style="text-align:center; padding: 56px 24px 36px;">
 
-        <!-- Logo -->
-        <div style="margin-bottom:18px;">
+        <!-- Logo — transparent background, larger -->
+        <div style="margin-bottom:22px;">
             <img src="app/static/logo.png"
                  alt="AscendCareer Logo"
                  onerror="this.style.display='none'"
-                 style="height:68px; width:auto;
-                        filter: drop-shadow(0 4px 16px rgba(79,70,229,0.22));" />
+                 style="height:92px; width:auto;
+                        filter: drop-shadow(0 6px 22px rgba(79,70,229,0.28))
+                                drop-shadow(0 2px 8px rgba(212,175,55,0.20));" />
         </div>
 
-        <!-- Brand name -->
-        <div class="ac-brand-name">AscendCareer</div>
+        <!-- Brand name — stylish Cinzel/serif with indigo→purple→gold gradient -->
+        <div style="
+            font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+            font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, {t['accent']} 0%, #7C3AED 35%, {t['gold']} 70%, #F59E0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        ">AscendCareer</div>
 
-        <!-- Where Preparation Meets Opportunity badge -->
-        <div style="margin-top:14px;">
-            <span class="ac-gold-badge">Where Preparation Meets Opportunity</span>
-        </div>
+        <!-- Tagline 1: Ascend with Preparation -->
+        <div style="
+            font-family: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
+            font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            color: {t['text_primary']};
+            margin-top: 14px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        ">Ascend with Preparation</div>
 
-        <!-- Taglines -->
-        <div class="ac-tagline-main" style="margin-top:16px;">
-            Better Preparation.&nbsp; Stronger Presentation.
-        </div>
-        <div class="ac-tagline-sub" style="margin-top:6px;">
-            Prepare for the opportunity you've been waiting for.
+        <!-- Tagline 2: Where Preparation Meets Opportunity -->
+        <div style="margin-top:12px;">
+            <span style="
+                display: inline-block;
+                background: {t['gold_soft']};
+                color: {t['gold']};
+                border-radius: 50px;
+                padding: 5px 24px;
+                font-size: clamp(0.78rem, 1.5vw, 0.92rem);
+                font-weight: 600;
+                letter-spacing: 0.05em;
+                font-style: italic;
+            ">Where Preparation Meets Opportunity.</span>
         </div>
 
         <!-- Description -->
-        <p style="margin:20px auto 0; max-width:560px;
+        <p style="margin:22px auto 0; max-width:560px;
                   font-size:0.92rem; color:{t['text_secondary']}; line-height:1.75;">
             A comprehensive, AI-powered interview preparation and career-readiness platform —
             realistic voice-to-voice interaction, multi-persona panels,
@@ -606,6 +632,7 @@ def _render_hero(t: dict):
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
