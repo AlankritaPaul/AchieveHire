@@ -8,13 +8,16 @@ Streamlit sanitizes these and renders the raw JS source code as visible text in 
 **ALWAYS** use `st.components.v1.html()` to execute JavaScript in Streamlit:
 
 ```python
+import textwrap
 import streamlit.components.v1 as components
 
 # Step 1: Inject any HTML elements (canvas, divs, etc.) into the parent DOM
-st.markdown(
-    '<canvas id="my-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>',
-    unsafe_allow_html=True,
-)
+# Always wrap multiline HTML in textwrap.dedent(...) to strip leading function indentation,
+# preventing Markdown from rendering HTML as a preformatted code block!
+st.markdown(textwrap.dedent("""
+    <canvas id="my-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+"""), unsafe_allow_html=True)
+```
 
 # Step 2: Execute JS via components.html (properly executes scripts)
 components.html("""
