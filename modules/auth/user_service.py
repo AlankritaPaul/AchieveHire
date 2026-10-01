@@ -51,7 +51,7 @@ def _save_all_users(users: Dict[str, dict]) -> None:
 def generate_unique_user_id(name: str) -> str:
     """
     Generates a guaranteed unique User ID based on the candidate's name
-    combined with a unique number (e.g. 'ALANKRITA-784291').
+    combined with a unique number (e.g. 'JOHNDOE-784291').
     Ensures complete uniqueness even when multiple candidates share the exact same name.
     """
     users = _ensure_data_store()

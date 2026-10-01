@@ -66,7 +66,7 @@ def render_signin_flow():
 
             candidate_name = st.text_input(
                 "Full Name",
-                placeholder="e.g. Alankrita Paul",
+                placeholder="Enter your full name",
                 key="input_candidate_name",
                 label_visibility="collapsed"
             )
@@ -130,7 +130,7 @@ def render_signin_flow():
 
             existing_id_input = st.text_input(
                 "User ID",
-                placeholder="e.g. ALANKRITA-784291",
+                placeholder="Your unique User ID will appear here",
                 key="input_existing_user_id",
                 label_visibility="collapsed"
             )

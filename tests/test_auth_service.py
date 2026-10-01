@@ -27,13 +27,13 @@ class TestAuthAndUserIdService(unittest.TestCase):
 
     def test_unique_user_id_generation(self):
         """Verify User ID is generated based on name + unique number and guarantees uniqueness."""
-        name = "Alankrita Paul"
+        name = "Test Candidate"
         user_id_1 = generate_unique_user_id(name)
         user_id_2 = generate_unique_user_id(name)
 
         # Structure check: contains base name and 6 digits
-        self.assertTrue(user_id_1.startswith("ALANKRITAPAU-"))
-        self.assertTrue(user_id_2.startswith("ALANKRITAPAU-"))
+        self.assertTrue(user_id_1.startswith("TESTCANDIDAT-"))
+        self.assertTrue(user_id_2.startswith("TESTCANDIDAT-"))
         
         # Guaranteed uniqueness even with identical names
         self.assertNotEqual(user_id_1, user_id_2)
