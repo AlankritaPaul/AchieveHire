@@ -8,6 +8,7 @@ The Sign In button is an entry-point placeholder — sign-in logic
 is implemented separately in the next step.
 """
 
+import textwrap
 import streamlit as st
 import streamlit.components.v1 as components
 from modules.landing.content import (
@@ -80,7 +81,7 @@ THEMES = {
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _inject_css(t: dict):
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -362,7 +363,7 @@ def _inject_css(t: dict):
         .ac-qa-answer {{ font-size: 0.82rem; padding: 10px 13px; }}
     }}
     </style>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -558,7 +559,7 @@ def _animated_background(theme_key: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_hero(t: dict):
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="text-align:center; padding: 56px 24px 36px;">
 
         <!-- Logo — transparent background, larger -->
@@ -631,7 +632,7 @@ def _render_hero(t: dict):
             <span class="ac-tag">🏆 6-Stage Ladder</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 
@@ -640,14 +641,14 @@ def _render_hero(t: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_signin_cta(t: dict) -> bool:
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="text-align:center; padding:0 24px 20px;">
         <hr class="ac-divider" style="max-width:300px; margin:0 auto 28px;" />
         <p style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:18px;">
             Your personalised career preparation journey starts here.
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     col_l, col_m, col_r = st.columns([1.2, 1, 1.2])
     with col_m:
@@ -655,13 +656,13 @@ def _render_signin_cta(t: dict) -> bool:
                             key="ac_signin_btn",
                             use_container_width=True)
 
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="text-align:center; padding:6px 24px 0;">
         <p style="font-size:0.75rem; color:{t['text_muted']}; margin-top:8px;">
             By signing in, you agree to our Privacy &amp; Trust principles outlined below.
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     return clicked
 
@@ -671,7 +672,7 @@ def _render_signin_cta(t: dict) -> bool:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_core_principle(t: dict):
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:18px;">
@@ -684,7 +685,7 @@ def _render_core_principle(t: dict):
             {CORE_PRINCIPLE}
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -710,7 +711,7 @@ def _build_qa_html(qa_list: list, t: dict) -> str:
 
 
 def _render_privacy_trust(t: dict):
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-top:32px; margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:20px;">
@@ -720,18 +721,18 @@ def _render_privacy_trust(t: dict):
             </p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # Wrap in a div for top-level expander styling
     st.markdown('<div class="ac-content ac-privacy-top" style="padding: 0 24px;">', unsafe_allow_html=True)
 
     with st.expander("🔒  Privacy & Trust — Click to read", expanded=False):
         # Statement banner at top
-        st.markdown(f"""
+        st.markdown(textwrap.dedent(f"""
         <div class="ac-privacy-statement">
             💬 {PRIVACY_STATEMENT}
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
         st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
@@ -740,11 +741,11 @@ def _render_privacy_trust(t: dict):
             label = f"{section['number']}.  {section['title']}"
             with st.expander(label, expanded=False):
                 qa_html = _build_qa_html(section["qa"], t)
-                st.markdown(f"""
+                st.markdown(textwrap.dedent(f"""
                 <div style="padding: 4px 0;">
                     {qa_html}
                 </div>
-                """, unsafe_allow_html=True)
+                """), unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -754,7 +755,7 @@ def _render_privacy_trust(t: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_footer(t: dict):
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="ac-content" style="
         text-align:center;
         padding: 36px 24px 52px;
@@ -770,7 +771,7 @@ def _render_footer(t: dict):
             © AscendCareer — Built for the candidate who is serious about their next step.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
