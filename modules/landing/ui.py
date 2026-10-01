@@ -157,7 +157,7 @@ def _inject_css(t: dict):
 
     /* Hide default Streamlit chrome on landing */
     #MainMenu, [data-testid="stFooter"], [data-testid="stToolbar"],
-    [data-testid="stSidebarNav"], header {{
+    [data-testid="stSidebarNav"], [data-testid="stSidebar"], header {{
         display: none !important;
     }}
 
@@ -1075,7 +1075,7 @@ def render_landing() -> dict:
     other_key = "dark" if theme_key == "light" else "light"
 
     # ── CSS ──────────────────────────────────────────────────────────────────
-    _inject_css(t)
+    # Global CSS is now injected in app.py
 
     # ── Animated background ──────────────────────────────────────────────────
     theme_icon_uri = _get_theme_icon_data_uri()

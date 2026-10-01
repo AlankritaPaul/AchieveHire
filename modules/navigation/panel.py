@@ -174,21 +174,31 @@ def render_navigation_drawer(t: dict):
     }}
 
     /* ── Navigation Drawer Box ── */
-    .ac-nav-drawer {{
-        position: fixed;
-        top: 0; left: 0;
-        width: 330px;
-        max-width: 86vw;
-        height: 100vh;
-        background: {t["surface"]};
-        border-right: 1px solid {t["border"]};
-        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25);
-        z-index: 9999;
-        overflow-y: auto;
-        padding: 24px 20px 32px;
-        display: flex;
-        flex-direction: column;
+    [data-testid="stSidebar"] {{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 330px !important;
+        min-width: 330px !important;
+        max-width: 86vw !important;
+        height: 100vh !important;
+        background: {t["surface"]} !important;
+        border-right: 1px solid {t["border"]} !important;
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25) !important;
+        z-index: 9999 !important;
+        overflow-y: auto !important;
+        padding: 24px 20px 32px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        transform: translateX(0) !important;
+        visibility: visible !important;
         animation: acSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+    
+    /* Hide the native sidebar toggle buttons inside the drawer */
+    [data-testid="stSidebarCollapseButton"], 
+    [data-testid="stSidebarResizer"] {{
+        display: none !important;
     }}
     @keyframes acSlideIn {{
         from {{ transform: translateX(-100%); }}

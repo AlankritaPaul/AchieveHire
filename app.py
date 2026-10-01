@@ -21,6 +21,10 @@ def main():
         st.session_state["ac_screen"] = "landing"   # Start on landing screen
 
     screen = st.session_state["ac_screen"]
+    
+    from modules.landing.ui import THEMES, _inject_css
+    t = THEMES[st.session_state.get("ac_theme", "light")]
+    _inject_css(t)
 
     # ── Landing Screen ────────────────────────────────────────────────────────
     if screen == "landing":
