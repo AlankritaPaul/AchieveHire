@@ -283,9 +283,12 @@ def _inject_css(t: dict):
         margin-top: 1px;
         color: {t["accent"]};
         transition: transform 0.2s;
+        font-style: normal;
     }}
+    .ac-qa-item .ac-qa-icon::before {{ content: '+'; }}
+    .ac-qa-item[open] .ac-qa-icon::before {{ content: '\2212'; }}
     .ac-qa-item[open] summary .ac-qa-icon {{
-        transform: rotate(45deg);
+        transform: none;
     }}
     .ac-qa-item[open] summary {{
         border-bottom: 1px solid {t["qa_border"]};
@@ -714,13 +717,6 @@ def _render_privacy_trust(t: dict):
                 <div style="padding: 4px 0;">
                     {qa_html}
                 </div>
-
-                <!-- Fix: re-inject icon rotation on open -->
-                <style>
-                .ac-qa-item[open] .ac-qa-icon {{ content: '\\2212'; }}
-                .ac-qa-item .ac-qa-icon::before {{ content: '+'; }}
-                .ac-qa-item[open] .ac-qa-icon::before {{ content: '\\2212'; }}
-                </style>
                 """, unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
