@@ -682,8 +682,11 @@ def export_builder_resume_to_pdf(data: Dict[str, Any], template_name: str = "Mod
             if not stripped:
                 continue
             safe_l = stripped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            if safe_l in ("Education", "Qualifications"):
+            if safe_l in ("Education", "Qualifications", "Technical Skills", "Non-Technical Skills", "TECHNICAL SKILLS", "NON-TECHNICAL SKILLS"):
                 elements.append(Paragraph(f"<b><u>{safe_l}</u></b>", body_style))
+            elif "Technologies Used:" in safe_l or "Tech Stack:" in safe_l:
+                clean_t = safe_l.lstrip("•-* ").strip()
+                elements.append(Paragraph(f"&bull; <b>{clean_t}</b>", bullet_style))
             elif safe_l.startswith(("•", "-", "*")):
                 clean_b = safe_l.lstrip("•-* ").strip()
                 elements.append(Paragraph(f"&bull; {clean_b}", bullet_style))

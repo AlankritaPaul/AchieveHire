@@ -636,8 +636,21 @@ class ResumeBuilderModel:
             "rest apis": ("RESTful APIs", "concepts"),
             "system design": ("System Design", "concepts"),
             "problem solving": ("Problem Solving", "concepts"),
-            "communication": ("Team Communication", "concepts"),
-            "leadership": ("Team Leadership", "concepts"),
+            "communication": ("Communication", "non_technical"),
+            "leadership": ("Leadership", "non_technical"),
+            "public speaking": ("Public Speaking", "non_technical"),
+            "critical thinking": ("Critical Thinking", "non_technical"),
+            "time management": ("Time Management", "non_technical"),
+            "teamwork": ("Teamwork & Collaboration", "non_technical"),
+            "collaboration": ("Teamwork & Collaboration", "non_technical"),
+            "adaptability": ("Adaptability", "non_technical"),
+            "presentation skills": ("Presentation Skills", "non_technical"),
+            "presentation": ("Presentation Skills", "non_technical"),
+            "negotiation": ("Negotiation", "non_technical"),
+            "interpersonal skills": ("Interpersonal Skills", "non_technical"),
+            "active listening": ("Active Listening", "non_technical"),
+            "conflict resolution": ("Conflict Resolution", "non_technical"),
+            "mentoring": ("Mentoring", "non_technical"),
         }
 
         category_labels_map = {
@@ -656,9 +669,10 @@ class ResumeBuilderModel:
             "cloud & tools": "Tools & Cloud Technologies",
             "core competencies": "Core Competencies & Methodologies",
             "methodologies": "Core Competencies & Methodologies",
-            "concepts": "Core Competencies & Methodologies",
+            "concepts": "Technical Competencies",
             "technical skills": "Technical Skills",
             "non-technical skills": "Non-Technical Skills",
+            "non technical skills": "Non-Technical Skills",
             "additional competencies": "Additional Competencies",
             "additional competency": "Additional Competencies",
             "soft skills": "Non-Technical Skills",
@@ -702,6 +716,8 @@ class ResumeBuilderModel:
             if norm_s and norm_s not in cat_skills[clean_c]:
                 cat_skills[clean_c].append(norm_s)
 
+        non_tech_detect_kws = {"public speaking", "communication", "leadership", "problem solving", "critical thinking", "time management", "teamwork", "collaboration", "adaptability", "presentation", "negotiation", "interpersonal", "active listening", "conflict resolution", "mentoring"}
+
         for line in raw_lines:
             l_clean = line.lstrip("•-* ").strip()
             if not l_clean:
@@ -727,7 +743,7 @@ class ResumeBuilderModel:
                         if tok.lower() in category_labels_map:
                             current_cat = category_labels_map[tok.lower()]
                             continue
-                        if current_cat and current_cat != "Technical Skills":
+                        if current_cat and current_cat not in ("Technical Skills", "Skills"):
                             add_skill(current_cat, tok)
                         else:
                             # Map token to standard category via tech_map
@@ -742,20 +758,59 @@ class ResumeBuilderModel:
                                     "databases": "Databases",
                                     "cloud_tools": "Tools & Cloud Technologies",
                                     "concepts": "Core Competencies & Methodologies",
+                                    "non_technical": "Non-Technical Skills",
                                     "other": "Additional Competencies"
                                 }.get(cat_key, "Technical Skills")
                                 add_skill(cat_display, name)
+                            elif any(k in low_tok for k in non_tech_detect_kws):
+                                add_skill("Non-Technical Skills", tok)
                             else:
                                 add_skill("Technical Skills", tok)
 
         # Build clean output bullets - only non-empty categories, no duplicate category headings
-        output_bullets = []
+        tech_bullets = []
+        non_tech_bullets = []
         for cat in cat_order:
             skills_list = cat_skills.get(cat, [])
             if skills_list:
-                output_bullets.append(f"• {cat}: {', '.join(skills_list)}")
+                if cat in ("Non-Technical Skills", "Soft Skills"):
+                    non_tech_bullets.append(f"• Non-Technical Skills: {', '.join(skills_list)}")
+                elif cat == "Technical Skills":
+                    other_tech = [c for c in cat_order if c in ("Programming Languages", "Frameworks & Libraries", "Databases", "Tools & Cloud Technologies") and cat_skills.get(c)]
+                    lbl = "Technical Competencies" if other_tech else "Technical Skills"
+                    tech_bullets.append(f"• {lbl}: {', '.join(skills_list)}")
+                else:
+                    tech_bullets.append(f"• {cat}: {', '.join(skills_list)}")
 
-        return "\n".join(output_bullets) if output_bullets else raw_skills.strip()
+        if tech_bullets and non_tech_bullets:
+            return "\n".join(tech_bullets + non_tech_bullets)
+        elif tech_bullets:
+            return "\n".join(tech_bullets)
+        elif non_tech_bullets:
+            return "\n".join(non_tech_bullets)
+        return raw_skills.strip()
+
+    @staticmethod
+    def enhance_technical_and_non_technical(tech_raw: str, non_tech_raw: str) -> str:
+        """
+        Enhance and combine technical and non-technical skills preserving strict section separation.
+        """
+        parts = []
+        if tech_raw and tech_raw.strip():
+            enh_tech = ResumeBuilderModel.enhance_skills(tech_raw)
+            if enh_tech:
+                parts.append(enh_tech)
+        if non_tech_raw and non_tech_raw.strip():
+            tokens = [s.strip(" •-*") for s in re.split(r"[,;\n]", non_tech_raw) if s.strip(" •-*")]
+            cleaned_non_tech = []
+            seen = set()
+            for t in tokens:
+                if t.lower() not in seen:
+                    seen.add(t.lower())
+                    cleaned_non_tech.append(t.title() if len(t) > 3 else t.upper())
+            if cleaned_non_tech:
+                parts.append(f"• Non-Technical Skills: {', '.join(cleaned_non_tech)}")
+        return "\n".join(parts)
 
     @staticmethod
     def enhance_experience(raw_exp: str) -> str:
@@ -961,7 +1016,7 @@ class ResumeBuilderModel:
 
             heading = f"• {name}" if name else "• Technical Project"
             if stack:
-                heading += f" | Tech Stack: {stack}"
+                heading += f" | Technologies Used: {stack}"
 
             proj_lines = [heading]
             if desc:

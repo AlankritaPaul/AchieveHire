@@ -490,9 +490,9 @@ class TestResumeBuilder(unittest.TestCase):
             }
         ]
         compiled = ResumeBuilderModel.compile_project_entries(project_entries)
-        # Heading has bullet
-        self.assertIn("• E-Commerce IQ | Tech Stack: Python, FastAPI", compiled)
-        self.assertIn("• Cloud Ledger | Tech Stack: Go, Docker", compiled)
+        # Heading has bullet with Technologies Used
+        self.assertIn("• E-Commerce IQ | Technologies Used: Python, FastAPI", compiled)
+        self.assertIn("• Cloud Ledger | Technologies Used: Go, Docker", compiled)
         # Description is plain indented paragraph, NOT another bullet
         self.assertIn("  It helps the business analyst to easily analyse their production.", compiled)
         self.assertNotIn("  - It helps the business analyst", compiled)
@@ -566,6 +566,50 @@ class TestResumeBuilder(unittest.TestCase):
         # Should be a single unified line for Programming Languages
         self.assertEqual(enhanced.count("Programming Languages"), 1)
         self.assertNotIn("Technical Skills", enhanced)
+
+    def test_non_technical_skills_explicit_separation(self):
+        """Test that public speaking is placed under Non-Technical Skills, while Python and C++ are under Programming Languages."""
+        # 1. Via enhance_skills
+        raw = "Python, C++, Public Speaking"
+        enhanced = ResumeBuilderModel.enhance_skills(raw)
+        self.assertIn("Programming Languages: Python, C++", enhanced)
+        self.assertIn("Non-Technical Skills: Public Speaking", enhanced)
+
+        # 2. Via enhance_technical_and_non_technical with Enter keys (line breaks)
+        tech_multiline = "Python\nC++\nSQL"
+        non_tech_multiline = "Public Speaking\nProblem Solving"
+        combined = ResumeBuilderModel.enhance_technical_and_non_technical(tech_multiline, non_tech_multiline)
+        self.assertIn("Programming Languages: Python, C++", combined)
+        self.assertIn("Non-Technical Skills: Public Speaking, Problem Solving", combined)
+
+    def test_skip_technical_projects_omits_section(self):
+        """Test that skipping technical projects leaves projects empty and omits the section from HTML and PDF."""
+        data = dict(self.sample_data)
+        data["skip_projects"] = True
+        data["has_projects"] = False
+        data["projects"] = ""
+        data["project_entries"] = []
+
+        html = render_resume_html(data, "Modern")
+        self.assertNotIn("TECHNICAL PROJECT", html)
+
+        pdf_bytes = export_builder_resume_to_pdf(data, "Modern")
+        self.assertTrue(pdf_bytes.startswith(b"%PDF"))
+
+    def test_optimizer_skills_non_technical_separation(self):
+        """Test that optimizer places public speaking into NON-TECHNICAL SKILLS and Python/C++ under TECHNICAL SKILLS."""
+        from modules.resume_guide.optimizer import ResumeOptimizer
+        optimizer = ResumeOptimizer(job_role="Software Developer", company="Google")
+        user_skills = {
+            "technical": "Python\nC++",
+            "non_technical": "Public Speaking"
+        }
+        res = optimizer._improve_skills(original_skills="", user_skills=user_skills, in_needs_improvement=True)
+        self.assertIsNotNone(res)
+        self.assertIn("TECHNICAL SKILLS", res["after"])
+        self.assertIn("Programming Languages: Python, C++", res["after"])
+        self.assertIn("NON-TECHNICAL SKILLS", res["after"])
+        self.assertIn("Public Speaking", res["after"])
 
 if __name__ == "__main__":
     unittest.main()

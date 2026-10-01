@@ -255,7 +255,7 @@ class ResumeOptimizer:
                         desc_upgraded = re.sub(pattern, strong_options[0].capitalize(), desc_upgraded, count=1)
                 parts.append(f"  {desc_upgraded}")
             if tools:
-                parts.append(f"  • Technologies: {tools}")
+                parts.append(f"  • Technologies Used: {tools}")
             if outcome:
                 parts.append(f"  • Key Outcome / Impact: {outcome}")
 
@@ -265,7 +265,7 @@ class ResumeOptimizer:
                 "section_title": "Technical Projects",
                 "before": "[Provided by Candidate]",
                 "after": after_text.strip(),
-                "rationale": f"Structured your provided technical project with clear bullet headings and implementation depth for {self.job_role}."
+                "rationale": f"Structured your provided technical project with clear bullet headings, description, and technologies used for {self.job_role}."
             }
 
         # Case B: Existing projects need improvement
@@ -314,51 +314,80 @@ class ResumeOptimizer:
         user_skills: Optional[Dict[str, str]] = None,
         in_needs_improvement: bool = False
     ) -> Optional[Dict[str, Any]]:
-        """Categorize skills cleanly without fabricating any new skills."""
-        # If user supplied skills
-        user_text = ""
+        """Categorize skills cleanly separating technical and non-technical skills without fabricating any new skills."""
+        # Non-technical keyword indicators
+        non_tech_keywords = {
+            "public speaking", "communication", "leadership", "problem solving",
+            "critical thinking", "time management", "teamwork", "collaboration",
+            "adaptability", "presentation skills", "negotiation", "conflict resolution",
+            "interpersonal skills", "active listening", "creative thinking", "mentoring"
+        }
+
+        # Collect user-provided technical and non-technical skills
+        u_tech = ""
+        u_non_tech = ""
         if user_skills:
             u_tech = user_skills.get("technical", "").strip()
             u_non_tech = user_skills.get("non_technical", "").strip()
-            user_text = f"{u_tech}, {u_non_tech}".strip(", ")
 
-        combined_text = (original_skills + " " + user_text).strip()
-        if not combined_text:
+        combined_tech = (original_skills + " " + u_tech).strip()
+        if not combined_tech and not u_non_tech:
             return None
 
-        if not in_needs_improvement and not user_text:
+        if not in_needs_improvement and not u_tech and not u_non_tech:
             return None
 
-        # Extract individual skill words or phrases
-        text = re.sub(r"^(skills|technical skills|core competencies)[:\s]*", "", combined_text, flags=re.IGNORECASE)
-        tokens = [s.strip(" •-*|,;") for s in re.split(r"[,|\n•\*\;]", text) if s.strip(" •-*|,;")]
+        # 1. Parse Non-Technical Skills
+        non_tech_tokens = []
+        if u_non_tech:
+            for s in re.split(r"[,|\n•\*\;]", u_non_tech):
+                clean_s = s.strip(" •-*|,;")
+                if clean_s:
+                    non_tech_tokens.append(clean_s)
 
-        if len(tokens) == 0:
-            return None
+        # 2. Parse Technical Skills
+        clean_orig = re.sub(r"^(skills|technical skills|core competencies)[:\s]*", "", combined_tech, flags=re.IGNORECASE)
+        tech_raw_tokens = [s.strip(" •-*|,;") for s in re.split(r"[,|\n•\*\;]", clean_orig) if s.strip(" •-*|,;")]
 
-        # Clean duplicates while preserving original order
-        seen = set()
-        unique_skills = []
-        for t in tokens:
-            if t.lower() not in seen and len(t) > 1:
-                seen.add(t.lower())
-                unique_skills.append(t)
+        tech_tokens = []
+        for t in tech_raw_tokens:
+            low_t = t.lower()
+            if any(k in low_t or low_t in k for k in non_tech_keywords):
+                non_tech_tokens.append(t)
+            else:
+                tech_tokens.append(t)
 
-        # Categorize known items
+        # Clean non-tech duplicates
+        seen_non_tech = set()
+        unique_non_tech = []
+        for nt in non_tech_tokens:
+            if nt.lower() not in seen_non_tech and len(nt) > 1:
+                seen_non_tech.add(nt.lower())
+                unique_non_tech.append(nt.title() if len(nt) > 3 else nt.upper())
+
+        # Clean tech duplicates
+        seen_tech = set()
+        unique_tech = []
+        for tt in tech_tokens:
+            if tt.lower() not in seen_tech and len(tt) > 1:
+                seen_tech.add(tt.lower())
+                unique_tech.append(tt)
+
+        # Categorize technical skills
         categories = {
             "Programming Languages": [],
             "Frameworks & Libraries": [],
             "Databases & Cloud Tools": [],
             "Developer Tools & Practices": [],
-            "Core Competencies": []
+            "Technical Competencies": []
         }
 
-        lang_keywords = {"python", "javascript", "typescript", "c++", "java", "c#", "go", "golang", "rust", "ruby", "php", "sql", "html", "css", "html5", "css3", "bash"}
+        lang_keywords = {"python", "javascript", "typescript", "c++", "cpp", "java", "c#", "go", "golang", "rust", "ruby", "php", "sql", "html", "css", "html5", "css3", "bash"}
         framework_keywords = {"react", "angular", "vue", "next.js", "node.js", "django", "fastapi", "spring", "flask", "express", "tailwind", "bootstrap", "redux"}
         db_cloud_keywords = {"postgresql", "mysql", "mongodb", "redis", "aws", "azure", "gcp", "docker", "kubernetes", "sqlite", "firebase"}
         tools_keywords = {"git", "github", "ci/cd", "jira", "linux", "postman", "jenkins", "figma", "vscode"}
 
-        for s in unique_skills:
+        for s in unique_tech:
             sl = s.lower()
             if any(k in sl for k in lang_keywords):
                 categories["Programming Languages"].append(s)
@@ -369,25 +398,33 @@ class ResumeOptimizer:
             elif any(k in sl for k in tools_keywords):
                 categories["Developer Tools & Practices"].append(s)
             else:
-                categories["Core Competencies"].append(s)
+                categories["Technical Competencies"].append(s)
 
         formatted_groups = []
         for cat_name, skill_list in categories.items():
             if skill_list:
                 formatted_groups.append(f"• {cat_name}: {', '.join(skill_list)}")
 
-        if not formatted_groups:
+        if not formatted_groups and not unique_non_tech:
             return None
 
-        improved_content = "TECHNICAL SKILLS\n" + "\n".join(formatted_groups)
+        output_sections = []
+        if formatted_groups:
+            output_sections.append("TECHNICAL SKILLS\n" + "\n".join(formatted_groups))
+        if unique_non_tech:
+            output_sections.append("NON-TECHNICAL SKILLS\n• " + ", ".join(unique_non_tech))
+
+        improved_content = "\n\n".join(output_sections)
         before_text = original_skills.strip() if original_skills.strip() else "[Provided by Candidate]"
+
+        sec_title = "Technical & Non-Technical Skills" if (formatted_groups and unique_non_tech) else ("Technical Skills" if formatted_groups else "Non-Technical Skills")
 
         return {
             "section_key": "skills",
-            "section_title": "Technical Skills",
+            "section_title": sec_title,
             "before": before_text,
             "after": improved_content,
-            "rationale": "Organized provided skills into logical domain categories for superior ATS parsing and recruiter readability."
+            "rationale": "Organized provided skills into distinct Technical Skills categories and dedicated Non-Technical Skills for clear recruiter readability."
         }
 
     def _improve_education(self, user_edu: Dict[str, str]) -> Optional[Dict[str, Any]]:

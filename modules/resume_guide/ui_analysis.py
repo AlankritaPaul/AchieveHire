@@ -424,7 +424,7 @@ def render_resume_analysis_flow():
                             if p_choice == "Provide Project Details":
                                 p_name = st.text_input("Project Name *", key="ui_p_name", placeholder="e.g. Distributed Task Orchestrator")
                                 p_desc = st.text_area("Project Description *", key="ui_p_desc", placeholder="Describe what the project does, key features, and your role...")
-                                p_tools = st.text_input("Technologies or Tools Used", key="ui_p_tools", placeholder="e.g. Python, Docker, Redis, REST APIs")
+                                p_tools = st.text_input("Technologies Used (Languages, Frameworks, Tools)", key="ui_p_tools", placeholder="e.g. Python, Docker, Redis, REST APIs")
                                 p_outcome = st.text_input("Key Contribution or Outcome (Optional/Measurable)", key="ui_p_outcome", placeholder="e.g. Handled 5,000 requests/sec with p99 latency < 20ms")
                                 if p_name or p_desc:
                                     user_provided_info["projects"] = {
@@ -472,8 +472,20 @@ def render_resume_analysis_flow():
                                 horizontal=True
                             )
                             if s_choice == "Provide Skills Details":
-                                s_tech = st.text_input("Technical Skills (Languages, Frameworks, Tools) *", key="ui_s_tech", placeholder="e.g. Python, SQL, Git, React, Docker")
-                                s_non_tech = st.text_input("Non-Technical / Functional Skills", key="ui_s_non_tech", placeholder="e.g. Problem Solving, Collaboration, Team Leadership")
+                                s_tech = st.text_area(
+                                    "Technical Skills (Languages, Frameworks, Tools) *",
+                                    key="ui_s_tech",
+                                    height=95,
+                                    placeholder="Enter technical skills line-by-line (Press Enter) or comma-separated:\nPython\nC++\nSQL\nGit\nDocker",
+                                    help="Press Enter to add skills on each new line"
+                                )
+                                s_non_tech = st.text_area(
+                                    "Non-Technical / Functional Skills",
+                                    key="ui_s_non_tech",
+                                    height=85,
+                                    placeholder="Enter non-technical skills line-by-line (Press Enter) or comma-separated:\nPublic Speaking\nProblem Solving\nTeam Leadership",
+                                    help="Press Enter to add skills on each new line"
+                                )
                                 if s_tech or s_non_tech:
                                     user_provided_info["skills"] = {
                                         "technical": s_tech,

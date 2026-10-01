@@ -18,6 +18,95 @@ from modules.resume_guide.builder_templates import (
     export_builder_resume_to_pdf
 )
 from modules.resume_guide.exporter import export_resume_to_docx
+import plotly.graph_objects as go
+
+def render_builder_section_breakdown_pie_chart(data: Dict[str, Any]):
+    """
+    Render an interactive Plotly donut/pie chart summarizing section completeness
+    and content breakdown for the created resume in Resume Builder.
+    """
+    from modules.resume_guide.builder_templates import get_resume_headline
+
+    # Evaluate sections in builder
+    sections_status = []
+
+    # 1. Contact / Personal Details
+    has_contact = bool(data.get("full_name") and (data.get("email") or data.get("phone")))
+    sections_status.append(("Personal Details & Contact", has_contact, "Essential contact credentials provided." if has_contact else "Missing name or contact info."))
+
+    # 2. Professional Headline
+    hl = get_resume_headline(data)
+    sections_status.append(("Professional Headline", bool(hl), f"Headline: '{hl}'" if hl else "Clean layout without headline."))
+
+    # 3. Education & Qualifications
+    has_edu = bool(data.get("education", "").strip() or data.get("education_entries"))
+    sections_status.append(("Education & Qualifications", has_edu, "Academic qualifications provided." if has_edu else "No education provided."))
+
+    # 4. Technical Skills
+    has_tech_skills = bool(data.get("skills", "").strip() or data.get("tech_skills_raw", "").strip())
+    sections_status.append(("Technical Skills", has_tech_skills, "Technical competencies added." if has_tech_skills else "No technical skills entered."))
+
+    # 5. Non-Technical Skills
+    has_non_tech = bool("Non-Technical" in data.get("skills", "") or data.get("non_tech_skills_raw", "").strip())
+    sections_status.append(("Non-Technical Skills", has_non_tech, "Interpersonal & soft skills included." if has_non_tech else "Optional non-technical skills skipped."))
+
+    # 6. Work Experience
+    has_exp = bool(data.get("experience", "").strip() or [e for e in data.get("experience_entries", []) if any(e.values())])
+    sections_status.append(("Work Experience", has_exp, "Professional experience included." if has_exp else "Fresher / Entry-Level (No prior employment)."))
+
+    # 7. Technical Projects
+    has_proj = bool(data.get("projects", "").strip() or [p for p in data.get("project_entries", []) if any(p.values())])
+    sections_status.append(("Technical Projects", has_proj, "Technical projects detailed." if has_proj else "No technical projects (Skipped)."))
+
+    # 8. Certifications / Courses
+    has_cert = bool(data.get("certifications", "").strip())
+    sections_status.append(("Certifications & Courses", has_cert, "Professional credentials included." if has_cert else "Optional certifications skipped."))
+
+    # 9. Declaration & Signature
+    has_decl = bool(data.get("declaration", "").strip() and (data.get("sig_val") or data.get("signature_img_b64") or data.get("signature_mode") == "blank"))
+    sections_status.append(("Declaration & Signature", has_decl, "Formal verification completed." if has_decl else "Pending signature."))
+
+    completed_sections = [s for s in sections_status if s[1]]
+    optional_skipped = [s for s in sections_status if not s[1]]
+
+    labels = ["Completed Sections", "Optional / Skipped Sections"]
+    values = [len(completed_sections), len(optional_skipped)]
+    colors_palette = ["#10B981", "#94A3B8"]
+
+    hover_completed = "<br>• ".join([s[0] for s in completed_sections])
+    hover_skipped = "<br>• ".join([s[0] for s in optional_skipped])
+    hover_texts = [f"<b>Included:</b><br>• {hover_completed}", f"<b>Skipped / Omitted:</b><br>• {hover_skipped}" if hover_skipped else "None skipped"]
+
+    col_chart, col_summary = st.columns([1.1, 1])
+    with col_chart:
+        fig = go.Figure(data=[go.Pie(
+            labels=labels,
+            values=values,
+            hole=0.52,
+            marker=dict(colors=colors_palette, line=dict(color='#FFFFFF', width=2.5)),
+            textinfo='percent+label',
+            textposition='inside',
+            hovertext=hover_texts,
+            hovertemplate='<b>%{label}</b><br>%{hovertext}<br><b>Count:</b> %{value} of ' + str(len(sections_status)) + ' sections (%{percent})<extra></extra>',
+            pull=[0.02, 0.02]
+        )])
+
+        pct_complete = int((len(completed_sections) / len(sections_status)) * 100)
+        fig.update_layout(
+            showlegend=True,
+            legend=dict(orientation='h', yanchor='bottom', y=-0.25, xanchor='center', x=0.5),
+            margin=dict(t=15, b=65, l=15, r=15),
+            height=320,
+            annotations=[dict(text=f'<b>{pct_complete}%</b><br><span style="font-size:11px;color:#64748B;">Complete</span>', x=0.5, y=0.5, font_size=18, showarrow=False)]
+        )
+        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+
+    with col_summary:
+        st.markdown("##### Resume Content & Completeness Summary")
+        for name, active, note in completed_sections:
+            st.markdown(f"🟢 **{name}**: *Included* — {note}")
+        for name, active, note in optional_skipped:
+            st.markdown(f"⚪ **{name}**: *Omitted* — {note}")
 
 def init_builder_state():
     """Ensure all required builder session keys exist."""
@@ -685,32 +774,44 @@ def render_create_resume_flow():
         col_s_head, col_s_btn = st.columns([3, 1])
         with col_s_head:
             st.markdown("### Skills")
-            st.caption("List your skills. The system will categorize and format them professionally without inventing any unprovided skills.")
+            st.caption("List your technical and non-technical skills. Press Enter to write skills on each new line.")
         with col_s_btn:
             st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
             if st.button("✨ Enhance Writing", key="btn_enhance_skills", use_container_width=True, help="Group skills into industry categories and capitalize technologies properly"):
-                current_skills = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
-                if current_skills:
-                    enhanced_skills = ResumeBuilderModel.enhance_skills(current_skills)
-                    st.session_state["builder_skills_input"] = enhanced_skills
+                cur_tech = st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")).strip()
+                cur_non_tech = st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")).strip()
+                if cur_tech or cur_non_tech:
+                    enhanced_skills = ResumeBuilderModel.enhance_technical_and_non_technical(cur_tech, cur_non_tech)
                     data["skills"] = enhanced_skills
                     st.success("✅ Skills organized into professional categories and standardized!")
                     st.rerun()
                 else:
                     st.warning("Please enter your skills first before enhancing.")
 
-        data["skills"] = st.text_area(
-            "List your skills (comma-separated or lines):",
-            value=st.session_state.get("builder_skills_input", data.get("skills", "")),
-            height=150,
-            placeholder="Python, Java, React, SQL, Docker, Git, REST APIs, Problem Solving, PostgreSQL, AWS",
-            key="builder_skills_input"
+        # Multi-line input 1: Technical Skills
+        data["tech_skills_raw"] = st.text_area(
+            "Technical Skills (Languages, Frameworks, Databases, Tools):",
+            value=st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")),
+            height=120,
+            placeholder="Type or press Enter to add each skill on a new line:\nPython\nC++\nSQL\nReact\nDocker\nGit",
+            key="builder_tech_skills_input",
+            help="Press Enter to write skills on each new line"
+        )
+
+        # Multi-line input 2: Non-Technical Skills
+        data["non_tech_skills_raw"] = st.text_area(
+            "Non-Technical Skills (Soft Skills, Leadership, Communication):",
+            value=st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")),
+            height=90,
+            placeholder="Type or press Enter to add each skill on a new line:\nPublic Speaking\nProblem Solving\nTeam Leadership\nCritical Thinking",
+            key="builder_non_tech_skills_input",
+            help="Press Enter to write skills on each new line"
         )
 
         st.markdown(
             """
             <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Smart Skill Categorization:</strong> Enter raw technologies or competencies. Clicking <strong>'✨ Enhance Writing'</strong> automatically groups them into standard professional categories (e.g. Programming Languages, Frameworks, Databases, Cloud & Tools, Core Competencies) while strictly keeping only what you have entered.
+                <strong>💡 Multi-line Skills Entry:</strong> You can press <strong>Enter</strong> to write each skill line-by-line or separate skills with commas. Technical skills and non-technical skills (such as Public Speaking) are formatted cleanly under their own separate sections on your final resume.
             </div>
             """,
             unsafe_allow_html=True
@@ -720,15 +821,22 @@ def render_create_resume_flow():
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
             if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
-                data["skills"] = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
+                cur_tech = st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")).strip()
+                cur_non_tech = st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")).strip()
+                data["tech_skills_raw"] = cur_tech
+                data["non_tech_skills_raw"] = cur_non_tech
+                if cur_tech or cur_non_tech:
+                    data["skills"] = ResumeBuilderModel.enhance_technical_and_non_technical(cur_tech, cur_non_tech)
                 st.session_state.builder_step = 6
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
-                raw_sk = st.session_state.get("builder_skills_input", data.get("skills", "")).strip()
-                if raw_sk:
-                    data["skills"] = ResumeBuilderModel.enhance_skills(raw_sk)
-                    st.session_state["builder_skills_input"] = data["skills"]
+                cur_tech = st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")).strip()
+                cur_non_tech = st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")).strip()
+                data["tech_skills_raw"] = cur_tech
+                data["non_tech_skills_raw"] = cur_non_tech
+                if cur_tech or cur_non_tech:
+                    data["skills"] = ResumeBuilderModel.enhance_technical_and_non_technical(cur_tech, cur_non_tech)
                 else:
                     data["skills"] = ""
                 st.session_state.builder_step = 8
@@ -1043,74 +1151,92 @@ def render_create_resume_flow():
                 else:
                     st.warning("Please enter your project details first before enhancing.")
 
-        if "project_entries" not in data or not isinstance(data.get("project_entries"), list) or not data["project_entries"]:
-            data["project_entries"] = [
-                {"name": "", "tech_stack": "", "description": ""}
-            ]
-
-        del_proj_indices = []
-        for p_idx, proj in enumerate(data["project_entries"]):
-            proj_title = proj.get("name", "").strip() or f"Technical Project #{p_idx + 1}"
-            with st.container():
-                cp_head, cp_del = st.columns([5, 1])
-                with cp_head:
-                    st.markdown(f"**💻 {proj_title}**")
-                with cp_del:
-                    if len(data["project_entries"]) > 1:
-                        if st.button("🗑️ Remove", key=f"btn_del_proj_{p_idx}"):
-                            del_proj_indices.append(p_idx)
-
-                c1, c2 = st.columns(2)
-                with c1:
-                    proj["name"] = st.text_input(
-                        "Project Name:",
-                        value=st.session_state.get(f"proj_name_{p_idx}", proj.get("name", "")),
-                        placeholder="e.g. Distributed Task Queue",
-                        key=f"proj_name_{p_idx}"
-                    )
-                with c2:
-                    proj["tech_stack"] = st.text_input(
-                        "Tech Stack / Technologies (Optional):",
-                        value=st.session_state.get(f"proj_stack_{p_idx}", proj.get("tech_stack", "")),
-                        placeholder="e.g. Python, Redis, Docker, FastAPI",
-                        key=f"proj_stack_{p_idx}"
-                    )
-
-                proj["description"] = st.text_area(
-                    "Project Description (Rendered as normal paragraph below heading):",
-                    value=st.session_state.get(f"proj_desc_{p_idx}", proj.get("description", "")),
-                    height=95,
-                    placeholder="Describe what the project does, key features, and your technical implementation. It will appear as a clean normal paragraph below the project name.",
-                    key=f"proj_desc_{p_idx}"
-                )
-                st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
-
-        if del_proj_indices:
-            for di in sorted(del_proj_indices, reverse=True):
-                data["project_entries"].pop(di)
-            st.rerun()
-
-        if st.button("➕ Add Another Project", key="btn_add_another_proj"):
-            data["project_entries"].append({
-                "name": "",
-                "tech_stack": "",
-                "description": ""
-            })
-            st.rerun()
-
-        # Compile project entries into data["projects"]
-        compiled_proj = ResumeBuilderModel.compile_project_entries(data.get("project_entries", []))
-        if compiled_proj:
-            data["projects"] = compiled_proj
-
-        st.markdown(
-            """
-            <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
-                <strong>💡 Professional Formatting:</strong> On the final resume paper, each Project Name appears as a bullet-point-style heading (<code>• Project Name</code>). The project description appears as a clean normal paragraph directly below the project name without extra bullet points.
-            </div>
-            """,
-            unsafe_allow_html=True
+        # User Choice: Add or Skip Technical Projects
+        has_proj_choice = st.radio(
+            "Do you have any technical projects to include on your resume?",
+            options=["Yes, Add Technical Projects", "No Technical Projects (Skip this section)"],
+            index=0 if data.get("has_projects", True) and not data.get("skip_projects", False) else 1,
+            key="builder_has_projects_radio",
+            horizontal=True
         )
+
+        if has_proj_choice == "No Technical Projects (Skip this section)":
+            data["has_projects"] = False
+            data["skip_projects"] = True
+            data["projects"] = ""
+            st.info("ℹ️ You have chosen to skip the Technical Project section. Your final resume will cleanly omit this section without leaving any empty space or placeholder.")
+        else:
+            data["has_projects"] = True
+            data["skip_projects"] = False
+
+            if "project_entries" not in data or not isinstance(data.get("project_entries"), list) or not data["project_entries"]:
+                data["project_entries"] = [
+                    {"name": "", "tech_stack": "", "description": ""}
+                ]
+
+            del_proj_indices = []
+            for p_idx, proj in enumerate(data["project_entries"]):
+                proj_title = proj.get("name", "").strip() or f"Technical Project #{p_idx + 1}"
+                with st.container():
+                    cp_head, cp_del = st.columns([5, 1])
+                    with cp_head:
+                        st.markdown(f"**💻 {proj_title}**")
+                    with cp_del:
+                        if len(data["project_entries"]) > 1:
+                            if st.button("🗑️ Remove", key=f"btn_del_proj_{p_idx}"):
+                                del_proj_indices.append(p_idx)
+
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        proj["name"] = st.text_input(
+                            "Project Name:",
+                            value=st.session_state.get(f"proj_name_{p_idx}", proj.get("name", "")),
+                            placeholder="e.g. Distributed Task Queue",
+                            key=f"proj_name_{p_idx}"
+                        )
+                    with c2:
+                        proj["tech_stack"] = st.text_input(
+                            "Technologies Used (Languages, Frameworks, Tools):",
+                            value=st.session_state.get(f"proj_stack_{p_idx}", proj.get("tech_stack", "")),
+                            placeholder="e.g. Python, Redis, Docker, FastAPI",
+                            key=f"proj_stack_{p_idx}"
+                        )
+
+                    proj["description"] = st.text_area(
+                        "Project Description (Explain what the project is, what it does, and your technical role):",
+                        value=st.session_state.get(f"proj_desc_{p_idx}", proj.get("description", "")),
+                        height=95,
+                        placeholder="Describe what the project does, key features, and your technical implementation. It will appear as a clean normal paragraph below the project name.",
+                        key=f"proj_desc_{p_idx}"
+                    )
+                    st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px dashed #CBD5E0;'/>", unsafe_allow_html=True)
+
+            if del_proj_indices:
+                for di in sorted(del_proj_indices, reverse=True):
+                    data["project_entries"].pop(di)
+                st.rerun()
+
+            if st.button("➕ Add Another Project", key="btn_add_another_proj"):
+                data["project_entries"].append({
+                    "name": "",
+                    "tech_stack": "",
+                    "description": ""
+                })
+                st.rerun()
+
+            # Compile project entries into data["projects"]
+            compiled_proj = ResumeBuilderModel.compile_project_entries(data.get("project_entries", []))
+            if compiled_proj:
+                data["projects"] = compiled_proj
+
+            st.markdown(
+                """
+                <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; color: #166534; margin-top: 8px;">
+                    <strong>💡 Professional Formatting:</strong> On the final resume paper, each Project Name appears as a bullet-point-style heading (<code>• Project Name | Technologies Used: ...</code>). The project description appears as a clean normal paragraph directly below the project name.
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
@@ -1120,14 +1246,20 @@ def render_create_resume_flow():
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_9", use_container_width=True):
-                valid_projs = [
-                    p for p in data.get("project_entries", [])
-                    if any([p.get("name", "").strip(), p.get("description", "").strip()])
-                ]
-                data["project_entries"] = valid_projs
-                if valid_projs:
-                    data["project_entries"] = ResumeBuilderModel.enhance_project_entries(valid_projs)
-                    data["projects"] = ResumeBuilderModel.compile_project_entries(data["project_entries"])
+                if data.get("skip_projects", False):
+                    data["projects"] = ""
+                    data["project_entries"] = []
+                else:
+                    valid_projs = [
+                        p for p in data.get("project_entries", [])
+                        if any([p.get("name", "").strip(), p.get("tech_stack", "").strip(), p.get("description", "").strip()])
+                    ]
+                    data["project_entries"] = valid_projs
+                    if valid_projs:
+                        data["project_entries"] = ResumeBuilderModel.enhance_project_entries(valid_projs)
+                        data["projects"] = ResumeBuilderModel.compile_project_entries(data["project_entries"])
+                    else:
+                        data["projects"] = ""
                 st.session_state.builder_step = 10
                 st.rerun()
 
@@ -1439,6 +1571,12 @@ def render_create_resume_flow():
                 st.session_state.builder_step = 14
                 st.rerun()
 
+        # Visual Pie Graph: Resume Section Breakdown & Completeness
+        st.markdown("---")
+        st.markdown("### 📊 Resume Section Breakdown & Completeness")
+        st.caption("Visual pie graph showing your completed resume sections and structure summary.")
+        render_builder_section_breakdown_pie_chart(data)
+
         st.markdown("")
         html_preview = render_resume_html(
             data=data,
@@ -1470,6 +1608,13 @@ def render_create_resume_flow():
             st.success("### “Your resume has been updated based on your selected job role and company.”")
 
         st.caption("You have complete control over your resume. You can edit any details or change the template at any time.")
+
+        # Visual Pie Graph: Resume Section Breakdown & Completeness
+        st.markdown("---")
+        st.markdown("### 📊 Resume Section Breakdown & Completeness")
+        st.caption("Visual pie graph summarizing all sections included in your final resume.")
+        render_builder_section_breakdown_pie_chart(data)
+        st.markdown("---")
 
         pdf_bytes = export_builder_resume_to_pdf(data, data.get("template_name", "Modern"))
         plain_text = ResumeBuilderModel.to_plain_text(data)
