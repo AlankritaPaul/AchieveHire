@@ -5,7 +5,8 @@
   <br/><br/>
 
   <p align="center">
-    <h3>Better Preparation. Stronger Presentation.</h3>
+    <img src="assets/tagline.png" alt="Better Preparation. Stronger Presentation." height="46" />
+    <br/><br/>
     <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>
 
