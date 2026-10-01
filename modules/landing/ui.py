@@ -9,6 +9,7 @@ is implemented separately in the next step.
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 from modules.landing.content import (
     CORE_PRINCIPLE,
     PRIVACY_STATEMENT,
@@ -372,19 +373,15 @@ def _animated_background(theme_key: str):
         # ── Light: Thin Career Path ───────────────────────────────────────
         # Delicate curved bezier lines traveling upward; small dots moving along them
         anim_js = r"""
-(function() {
-    const canvas = document.getElementById('ac-anim-canvas');
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width  = window.parent.innerWidth  || window.innerWidth;
+        canvas.height = window.parent.innerHeight || window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.parent.addEventListener('resize', resize);
 
-    // Define career paths as bezier control points (relative 0-1 coords)
     const PATH_DEFS = [
         { cp: [[0.05,0.95],[0.20,0.60],[0.45,0.70],[0.65,0.30],[0.85,0.10]], hue: 230, a: 0.18 },
         { cp: [[0.15,1.00],[0.30,0.75],[0.50,0.55],[0.70,0.35],[0.92,0.05]], hue: 250, a: 0.12 },
@@ -392,26 +389,22 @@ def _animated_background(theme_key: str):
         { cp: [[0.25,1.00],[0.35,0.80],[0.55,0.60],[0.72,0.38],[0.95,0.12]], hue: 240, a: 0.09 },
     ];
 
-    // Evaluate a 4-segment polyline Catmull-Rom style using linear bezier per segment
     function evalPath(cp, t, W, H) {
-        const n = cp.length - 1;
+        const n   = cp.length - 1;
         const seg = Math.min(Math.floor(t * n), n - 1);
         const lt  = t * n - seg;
         const p0  = cp[seg];
         const p1  = cp[seg + 1];
-        return {
-            x: (p0[0] + (p1[0] - p0[0]) * lt) * W,
-            y: (p0[1] + (p1[1] - p0[1]) * lt) * H,
-        };
+        return { x: (p0[0] + (p1[0] - p0[0]) * lt) * W,
+                 y: (p0[1] + (p1[1] - p0[1]) * lt) * H };
     }
 
-    // Paths with their moving dots
     const paths = PATH_DEFS.map(def => ({
         def,
         dots: Array.from({ length: 3 }, (_, i) => ({
             t:     (i / 3) + Math.random() * 0.2,
             speed: 0.0006 + Math.random() * 0.0008,
-            r:     1.8 + Math.random() * 2.2,
+            r:     1.8  + Math.random() * 2.2,
             alpha: 0.55 + Math.random() * 0.35,
         })),
     }));
@@ -428,64 +421,43 @@ def _animated_background(theme_key: str):
         ctx.stroke();
     }
 
-    function draw() {
+    function drawAnim() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Soft white base
         ctx.fillStyle = '#F8FAFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         const W = canvas.width, H = canvas.height;
-
         paths.forEach(({ def, dots }) => {
-            // Draw the path line
             drawPath(def);
-
-            // Move and draw dots along the path
             dots.forEach(dot => {
                 dot.t += dot.speed;
                 if (dot.t > 1) dot.t -= 1;
-
                 const pt = evalPath(def.cp, dot.t, W, H);
-
-                // Soft glow halo
                 const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, dot.r * 5);
-                glow.addColorStop(0,   `hsla(${def.hue}, 70%, 60%, ${dot.alpha * 0.5})`);
-                glow.addColorStop(1,   `hsla(${def.hue}, 70%, 60%, 0)`);
-                ctx.beginPath();
-                ctx.arc(pt.x, pt.y, dot.r * 5, 0, Math.PI * 2);
-                ctx.fillStyle = glow;
-                ctx.fill();
-
-                // Core dot
-                ctx.beginPath();
-                ctx.arc(pt.x, pt.y, dot.r, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${def.hue}, 65%, 52%, ${dot.alpha})`;
-                ctx.fill();
+                glow.addColorStop(0, `hsla(${def.hue}, 70%, 60%, ${dot.alpha * 0.5})`);
+                glow.addColorStop(1, `hsla(${def.hue}, 70%, 60%, 0)`);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r * 5, 0, Math.PI * 2);
+                ctx.fillStyle = glow; ctx.fill();
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${def.hue}, 65%, 52%, ${dot.alpha})`; ctx.fill();
             });
         });
-
-        requestAnimationFrame(draw);
+        requestAnimationFrame(drawAnim);
     }
-    draw();
-})();
+    drawAnim();
         """
 
     else:
         # ── Dark: Rising Glow ─────────────────────────────────────────────
         # Tiny glowing particles slowly rise; some fade away while new ones appear
         anim_js = r"""
-(function() {
-    const canvas = document.getElementById('ac-anim-canvas');
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width  = window.parent.innerWidth  || window.innerWidth;
+        canvas.height = window.parent.innerHeight || window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.parent.addEventListener('resize', resize);
 
     const MAX = 90;
     const particles = [];
@@ -495,9 +467,9 @@ def _animated_background(theme_key: str):
             x:        Math.random() * canvas.width,
             y:        spreadY !== undefined ? spreadY : canvas.height + 8,
             r:        1.2 + Math.random() * 2.8,
-            vy:       0.35 + Math.random() * 0.9,     // rise speed
-            vx:       (Math.random() - 0.5) * 0.25,   // slight horizontal drift
-            hue:      200 + Math.random() * 90,        // blue → purple range
+            vy:       0.35 + Math.random() * 0.9,
+            vx:       (Math.random() - 0.5) * 0.25,
+            hue:      200 + Math.random() * 90,
             life:     0,
             maxLife:  180 + Math.random() * 260,
             maxAlpha: 0.35 + Math.random() * 0.55,
@@ -505,31 +477,23 @@ def _animated_background(theme_key: str):
         };
     }
 
-    // Pre-seed particles spread across the screen
     for (let i = 0; i < MAX; i++) {
-        const p = spawn(Math.random() * (window.innerHeight || 800));
+        const p = spawn(Math.random() * canvas.height);
         p.life = Math.random() * p.maxLife;
         particles.push(p);
     }
 
-    function draw() {
+    function drawGlow() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#0D0F1A';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Spawn new particles to maintain count
-        while (particles.length < MAX) {
-            particles.push(spawn());
-        }
+        while (particles.length < MAX) { particles.push(spawn()); }
 
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
+            p.life++; p.x += p.vx; p.y -= p.vy;
 
-            p.life++;
-            p.x += p.vx;
-            p.y -= p.vy;
-
-            // Fade in (first 30%) → full → fade out (last 30%)
             const fadeIn  = p.maxLife * 0.30;
             const fadeOut = p.maxLife * 0.70;
             if (p.life < fadeIn) {
@@ -540,40 +504,50 @@ def _animated_background(theme_key: str):
                 p.alpha = p.maxAlpha * (1 - (p.life - fadeOut) / (p.maxLife - fadeOut));
             }
 
-            // Remove dead or out-of-bounds particles
-            if (p.life >= p.maxLife || p.y < -20) {
-                particles.splice(i, 1);
-                continue;
-            }
+            if (p.life >= p.maxLife || p.y < -20) { particles.splice(i, 1); continue; }
 
-            // Outer glow corona
             const glowR = p.r * 6;
             const glow  = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
             glow.addColorStop(0,   `hsla(${p.hue}, 80%, 70%, ${p.alpha * 0.55})`);
             glow.addColorStop(0.4, `hsla(${p.hue}, 75%, 65%, ${p.alpha * 0.22})`);
             glow.addColorStop(1,   `hsla(${p.hue}, 70%, 60%, 0)`);
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
-            ctx.fillStyle = glow;
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+            ctx.fillStyle = glow; ctx.fill();
 
-            // Bright core
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${Math.min(1, p.alpha * 1.6)})`;
             ctx.fill();
         }
-
-        requestAnimationFrame(draw);
+        requestAnimationFrame(drawGlow);
     }
-    draw();
-})();
+    drawGlow();
         """
 
-    st.markdown(f"""
-    <canvas id="ac-anim-canvas"></canvas>
-    <script>{anim_js}</script>
-    """, unsafe_allow_html=True)
+    # Inject canvas element into parent Streamlit DOM
+    st.markdown(
+        '<canvas id="ac-anim-canvas" '
+        'style="position:fixed;top:0;left:0;width:100%;height:100%;'
+        'z-index:0;pointer-events:none;"></canvas>',
+        unsafe_allow_html=True,
+    )
+
+    # Run the animation JS via components.html (which properly executes scripts).
+    # The script uses window.parent.document to reach the canvas in the parent page,
+    # since components.html runs inside an iframe that shares origin with Streamlit.
+    components.html(
+        f"""
+        <script>
+        (function run() {{
+            // Retry until parent canvas is available
+            const canvas = window.parent.document.getElementById('ac-anim-canvas');
+            if (!canvas) {{ setTimeout(run, 50); return; }}
+            {anim_js}
+        }})();
+        </script>
+        """,
+        height=0,
+        scrolling=False,
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
