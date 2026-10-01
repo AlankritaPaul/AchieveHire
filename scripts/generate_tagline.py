@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 def create_cursive_tagline():
     print("Generating cursive tagline badge (Better Preparation. Stronger Presentation.)...")
     SCALE = 4
-    font = ImageFont.truetype('assets/fonts/GreatVibes.ttf', int(54 * SCALE))
+    font = ImageFont.truetype('assets/fonts/GreatVibes.ttf', int(64 * SCALE))
 
     tag1 = "Better Preparation."
     tag2 = " Stronger Presentation."
@@ -13,8 +13,8 @@ def create_cursive_tagline():
     total_w = int(w1 + w2)
 
     bbox = font.getbbox(tag1 + tag2)
-    pad_x = int(35 * SCALE)
-    pad_y = int(24 * SCALE)
+    pad_x = int(40 * SCALE)
+    pad_y = int(28 * SCALE)
     txt_h = bbox[3] - bbox[1]
 
     W = total_w + pad_x * 2
@@ -29,7 +29,7 @@ def create_cursive_tagline():
     sdraw = ImageDraw.Draw(shd)
     sdraw.text((tag_x + int(1.5 * SCALE), tag_y + int(2.5 * SCALE)), tag1, font=font, fill=(0, 0, 0, 95))
     sdraw.text((tag_x + w1 + int(1.5 * SCALE), tag_y + int(2.5 * SCALE)), tag2, font=font, fill=(0, 0, 0, 95))
-    shd = shd.filter(ImageFilter.GaussianBlur(int(2.5 * SCALE)))
+    shd = shd.filter(ImageFilter.GaussianBlur(int(2.8 * SCALE)))
     img.alpha_composite(shd)
 
     # Luminous glow (light pink behind Better Preparation., sky blue behind Stronger Presentation.)
@@ -37,7 +37,7 @@ def create_cursive_tagline():
     gdraw = ImageDraw.Draw(glow)
     gdraw.text((tag_x, tag_y), tag1, font=font, fill=(244, 114, 182, 160))
     gdraw.text((tag_x + w1, tag_y), tag2, font=font, fill=(56, 189, 248, 160))
-    glow = glow.filter(ImageFilter.GaussianBlur(int(7 * SCALE)))
+    glow = glow.filter(ImageFilter.GaussianBlur(int(8 * SCALE)))
     img.alpha_composite(glow)
 
     # Core rich text

@@ -14,14 +14,14 @@ def create_banner():
     # Fonts
     font_title = ImageFont.truetype('assets/fonts/glitten/Glitten-Regular.otf', int(76 * SCALE))
     font_tagline = ImageFont.truetype('assets/fonts/hatton/Hatton1.otf', int(27 * SCALE))
-    font_mono = ImageFont.truetype('C:/Windows/Fonts/consolab.ttf', int(17.5 * SCALE))
+    font_mono = ImageFont.truetype('C:/Windows/Fonts/consolab.ttf', int(20 * SCALE))
 
     # Base coordinates
     start_x = int(395 * SCALE)
-    base_y = int(72 * SCALE)
+    base_y = int(70 * SCALE)
     tag_y = base_y + int(94 * SCALE)
-    pill_y = tag_y + int(96 * SCALE)
-    pill_h = int(32 * SCALE)
+    pill_y = tag_y + int(98 * SCALE)
+    pill_h = int(36 * SCALE)
 
     # 2. Static Logo on Left (NO animation!)
     logo = Image.open('assets/logo.png').convert('RGBA')
@@ -137,16 +137,16 @@ def create_banner():
     for icon_fn, label, color in pills_data:
         bbox = pdraw.textbbox((0, 0), label, font=font_mono)
         tw = bbox[2] - bbox[0]
-        pw = tw + int(48 * SCALE)
+        pw = tw + int(56 * SCALE)
         pdraw.rounded_rectangle(
             (cur_bx, pill_y, cur_bx + pw, pill_y + pill_h),
-            radius=int(6 * SCALE),
+            radius=int(7 * SCALE),
             fill=(15, 23, 42, 255),
             outline=(30, 41, 59, 255),
             width=int(1 * SCALE)
         )
-        icon_fn(pdraw, cur_bx + int(16 * SCALE), pill_y + pill_h // 2, s=int(11 * SCALE))
-        pdraw.text((cur_bx + int(32 * SCALE), pill_y + int(7 * SCALE)), label, font=font_mono, fill=color)
+        icon_fn(pdraw, cur_bx + int(19 * SCALE), pill_y + pill_h // 2, s=int(12.5 * SCALE))
+        pdraw.text((cur_bx + int(38 * SCALE), pill_y + int(9.5 * SCALE)), label, font=font_mono, fill=color)
         cur_bx += pw + int(14 * SCALE)
 
     # 6. Assemble Static Master Image
