@@ -1,7 +1,7 @@
 """
 AscendCareer — Landing Screen
 Polished opening screen with animated background, theme switching,
-branding, Core Principles, Privacy info, and Sign In entry point.
+branding, Core Principle, Privacy & Trust section, and Sign In entry point.
 
 This module is intentionally self-contained and modular.
 The Sign In button is an entry-point placeholder — sign-in logic
@@ -9,7 +9,11 @@ is implemented separately in the next step.
 """
 
 import streamlit as st
-from modules.landing.content import CORE_PRINCIPLES, PRIVACY_POINTS
+from modules.landing.content import (
+    CORE_PRINCIPLE,
+    PRIVACY_STATEMENT,
+    PRIVACY_SECTIONS,
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -18,7 +22,7 @@ from modules.landing.content import CORE_PRINCIPLES, PRIVACY_POINTS
 
 THEMES = {
     "light": {
-        "label": "☀️ Light",
+        "label": "🌙 Dark",           # label shows what you'll SWITCH TO
         "bg": "#F8FAFF",
         "surface": "#FFFFFF",
         "surface2": "#F0F4FF",
@@ -26,7 +30,7 @@ THEMES = {
         "text_primary": "#1A1F36",
         "text_secondary": "#4A5568",
         "text_muted": "#718096",
-        "accent": "#4F46E5",          # Indigo
+        "accent": "#4F46E5",
         "accent_hover": "#4338CA",
         "accent_soft": "#EEF2FF",
         "gold": "#D97706",
@@ -36,10 +40,14 @@ THEMES = {
         "tag_bg": "#EEF2FF",
         "tag_text": "#4F46E5",
         "divider": "#E2E8F0",
-        "anim_id": "light",
+        "qa_bg": "#F8FAFF",
+        "qa_hover": "#EEF2FF",
+        "qa_answer_bg": "#F0F4FF",
+        "qa_border": "#DDE3F0",
+        "principle_border": "#C7D2FE",
     },
     "dark": {
-        "label": "🌙 Dark",
+        "label": "☀️ Light",          # label shows what you'll SWITCH TO
         "bg": "#0D0F1A",
         "surface": "#141827",
         "surface2": "#1C2035",
@@ -47,7 +55,7 @@ THEMES = {
         "text_primary": "#E8ECF7",
         "text_secondary": "#A0AABF",
         "text_muted": "#6B7599",
-        "accent": "#818CF8",          # Soft indigo
+        "accent": "#818CF8",
         "accent_hover": "#A5B4FC",
         "accent_soft": "#1E2347",
         "gold": "#FCD34D",
@@ -57,7 +65,11 @@ THEMES = {
         "tag_bg": "#1E2347",
         "tag_text": "#818CF8",
         "divider": "#2D3450",
-        "anim_id": "dark",
+        "qa_bg": "#141827",
+        "qa_hover": "#1C2035",
+        "qa_answer_bg": "#1A1F36",
+        "qa_border": "#2D3450",
+        "principle_border": "#3730A3",
     },
 }
 
@@ -69,8 +81,11 @@ THEMES = {
 def _inject_css(t: dict):
     st.markdown(f"""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
     /* ── Reset & Base ─────────────────────────────────────────────────── */
-    html, body, [data-testid="stAppViewContainer"],
+    html, body,
+    [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {{
         background: {t["bg"]} !important;
         color: {t["text_primary"]} !important;
@@ -84,87 +99,18 @@ def _inject_css(t: dict):
     }}
 
     /* ── Scrollbar ────────────────────────────────────────────────────── */
-    ::-webkit-scrollbar {{ width: 6px; }}
+    ::-webkit-scrollbar {{ width: 5px; }}
     ::-webkit-scrollbar-track {{ background: {t["bg"]}; }}
     ::-webkit-scrollbar-thumb {{ background: {t["border"]}; border-radius: 3px; }}
 
-    /* ── Streamlit default padding override ───────────────────────────── */
+    /* ── Streamlit padding override ───────────────────────────────────── */
     .block-container {{
         padding: 0 !important;
         max-width: 100% !important;
     }}
     [data-testid="stVerticalBlock"] > div {{ padding: 0; }}
 
-    /* ── Section Cards ────────────────────────────────────────────────── */
-    .ac-card {{
-        background: {t["surface"]} !important;
-        border: 1px solid {t["border"]} !important;
-        border-radius: 16px !important;
-        box-shadow: {t["card_shadow"]} !important;
-        color: {t["text_primary"]} !important;
-    }}
-
-    .ac-card-subtle {{
-        background: {t["surface2"]} !important;
-        border: 1px solid {t["border"]} !important;
-        border-radius: 12px !important;
-        color: {t["text_primary"]} !important;
-    }}
-
-    /* ── Sign In Button ───────────────────────────────────────────────── */
-    .ac-signin-btn {{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: linear-gradient(135deg, {t["accent"]}, {t["accent_hover"]});
-        color: {t["btn_text"]};
-        border: none;
-        border-radius: 50px;
-        padding: 16px 52px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: 0 6px 28px rgba(79,70,229,0.35);
-        transition: all 0.2s ease;
-        margin: 8px 4px;
-    }}
-    .ac-signin-btn:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 10px 36px rgba(79,70,229,0.45);
-    }}
-
-    /* ── Theme toggle button ──────────────────────────────────────────── */
-    .stButton > button {{
-        background: {t["surface2"]} !important;
-        color: {t["text_primary"]} !important;
-        border: 1.5px solid {t["border"]} !important;
-        border-radius: 50px !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        padding: 6px 18px !important;
-        transition: all 0.2s ease !important;
-    }}
-    .stButton > button:hover {{
-        border-color: {t["accent"]} !important;
-        color: {t["accent"]} !important;
-    }}
-
-    /* ── Principle / Privacy Tags ─────────────────────────────────────── */
-    .ac-tag {{
-        display: inline-block;
-        background: {t["tag_bg"]};
-        color: {t["tag_text"]};
-        border-radius: 20px;
-        padding: 3px 12px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-    }}
-
-    /* ── Animated canvas container ────────────────────────────────────── */
+    /* ── Animated canvas ──────────────────────────────────────────────── */
     #ac-anim-canvas {{
         position: fixed;
         top: 0; left: 0;
@@ -173,266 +119,455 @@ def _inject_css(t: dict):
         pointer-events: none;
     }}
 
-    /* ── Content above canvas ─────────────────────────────────────────── */
+    /* ── Content layer above canvas ───────────────────────────────────── */
     .ac-content {{
         position: relative;
         z-index: 1;
     }}
 
+    /* ── Theme toggle & top bar ───────────────────────────────────────── */
+    .stButton > button {{
+        background: {t["surface2"]} !important;
+        color: {t["text_primary"]} !important;
+        border: 1.5px solid {t["border"]} !important;
+        border-radius: 50px !important;
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        padding: 6px 18px !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+    }}
+    .stButton > button:hover {{
+        border-color: {t["accent"]} !important;
+        color: {t["accent"]} !important;
+        background: {t["accent_soft"]} !important;
+    }}
+
+    /* ── Sign In button override ──────────────────────────────────────── */
+    [data-testid="stButton"][key="ac_signin_btn"] > button,
+    div[data-testid="column"]:nth-child(2) .stButton > button {{
+        background: linear-gradient(135deg, {t["accent"]}, {t["accent_hover"]}) !important;
+        color: {t["btn_text"]} !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 14px 0 !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        box-shadow: 0 6px 28px rgba(79,70,229,0.32) !important;
+        transition: all 0.2s ease !important;
+    }}
+
     /* ── Typography ───────────────────────────────────────────────────── */
     .ac-brand-name {{
-        font-size: clamp(2.8rem, 6vw, 4.8rem);
+        font-size: clamp(2.6rem, 5.5vw, 4.5rem);
         font-weight: 900;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
+        letter-spacing: -0.025em;
+        line-height: 1.08;
         background: linear-gradient(135deg, {t["accent"]} 0%, {t["gold"]} 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        margin: 0;
     }}
     .ac-tagline-main {{
-        font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+        font-size: clamp(1rem, 2.2vw, 1.35rem);
         font-weight: 700;
         color: {t["text_primary"]};
         letter-spacing: 0.01em;
     }}
     .ac-tagline-sub {{
-        font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+        font-size: clamp(0.82rem, 1.6vw, 1.02rem);
         color: {t["text_secondary"]};
         font-style: italic;
         font-weight: 400;
     }}
     .ac-section-title {{
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 800;
         color: {t["text_primary"]};
         letter-spacing: -0.01em;
-    }}
-    .ac-principle-title {{
-        font-size: 1.0rem;
-        font-weight: 700;
-        color: {t["text_primary"]};
-    }}
-    .ac-principle-desc {{
-        font-size: 0.88rem;
-        color: {t["text_secondary"]};
-        line-height: 1.6;
+        margin: 0 0 4px;
     }}
     .ac-divider {{
         border: none;
         border-top: 1px solid {t["divider"]};
         margin: 0;
     }}
-
-    /* ── Gold accent for tagline badge ───────────────────────────────── */
     .ac-gold-badge {{
         display: inline-block;
         background: {t["gold_soft"]};
         color: {t["gold"]};
         border-radius: 50px;
         padding: 4px 18px;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.05em;
         text-transform: uppercase;
+    }}
+    .ac-tag {{
+        display: inline-block;
+        background: {t["tag_bg"]};
+        color: {t["tag_text"]};
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }}
+
+    /* ── Streamlit Expander styling ───────────────────────────────────── */
+    [data-testid="stExpander"] {{
+        background: {t["surface"]} !important;
+        border: 1px solid {t["border"]} !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+        margin-bottom: 4px !important;
+        overflow: hidden !important;
+    }}
+    [data-testid="stExpander"] > details > summary {{
+        background: {t["surface"]} !important;
+        color: {t["text_primary"]} !important;
+        font-weight: 700 !important;
+        font-size: 0.97rem !important;
+        padding: 14px 18px !important;
+        border-radius: 12px !important;
+    }}
+    [data-testid="stExpander"] > details > summary:hover {{
+        background: {t["surface2"]} !important;
+    }}
+    [data-testid="stExpander"] > details[open] > summary {{
+        border-bottom: 1px solid {t["border"]} !important;
+        border-radius: 12px 12px 0 0 !important;
+    }}
+    [data-testid="stExpander"] > details > div {{
+        background: {t["surface"]} !important;
+        padding: 4px 18px 16px !important;
+    }}
+
+    /* ── Q&A details/summary (HTML native) ───────────────────────────── */
+    .ac-qa-item {{
+        border: 1px solid {t["qa_border"]};
+        border-radius: 8px;
+        margin: 6px 0;
+        overflow: hidden;
+        background: {t["qa_bg"]};
+        transition: border-color 0.2s;
+    }}
+    .ac-qa-item:hover {{
+        border-color: {t["accent"]};
+    }}
+    .ac-qa-item summary {{
+        padding: 11px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: {t["text_primary"]};
+        list-style: none;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        user-select: none;
+        background: {t["qa_bg"]};
+        transition: background 0.15s;
+    }}
+    .ac-qa-item summary::-webkit-details-marker {{ display: none; }}
+    .ac-qa-item summary:hover {{
+        background: {t["qa_hover"]};
+    }}
+    .ac-qa-item summary .ac-qa-icon {{
+        flex-shrink: 0;
+        font-size: 0.9rem;
+        margin-top: 1px;
+        color: {t["accent"]};
+        transition: transform 0.2s;
+    }}
+    .ac-qa-item[open] summary .ac-qa-icon {{
+        transform: rotate(45deg);
+    }}
+    .ac-qa-item[open] summary {{
+        border-bottom: 1px solid {t["qa_border"]};
+        background: {t["qa_hover"]};
+    }}
+    .ac-qa-answer {{
+        padding: 12px 16px 14px;
+        font-size: 0.855rem;
+        color: {t["text_secondary"]};
+        line-height: 1.7;
+        background: {t["qa_answer_bg"]};
+        border-top: none;
+    }}
+
+    /* ── Privacy & Trust top-level expander — larger header ─────────── */
+    .ac-privacy-top > [data-testid="stExpander"] > details > summary {{
+        font-size: 1.1rem !important;
+        font-weight: 800 !important;
+        padding: 16px 20px !important;
+        background: {t["surface2"]} !important;
+    }}
+
+    /* ── Core Principle block ────────────────────────────────────────── */
+    .ac-principle-block {{
+        background: {t["surface"]};
+        border: 1px solid {t["principle_border"]};
+        border-left: 4px solid {t["accent"]};
+        border-radius: 12px;
+        padding: 22px 26px;
+        font-size: 0.92rem;
+        line-height: 1.8;
+        color: {t["text_secondary"]};
+        box-shadow: {t["card_shadow"]};
+    }}
+
+    /* ── Privacy statement banner ────────────────────────────────────── */
+    .ac-privacy-statement {{
+        background: {t["accent_soft"]};
+        border: 1px solid {t["accent"]};
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: {t["text_primary"]};
+        margin-bottom: 16px;
+        line-height: 1.6;
+    }}
+
+    /* ── Section number badge ────────────────────────────────────────── */
+    .ac-sec-badge {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        background: {t["accent"]};
+        color: white;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 800;
+        margin-right: 8px;
+        flex-shrink: 0;
+        vertical-align: middle;
+    }}
+
+    /* ── Mobile responsiveness ───────────────────────────────────────── */
+    @media (max-width: 640px) {{
+        .ac-brand-name {{ font-size: 2.4rem; }}
+        .ac-principle-block {{ padding: 16px 18px; font-size: 0.87rem; }}
+        .ac-qa-item summary {{ font-size: 0.83rem; padding: 10px 13px; }}
+        .ac-qa-answer {{ font-size: 0.82rem; padding: 10px 13px; }}
     }}
     </style>
     """, unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Animated Background (Canvas)
+# Animated Backgrounds
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _animated_background(theme_key: str):
-    """Injects a canvas-based animated background appropriate for the theme."""
+    """Injects a canvas-based animated background per theme."""
 
     if theme_key == "light":
-        # Light theme: soft floating orbs + gentle particle drift
-        anim_js = """
-        (function() {
-            const canvas = document.getElementById('ac-anim-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+        # ── Light: Thin Career Path ───────────────────────────────────────
+        # Delicate curved bezier lines traveling upward; small dots moving along them
+        anim_js = r"""
+(function() {
+    const canvas = document.getElementById('ac-anim-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resize();
-            window.addEventListener('resize', resize);
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
 
-            // Floating orbs
-            const orbs = Array.from({length: 7}, (_, i) => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: 120 + Math.random() * 180,
-                dx: (Math.random() - 0.5) * 0.25,
-                dy: (Math.random() - 0.5) * 0.25,
-                hue: [220, 240, 260, 200, 210][i % 5],
-                alpha: 0.055 + Math.random() * 0.04,
-            }));
+    // Define career paths as bezier control points (relative 0-1 coords)
+    const PATH_DEFS = [
+        { cp: [[0.05,0.95],[0.20,0.60],[0.45,0.70],[0.65,0.30],[0.85,0.10]], hue: 230, a: 0.18 },
+        { cp: [[0.15,1.00],[0.30,0.75],[0.50,0.55],[0.70,0.35],[0.92,0.05]], hue: 250, a: 0.12 },
+        { cp: [[0.00,0.80],[0.25,0.65],[0.40,0.40],[0.60,0.25],[0.80,0.08]], hue: 210, a: 0.10 },
+        { cp: [[0.25,1.00],[0.35,0.80],[0.55,0.60],[0.72,0.38],[0.95,0.12]], hue: 240, a: 0.09 },
+    ];
 
-            // Particles
-            const particles = Array.from({length: 55}, () => ({
-                x: Math.random() * (typeof canvas !== 'undefined' ? canvas.width : 1200),
-                y: Math.random() * (typeof canvas !== 'undefined' ? canvas.height : 800),
-                r: 1 + Math.random() * 2,
-                dx: (Math.random() - 0.5) * 0.3,
-                dy: -0.15 - Math.random() * 0.25,
-                alpha: 0.12 + Math.random() * 0.18,
-                hue: 220 + Math.random() * 40,
-            }));
+    // Evaluate a 4-segment polyline Catmull-Rom style using linear bezier per segment
+    function evalPath(cp, t, W, H) {
+        const n = cp.length - 1;
+        const seg = Math.min(Math.floor(t * n), n - 1);
+        const lt  = t * n - seg;
+        const p0  = cp[seg];
+        const p1  = cp[seg + 1];
+        return {
+            x: (p0[0] + (p1[0] - p0[0]) * lt) * W,
+            y: (p0[1] + (p1[1] - p0[1]) * lt) * H,
+        };
+    }
 
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Paths with their moving dots
+    const paths = PATH_DEFS.map(def => ({
+        def,
+        dots: Array.from({ length: 3 }, (_, i) => ({
+            t:     (i / 3) + Math.random() * 0.2,
+            speed: 0.0006 + Math.random() * 0.0008,
+            r:     1.8 + Math.random() * 2.2,
+            alpha: 0.55 + Math.random() * 0.35,
+        })),
+    }));
 
-                // Background base
-                ctx.fillStyle = '#F8FAFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function drawPath(def) {
+        const W = canvas.width, H = canvas.height;
+        ctx.beginPath();
+        for (let i = 0; i <= 120; i++) {
+            const pt = evalPath(def.cp, i / 120, W, H);
+            i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = `hsla(${def.hue}, 60%, 55%, ${def.a})`;
+        ctx.lineWidth   = 1.2;
+        ctx.stroke();
+    }
 
-                // Subtle grid
-                ctx.strokeStyle = 'rgba(79,70,229,0.035)';
-                ctx.lineWidth = 1;
-                const step = 48;
-                for (let x = 0; x < canvas.width; x += step) {
-                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-                }
-                for (let y = 0; y < canvas.height; y += step) {
-                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-                }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Orbs
-                orbs.forEach(o => {
-                    o.x += o.dx; o.y += o.dy;
-                    if (o.x < -o.r) o.x = canvas.width + o.r;
-                    if (o.x > canvas.width + o.r) o.x = -o.r;
-                    if (o.y < -o.r) o.y = canvas.height + o.r;
-                    if (o.y > canvas.height + o.r) o.y = -o.r;
-                    const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-                    g.addColorStop(0, `hsla(${o.hue}, 70%, 70%, ${o.alpha})`);
-                    g.addColorStop(1, `hsla(${o.hue}, 70%, 70%, 0)`);
-                    ctx.beginPath();
-                    ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
-                    ctx.fillStyle = g;
-                    ctx.fill();
-                });
+        // Soft white base
+        ctx.fillStyle = '#F8FAFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Particles
-                particles.forEach(p => {
-                    p.x += p.dx; p.y += p.dy;
-                    if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `hsla(${p.hue}, 60%, 55%, ${p.alpha})`;
-                    ctx.fill();
-                });
+        const W = canvas.width, H = canvas.height;
 
-                requestAnimationFrame(draw);
-            }
-            draw();
-        })();
+        paths.forEach(({ def, dots }) => {
+            // Draw the path line
+            drawPath(def);
+
+            // Move and draw dots along the path
+            dots.forEach(dot => {
+                dot.t += dot.speed;
+                if (dot.t > 1) dot.t -= 1;
+
+                const pt = evalPath(def.cp, dot.t, W, H);
+
+                // Soft glow halo
+                const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, dot.r * 5);
+                glow.addColorStop(0,   `hsla(${def.hue}, 70%, 60%, ${dot.alpha * 0.5})`);
+                glow.addColorStop(1,   `hsla(${def.hue}, 70%, 60%, 0)`);
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, dot.r * 5, 0, Math.PI * 2);
+                ctx.fillStyle = glow;
+                ctx.fill();
+
+                // Core dot
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, dot.r, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${def.hue}, 65%, 52%, ${dot.alpha})`;
+                ctx.fill();
+            });
+        });
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
         """
+
     else:
-        # Dark theme: deep space nebula with stars + aurora ribbons
-        anim_js = """
-        (function() {
-            const canvas = document.getElementById('ac-anim-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+        # ── Dark: Rising Glow ─────────────────────────────────────────────
+        # Tiny glowing particles slowly rise; some fade away while new ones appear
+        anim_js = r"""
+(function() {
+    const canvas = document.getElementById('ac-anim-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const MAX = 90;
+    const particles = [];
+
+    function spawn(spreadY) {
+        return {
+            x:        Math.random() * canvas.width,
+            y:        spreadY !== undefined ? spreadY : canvas.height + 8,
+            r:        1.2 + Math.random() * 2.8,
+            vy:       0.35 + Math.random() * 0.9,     // rise speed
+            vx:       (Math.random() - 0.5) * 0.25,   // slight horizontal drift
+            hue:      200 + Math.random() * 90,        // blue → purple range
+            life:     0,
+            maxLife:  180 + Math.random() * 260,
+            maxAlpha: 0.35 + Math.random() * 0.55,
+            alpha:    0,
+        };
+    }
+
+    // Pre-seed particles spread across the screen
+    for (let i = 0; i < MAX; i++) {
+        const p = spawn(Math.random() * (window.innerHeight || 800));
+        p.life = Math.random() * p.maxLife;
+        particles.push(p);
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0D0F1A';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Spawn new particles to maintain count
+        while (particles.length < MAX) {
+            particles.push(spawn());
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+
+            p.life++;
+            p.x += p.vx;
+            p.y -= p.vy;
+
+            // Fade in (first 30%) → full → fade out (last 30%)
+            const fadeIn  = p.maxLife * 0.30;
+            const fadeOut = p.maxLife * 0.70;
+            if (p.life < fadeIn) {
+                p.alpha = p.maxAlpha * (p.life / fadeIn);
+            } else if (p.life < fadeOut) {
+                p.alpha = p.maxAlpha;
+            } else {
+                p.alpha = p.maxAlpha * (1 - (p.life - fadeOut) / (p.maxLife - fadeOut));
             }
-            resize();
-            window.addEventListener('resize', resize);
 
-            // Stars
-            const stars = Array.from({length: 160}, () => ({
-                x: Math.random() * (typeof canvas !== 'undefined' ? canvas.width : 1200),
-                y: Math.random() * (typeof canvas !== 'undefined' ? canvas.height : 800),
-                r: 0.4 + Math.random() * 1.4,
-                alpha: 0.3 + Math.random() * 0.7,
-                twinkleSpeed: 0.008 + Math.random() * 0.02,
-                twinklePhase: Math.random() * Math.PI * 2,
-            }));
-
-            // Nebula orbs
-            const nebulae = Array.from({length: 5}, (_, i) => ({
-                x: Math.random() * (typeof canvas !== 'undefined' ? canvas.width : 1200),
-                y: Math.random() * (typeof canvas !== 'undefined' ? canvas.height : 800),
-                r: 200 + Math.random() * 300,
-                dx: (Math.random() - 0.5) * 0.12,
-                dy: (Math.random() - 0.5) * 0.12,
-                hue: [260, 200, 280, 220, 240][i],
-                alpha: 0.06 + Math.random() * 0.06,
-            }));
-
-            // Aurora ribbons
-            const ribbons = Array.from({length: 3}, (_, i) => ({
-                phase: i * (Math.PI * 2 / 3),
-                speed: 0.004 + i * 0.002,
-                amp: 60 + i * 30,
-                y: 0.2 + i * 0.28,
-                hue: [180, 270, 210][i],
-            }));
-
-            let t = 0;
-
-            function draw() {
-                t += 0.01;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Base
-                ctx.fillStyle = '#0D0F1A';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Nebulae
-                nebulae.forEach(n => {
-                    n.x += n.dx; n.y += n.dy;
-                    if (n.x < -n.r) n.x = canvas.width + n.r;
-                    if (n.x > canvas.width + n.r) n.x = -n.r;
-                    if (n.y < -n.r) n.y = canvas.height + n.r;
-                    if (n.y > canvas.height + n.r) n.y = -n.r;
-                    const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-                    g.addColorStop(0, `hsla(${n.hue}, 70%, 55%, ${n.alpha})`);
-                    g.addColorStop(1, `hsla(${n.hue}, 70%, 55%, 0)`);
-                    ctx.beginPath();
-                    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-                    ctx.fillStyle = g;
-                    ctx.fill();
-                });
-
-                // Aurora ribbons
-                ribbons.forEach(r => {
-                    ctx.beginPath();
-                    const baseY = r.y * canvas.height;
-                    ctx.moveTo(0, baseY + Math.sin(r.phase + t * r.speed * canvas.width * 0.002) * r.amp);
-                    for (let x = 0; x <= canvas.width; x += 4) {
-                        const y = baseY + Math.sin(r.phase + t * r.speed + x * 0.006) * r.amp
-                                        + Math.sin(r.phase * 2 + x * 0.003 + t * 0.5) * (r.amp * 0.4);
-                        ctx.lineTo(x, y);
-                    }
-                    ctx.strokeStyle = `hsla(${r.hue}, 80%, 70%, 0.06)`;
-                    ctx.lineWidth = 40 + 20 * Math.sin(t * 0.3 + r.phase);
-                    ctx.stroke();
-                });
-
-                // Stars
-                stars.forEach(s => {
-                    s.twinklePhase += s.twinkleSpeed;
-                    const a = s.alpha * (0.5 + 0.5 * Math.sin(s.twinklePhase));
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(200, 210, 255, ${a})`;
-                    ctx.fill();
-                });
-
-                requestAnimationFrame(draw);
+            // Remove dead or out-of-bounds particles
+            if (p.life >= p.maxLife || p.y < -20) {
+                particles.splice(i, 1);
+                continue;
             }
-            draw();
-        })();
+
+            // Outer glow corona
+            const glowR = p.r * 6;
+            const glow  = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+            glow.addColorStop(0,   `hsla(${p.hue}, 80%, 70%, ${p.alpha * 0.55})`);
+            glow.addColorStop(0.4, `hsla(${p.hue}, 75%, 65%, ${p.alpha * 0.22})`);
+            glow.addColorStop(1,   `hsla(${p.hue}, 70%, 60%, 0)`);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+
+            // Bright core
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${Math.min(1, p.alpha * 1.6)})`;
+            ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
         """
 
     st.markdown(f"""
@@ -447,49 +582,44 @@ def _animated_background(theme_key: str):
 
 def _render_hero(t: dict):
     st.markdown(f"""
-    <div class="ac-content" style="
-        text-align: center;
-        padding: 60px 24px 40px;
-    ">
+    <div class="ac-content" style="text-align:center; padding: 56px 24px 36px;">
+
         <!-- Logo -->
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom:18px;">
             <img src="app/static/logo.png"
                  alt="AscendCareer Logo"
                  onerror="this.style.display='none'"
-                 style="height: 72px; width: auto; filter: drop-shadow(0 4px 16px rgba(79,70,229,0.25));" />
+                 style="height:68px; width:auto;
+                        filter: drop-shadow(0 4px 16px rgba(79,70,229,0.22));" />
         </div>
 
         <!-- Brand name -->
         <div class="ac-brand-name">AscendCareer</div>
 
-        <!-- Tagline row -->
-        <div style="margin-top: 12px; margin-bottom: 6px;">
+        <!-- Where Preparation Meets Opportunity badge -->
+        <div style="margin-top:14px;">
             <span class="ac-gold-badge">Where Preparation Meets Opportunity</span>
         </div>
 
-        <!-- Main taglines -->
-        <div class="ac-tagline-main" style="margin-top: 14px;">
-            Better Preparation. &nbsp;Stronger Presentation.
+        <!-- Taglines -->
+        <div class="ac-tagline-main" style="margin-top:16px;">
+            Better Preparation.&nbsp; Stronger Presentation.
         </div>
-        <div class="ac-tagline-sub" style="margin-top: 6px;">
+        <div class="ac-tagline-sub" style="margin-top:6px;">
             Prepare for the opportunity you've been waiting for.
         </div>
 
         <!-- Description -->
-        <p style="
-            margin: 22px auto 0;
-            max-width: 580px;
-            font-size: 0.95rem;
-            color: {t['text_secondary']};
-            line-height: 1.7;
-        ">
+        <p style="margin:20px auto 0; max-width:560px;
+                  font-size:0.92rem; color:{t['text_secondary']}; line-height:1.75;">
             A comprehensive, AI-powered interview preparation and career-readiness platform —
-            with realistic voice-to-voice interaction, multi-persona panels,
+            realistic voice-to-voice interaction, multi-persona panels,
             adaptive difficulty, and deep role &amp; company tailoring.
         </p>
 
         <!-- Feature pills -->
-        <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+        <div style="margin-top:18px; display:flex; flex-wrap:wrap;
+                    gap:7px; justify-content:center;">
             <span class="ac-tag">📄 Resume Analysis</span>
             <span class="ac-tag">🏗️ Resume Builder</span>
             <span class="ac-tag">🎙️ Voice Interviews</span>
@@ -506,24 +636,25 @@ def _render_hero(t: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_signin_cta(t: dict) -> bool:
-    """Renders the Sign In button and returns True if clicked."""
     st.markdown(f"""
-    <div class="ac-content" style="text-align: center; padding: 8px 24px 40px;">
-        <hr class="ac-divider" style="max-width: 320px; margin: 0 auto 32px;" />
-        <p style="font-size: 0.9rem; color: {t['text_muted']}; margin-bottom: 20px;">
+    <div class="ac-content" style="text-align:center; padding:0 24px 20px;">
+        <hr class="ac-divider" style="max-width:300px; margin:0 auto 28px;" />
+        <p style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:18px;">
             Your personalised career preparation journey starts here.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        clicked = st.button("🚀  Sign In to AscendCareer", key="ac_signin_btn", use_container_width=True)
+    col_l, col_m, col_r = st.columns([1.2, 1, 1.2])
+    with col_m:
+        clicked = st.button("🚀  Sign In to AscendCareer",
+                            key="ac_signin_btn",
+                            use_container_width=True)
 
     st.markdown(f"""
-    <div class="ac-content" style="text-align: center; padding: 8px 24px 0;">
-        <p style="font-size: 0.78rem; color: {t['text_muted']}; margin-top: 10px;">
-            By signing in, you agree to our Privacy principles outlined below.
+    <div class="ac-content" style="text-align:center; padding:6px 24px 0;">
+        <p style="font-size:0.75rem; color:{t['text_muted']}; margin-top:8px;">
+            By signing in, you agree to our Privacy &amp; Trust principles outlined below.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -532,77 +663,93 @@ def _render_signin_cta(t: dict) -> bool:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Section: Core Principles
+# Section: Core Principle
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _render_core_principles(t: dict):
+def _render_core_principle(t: dict):
     st.markdown(f"""
-    <div class="ac-content" style="padding: 12px 24px 0;">
-        <hr class="ac-divider" />
-        <div style="padding: 40px 0 20px; text-align: center;">
-            <div class="ac-section-title">⚡ Core Principles</div>
-            <p style="color: {t['text_muted']}; font-size: 0.88rem; margin-top: 6px;">
-                The values that guide every decision AscendCareer makes.
+    <div class="ac-content" style="padding: 0 24px;">
+        <hr class="ac-divider" style="margin-bottom:32px;" />
+        <div style="text-align:center; margin-bottom:18px;">
+            <div class="ac-section-title">💡 Core Principle</div>
+            <p style="font-size:0.83rem; color:{t['text_muted']}; margin-top:4px;">
+                The philosophy behind everything AscendCareer does.
+            </p>
+        </div>
+        <div class="ac-principle-block">
+            {CORE_PRINCIPLE}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Section: Privacy & Trust
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _build_qa_html(qa_list: list, t: dict) -> str:
+    """Build the HTML for a list of Q&A items using native <details>/<summary>."""
+    items_html = ""
+    for item in qa_list:
+        q = item["q"].replace("'", "&#39;").replace('"', "&quot;")
+        a = item["a"].replace("'", "&#39;").replace('"', "&quot;")
+        items_html += f"""
+        <details class="ac-qa-item">
+            <summary>
+                <span>{q}</span>
+                <span class="ac-qa-icon">+</span>
+            </summary>
+            <div class="ac-qa-answer">{a}</div>
+        </details>
+        """
+    return items_html
+
+
+def _render_privacy_trust(t: dict):
+    st.markdown(f"""
+    <div class="ac-content" style="padding: 0 24px;">
+        <hr class="ac-divider" style="margin-top:32px; margin-bottom:32px;" />
+        <div style="text-align:center; margin-bottom:20px;">
+            <div class="ac-section-title">🔒 Privacy &amp; Trust</div>
+            <p style="font-size:0.83rem; color:{t['text_muted']}; margin-top:4px;">
+                How AscendCareer handles your information — honestly and clearly.
             </p>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # 3-column grid of principle cards
-    cols = st.columns(3, gap="medium")
-    for i, principle in enumerate(CORE_PRINCIPLES):
-        with cols[i % 3]:
-            st.markdown(f"""
-            <div class="ac-content ac-card" style="padding: 20px; margin-bottom: 16px; min-height: 150px;">
-                <div style="font-size: 1.8rem; margin-bottom: 8px;">{principle['icon']}</div>
-                <div class="ac-principle-title">{principle['title']}</div>
-                <div class="ac-principle-desc" style="margin-top: 6px;">{principle['description']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    # Wrap in a div for top-level expander styling
+    st.markdown('<div class="ac-content ac-privacy-top" style="padding: 0 24px;">', unsafe_allow_html=True)
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Section: Privacy Information
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _render_privacy(t: dict):
-    st.markdown(f"""
-    <div class="ac-content" style="padding: 12px 24px 0;">
-        <hr class="ac-divider" style="margin-top: 24px;" />
-        <div style="padding: 36px 0 20px; text-align: center;">
-            <div class="ac-section-title">🔒 Privacy Information</div>
-            <p style="color: {t['text_muted']}; font-size: 0.88rem; margin-top: 6px;">
-                How AscendCareer handles your information — simply and honestly.
-            </p>
+    with st.expander("🔒  Privacy & Trust — Click to read", expanded=False):
+        # Statement banner at top
+        st.markdown(f"""
+        <div class="ac-privacy-statement">
+            💬 {PRIVACY_STATEMENT}
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    # 2-col + 3-col split: 2 on top, 3 on bottom
-    top_items = PRIVACY_POINTS[:2]
-    bot_items = PRIVACY_POINTS[2:]
+        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
-    top_cols = st.columns(2, gap="medium")
-    for i, item in enumerate(top_items):
-        with top_cols[i]:
-            st.markdown(f"""
-            <div class="ac-content ac-card-subtle" style="padding: 18px 20px; margin-bottom: 14px; border-left: 3px solid {t['accent']};">
-                <span style="font-size: 1.4rem;">{item['icon']}</span>
-                <span class="ac-principle-title" style="margin-left: 8px;">{item['heading']}</span>
-                <div class="ac-principle-desc" style="margin-top: 8px;">{item['text']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+        # Each of the 7 sections as a nested expander
+        for section in PRIVACY_SECTIONS:
+            label = f"{section['number']}.  {section['title']}"
+            with st.expander(label, expanded=False):
+                qa_html = _build_qa_html(section["qa"], t)
+                st.markdown(f"""
+                <div style="padding: 4px 0;">
+                    {qa_html}
+                </div>
 
-    bot_cols = st.columns(3, gap="medium")
-    for i, item in enumerate(bot_items):
-        with bot_cols[i]:
-            st.markdown(f"""
-            <div class="ac-content ac-card-subtle" style="padding: 18px 20px; margin-bottom: 14px; border-left: 3px solid {t['accent']};">
-                <span style="font-size: 1.4rem;">{item['icon']}</span>
-                <span class="ac-principle-title" style="margin-left: 8px;">{item['heading']}</span>
-                <div class="ac-principle-desc" style="margin-top: 8px;">{item['text']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+                <!-- Fix: re-inject icon rotation on open -->
+                <style>
+                .ac-qa-item[open] .ac-qa-icon {{ content: '\\2212'; }}
+                .ac-qa-item .ac-qa-icon::before {{ content: '+'; }}
+                .ac-qa-item[open] .ac-qa-icon::before {{ content: '\\2212'; }}
+                </style>
+                """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -612,18 +759,18 @@ def _render_privacy(t: dict):
 def _render_footer(t: dict):
     st.markdown(f"""
     <div class="ac-content" style="
-        text-align: center;
-        padding: 32px 24px 48px;
+        text-align:center;
+        padding: 36px 24px 52px;
         border-top: 1px solid {t['divider']};
-        margin-top: 32px;
+        margin-top: 36px;
     ">
-        <div style="font-size: 0.82rem; color: {t['text_muted']};">
-            <strong style="color: {t['text_secondary']};">AscendCareer</strong>
+        <div style="font-size:0.8rem; color:{t['text_muted']};">
+            <strong style="color:{t['text_secondary']};">AscendCareer</strong>
             &nbsp;·&nbsp; AI-Powered Career Readiness
             &nbsp;·&nbsp; Audit → Optimize → Train → Verify → Placement Readiness
         </div>
-        <div style="font-size: 0.75rem; color: {t['text_muted']}; margin-top: 6px;">
-            &copy; AscendCareer — Built for the candidate who is serious about their next step.
+        <div style="font-size:0.73rem; color:{t['text_muted']}; margin-top:5px;">
+            © AscendCareer — Built for the candidate who is serious about their next step.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -639,30 +786,27 @@ def render_landing() -> dict:
 
     Returns:
         dict with keys:
-            - 'proceed': bool — True if user clicked Sign In
-            - 'theme': str — current theme key ('light' or 'dark')
+            - 'proceed' : bool  — True if user clicked Sign In
+            - 'theme'   : str   — current theme key ('light' or 'dark')
 
-    The caller (app.py) checks 'proceed' to decide whether to move
-    to the next step (sign-in / profile setup).
+    The caller (app.py) checks 'proceed' to move to the next step.
     """
-
     # ── State initialisation ─────────────────────────────────────────────────
     if "ac_theme" not in st.session_state:
-        st.session_state["ac_theme"] = "light"      # Light is the default
+        st.session_state["ac_theme"] = "light"      # Light is default
 
     theme_key = st.session_state["ac_theme"]
-    t = THEMES[theme_key]
+    t         = THEMES[theme_key]
     other_key = "dark" if theme_key == "light" else "light"
-    other_label = THEMES[other_key]["label"]
 
     # ── CSS ──────────────────────────────────────────────────────────────────
     _inject_css(t)
 
-    # ── Theme toggle — top right ─────────────────────────────────────────────
-    top_col_l, top_col_r = st.columns([6, 1])
-    with top_col_r:
-        st.markdown("<div style='padding-top: 12px;'></div>", unsafe_allow_html=True)
-        if st.button(other_label, key="ac_theme_toggle"):
+    # ── Theme toggle — top-right ─────────────────────────────────────────────
+    _, top_right = st.columns([8, 1])
+    with top_right:
+        st.markdown("<div style='padding-top:10px;'></div>", unsafe_allow_html=True)
+        if st.button(THEMES[other_key]["label"], key="ac_theme_toggle"):
             st.session_state["ac_theme"] = other_key
             st.rerun()
 
@@ -672,11 +816,11 @@ def render_landing() -> dict:
     # ── Content ──────────────────────────────────────────────────────────────
     _render_hero(t)
     signin_clicked = _render_signin_cta(t)
-    _render_core_principles(t)
-    _render_privacy(t)
+    _render_core_principle(t)
+    _render_privacy_trust(t)
     _render_footer(t)
 
     return {
         "proceed": signin_clicked,
-        "theme": theme_key,
+        "theme":   theme_key,
     }
