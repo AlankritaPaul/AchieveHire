@@ -853,6 +853,11 @@ def _inject_css(t: dict):
     active_tab_color = "#FCD34D" if is_dark else "#000000"
     muted_color = "#F3F4F6" if is_dark else "#1F2937"
 
+    input_bg = "#1E2337" if is_dark else "#FFFFFF"
+    input_text = "#FFFFFF" if is_dark else "#000000"
+    input_placeholder = "#94A3B8" if is_dark else "#64748B"
+    input_border = "#374151" if is_dark else "#D1D5DB"
+
     components.html(f"""
     <script>
     (function run() {{
@@ -944,6 +949,36 @@ def _inject_css(t: dict):
                 color: {target_color} !important;
                 font-weight: 700 !important;
                 font-size: 1.12rem !important;
+                opacity: 1 !important;
+            }}
+
+            /* Force Input Fields Background, Text Color & Webkit Fill Color */
+            div[data-baseweb="input"],
+            div[data-baseweb="textarea"] {{
+                background-color: {input_bg} !important;
+                border-color: {input_border} !important;
+                border-radius: 8px !important;
+            }}
+
+            div[data-baseweb="input"] input,
+            div[data-baseweb="textarea"] textarea,
+            [data-testid="stTextInput"] input,
+            [data-testid="stTextArea"] textarea {{
+                color: {input_text} !important;
+                -webkit-text-fill-color: {input_text} !important;
+                background-color: {input_bg} !important;
+                font-weight: 600 !important;
+                font-size: 1.08rem !important;
+            }}
+
+            div[data-baseweb="input"] input::placeholder,
+            div[data-baseweb="textarea"] textarea::placeholder,
+            [data-testid="stTextInput"] input::placeholder,
+            [data-testid="stTextArea"] textarea::placeholder {{
+                color: {input_placeholder} !important;
+                -webkit-text-fill-color: {input_placeholder} !important;
+                font-weight: 500 !important;
+                font-size: 1.05rem !important;
                 opacity: 1 !important;
             }}
         `;
