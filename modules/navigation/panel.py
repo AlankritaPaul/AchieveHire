@@ -382,7 +382,7 @@ def render_navigation_drawer(t: dict):
         # Exit / Close Button (placed cleanly above the brand text)
         close_col1, close_col2 = st.columns([82, 18])
         with close_col2:
-            if st.button("✕", key="nav_close_btn", help="Close Menu & Go to Home"):
+            if st.button(">", key="nav_close_btn", help="Close Menu & Go to Home"):
                 st.session_state["nav_open"] = False
                 st.session_state["ac_screen"] = "landing"
                 st.rerun()
