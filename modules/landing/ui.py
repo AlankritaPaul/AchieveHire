@@ -741,8 +741,8 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
     """Injects a canvas-based animated background per theme."""
 
     if theme_key == "light":
-        # ── Light: Thin Career Path ───────────────────────────────────────
-        # Delicate curved bezier lines traveling upward; small dots moving along them
+        # ── Light: Full-Screen Ambient Glow ───────────────────────────────
+        # Glowing particles slowly rise across 100% full width & height of the light background
         anim_js = r"""
     const ctx = canvas.getContext('2d');
 
@@ -753,68 +753,68 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
     resize();
     window.parent.addEventListener('resize', resize);
 
-    const PATH_DEFS = [
-        { cp: [[0.05,0.95],[0.20,0.60],[0.45,0.70],[0.65,0.30],[0.85,0.10]], hue: 230, a: 0.18 },
-        { cp: [[0.15,1.00],[0.30,0.75],[0.50,0.55],[0.70,0.35],[0.92,0.05]], hue: 250, a: 0.12 },
-        { cp: [[0.00,0.80],[0.25,0.65],[0.40,0.40],[0.60,0.25],[0.80,0.08]], hue: 210, a: 0.10 },
-        { cp: [[0.25,1.00],[0.35,0.80],[0.55,0.60],[0.72,0.38],[0.95,0.12]], hue: 240, a: 0.09 },
-    ];
+    const MAX = 90;
+    const particles = [];
 
-    function evalPath(cp, t, W, H) {
-        const n   = cp.length - 1;
-        const seg = Math.min(Math.floor(t * n), n - 1);
-        const lt  = t * n - seg;
-        const p0  = cp[seg];
-        const p1  = cp[seg + 1];
-        return { x: (p0[0] + (p1[0] - p0[0]) * lt) * W,
-                 y: (p0[1] + (p1[1] - p0[1]) * lt) * H };
+    function spawn(spreadY) {
+        return {
+            x:        Math.random() * canvas.width,
+            y:        spreadY !== undefined ? spreadY : canvas.height + 8,
+            r:        1.2 + Math.random() * 2.8,
+            vy:       0.35 + Math.random() * 0.9,
+            vx:       (Math.random() - 0.5) * 0.25,
+            hue:      210 + Math.random() * 50,
+            life:     0,
+            maxLife:  180 + Math.random() * 260,
+            maxAlpha: 0.25 + Math.random() * 0.45,
+            alpha:    0,
+        };
     }
 
-    const paths = PATH_DEFS.map(def => ({
-        def,
-        dots: Array.from({ length: 3 }, (_, i) => ({
-            t:     (i / 3) + Math.random() * 0.2,
-            speed: 0.0006 + Math.random() * 0.0008,
-            r:     1.8  + Math.random() * 2.2,
-            alpha: 0.55 + Math.random() * 0.35,
-        })),
-    }));
-
-    function drawPath(def) {
-        const W = canvas.width, H = canvas.height;
-        ctx.beginPath();
-        for (let i = 0; i <= 120; i++) {
-            const pt = evalPath(def.cp, i / 120, W, H);
-            i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y);
-        }
-        ctx.strokeStyle = `hsla(${def.hue}, 60%, 55%, ${def.a})`;
-        ctx.lineWidth   = 1.2;
-        ctx.stroke();
+    for (let i = 0; i < MAX; i++) {
+        const p = spawn(Math.random() * canvas.height);
+        p.life = Math.random() * p.maxLife;
+        particles.push(p);
     }
 
-    function drawAnim() {
+    function drawGlow() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#F8FAFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        const W = canvas.width, H = canvas.height;
-        paths.forEach(({ def, dots }) => {
-            drawPath(def);
-            dots.forEach(dot => {
-                dot.t += dot.speed;
-                if (dot.t > 1) dot.t -= 1;
-                const pt = evalPath(def.cp, dot.t, W, H);
-                const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, dot.r * 5);
-                glow.addColorStop(0, `hsla(${def.hue}, 70%, 60%, ${dot.alpha * 0.5})`);
-                glow.addColorStop(1, `hsla(${def.hue}, 70%, 60%, 0)`);
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r * 5, 0, Math.PI * 2);
-                ctx.fillStyle = glow; ctx.fill();
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${def.hue}, 65%, 52%, ${dot.alpha})`; ctx.fill();
-            });
-        });
-        requestAnimationFrame(drawAnim);
+
+        while (particles.length < MAX) { particles.push(spawn()); }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.life++; p.x += p.vx; p.y -= p.vy;
+
+            const fadeIn  = p.maxLife * 0.30;
+            const fadeOut = p.maxLife * 0.70;
+            if (p.life < fadeIn) {
+                p.alpha = p.maxAlpha * (p.life / fadeIn);
+            } else if (p.life < fadeOut) {
+                p.alpha = p.maxAlpha;
+            } else {
+                p.alpha = p.maxAlpha * (1 - (p.life - fadeOut) / (p.maxLife - fadeOut));
+            }
+
+            if (p.life >= p.maxLife || p.y < -20) { particles.splice(i, 1); continue; }
+
+            const glowR = p.r * 6;
+            const glow  = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+            glow.addColorStop(0,   `hsla(${p.hue}, 70%, 55%, ${p.alpha * 0.45})`);
+            glow.addColorStop(0.4, `hsla(${p.hue}, 65%, 60%, ${p.alpha * 0.18})`);
+            glow.addColorStop(1,   `hsla(${p.hue}, 60%, 65%, 0)`);
+            ctx.beginPath(); ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+            ctx.fillStyle = glow; ctx.fill();
+
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${p.hue}, 75%, 48%, ${Math.min(1, p.alpha * 1.4)})`;
+            ctx.fill();
+        }
+        requestAnimationFrame(drawGlow);
     }
-    drawAnim();
+    drawGlow();
         """
 
     else:
