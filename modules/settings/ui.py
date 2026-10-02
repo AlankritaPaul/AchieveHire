@@ -46,32 +46,27 @@ def render_settings_page():
     """), unsafe_allow_html=True)
 
     # ── 1. Notification Preferences (with Logo) ──
-    st.markdown(clean_html(f"""
-    <div style="max-width:880px; margin: 0 auto 20px; padding: 0 16px;">
+    with st.container(border=True):
+        st.markdown(clean_html(f"""
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <div style="width:38px; height:38px; border-radius:10px; background:{t['accent_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+            <div style="width:36px; height:36px; border-radius:8px; background:{t['accent_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
                 🔔
             </div>
             <div>
-                <h3 style="font-size:1.2rem; font-weight:700; color:{t['text_primary']}; margin:0;">
+                <h3 style="font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin:0;">
                     Notification Preferences
                 </h3>
-                <div style="font-size:0.85rem; color:{t['text_muted']};">
-                    Control interview alerts, resume analysis updates, and practice milestone reminders.
-                </div>
             </div>
         </div>
-    </div>
-    """), unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
-    with st.container(border=True):
-        col_n1, col_n2 = st.columns([75, 25])
+        col_n1, col_n2 = st.columns([68, 32])
         with col_n1:
             st.markdown(f"""
-            <div style="font-weight:600; font-size:0.95rem; color:{t['text_primary']};">
+            <div style="font-weight:600; font-size:0.95rem; color:{t['text_primary']}; margin-bottom:2px;">
                 Preparation &amp; Interview Reminders
             </div>
-            <div style="font-size:0.84rem; color:{t['text_secondary']};">
+            <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
                 Receive on-screen and browser notifications for scheduled practice sessions and pending resume reviews.
             </div>
             """, unsafe_allow_html=True)
@@ -86,13 +81,13 @@ def render_settings_page():
 
         st.markdown("<hr style='border:none; border-top:1px solid " + t["border"] + "; margin:12px 0;'>", unsafe_allow_html=True)
 
-        col_m1, col_m2 = st.columns([75, 25])
+        col_m1, col_m2 = st.columns([68, 32])
         with col_m1:
             st.markdown(f"""
-            <div style="font-weight:600; font-size:0.95rem; color:{t['text_primary']};">
+            <div style="font-weight:600; font-size:0.95rem; color:{t['text_primary']}; margin-bottom:2px;">
                 Milestone &amp; Readiness Score Alerts
             </div>
-            <div style="font-size:0.84rem; color:{t['text_secondary']};">
+            <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
                 Get notified when your resume alignment score updates or when interview level evaluations are ready.
             </div>
             """, unsafe_allow_html=True)
@@ -105,123 +100,104 @@ def render_settings_page():
             )
             st.session_state["notif_milestones_enabled"] = milestone_notifs
 
-    st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
     # ── 2. Add this to Desktop (with Logo) ──
-    st.markdown(clean_html(f"""
-    <div style="max-width:880px; margin: 0 auto 12px; padding: 0 16px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-            <div style="width:38px; height:38px; border-radius:10px; background:{t['gold_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                🖥️
-            </div>
-            <div>
-                <h3 style="font-size:1.2rem; font-weight:700; color:{t['text_primary']}; margin:0;">
-                    Add AscendCareer to Desktop
-                </h3>
-            </div>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
     with st.container(border=True):
-        shortcut_data = "[InternetShortcut]\r\nURL=http://localhost:8501\r\nIconIndex=0\r\n"
-        st.download_button(
-            label="🖥️  Add to Desktop",
-            data=shortcut_data,
-            file_name="AscendCareer.url",
-            mime="application/x-mswinurl",
-            use_container_width=True,
-            type="primary"
-        )
-
-    st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
-
-    # ── 3. Sign Out of Account (with Logo) ──
-    st.markdown(clean_html(f"""
-    <div style="max-width:880px; margin: 0 auto 12px; padding: 0 16px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-            <div style="width:38px; height:38px; border-radius:10px; background:{t['accent_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                🚪
-            </div>
-            <div>
-                <h3 style="font-size:1.2rem; font-weight:700; color:{t['text_primary']}; margin:0;">
-                    Sign Out of Account
-                </h3>
-                <div style="font-size:0.85rem; color:{t['text_muted']};">
-                    Temporarily exit your current session while keeping all your old data completely safe.
+        col_d1, col_d2 = st.columns([68, 32])
+        with col_d1:
+            st.markdown(clean_html(f"""
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:{t['gold_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    🖥️
+                </div>
+                <div>
+                    <h3 style="font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin:0 0 4px;">
+                        Add AscendCareer to Desktop
+                    </h3>
+                    <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
+                        Create a desktop shortcut launcher to quickly open AscendCareer directly in your browser.
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
+            """), unsafe_allow_html=True)
+        with col_d2:
+            shortcut_data = "[InternetShortcut]\r\nURL=http://localhost:8501\r\nIconIndex=0\r\n"
+            st.download_button(
+                label="🖥️  Add to Desktop",
+                data=shortcut_data,
+                file_name="AscendCareer.url",
+                mime="application/x-mswinurl",
+                use_container_width=True,
+                type="primary"
+            )
 
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+
+    # ── 3. Sign Out of Account (with Logo) ──
     with st.container(border=True):
-        col_so1, _ = st.columns([50, 50])
-        with col_so1:
+        col_s1, col_s2 = st.columns([68, 32])
+        with col_s1:
+            st.markdown(clean_html(f"""
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:{t['accent_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    🚪
+                </div>
+                <div>
+                    <h3 style="font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin:0 0 4px;">
+                        Sign Out of Account
+                    </h3>
+                    <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
+                        This will not delete your account or your old data. You will be temporarily out. When you will again come back and you will click 'Sign In', use your existing user ID in the 'Existing User' option.
+                    </div>
+                </div>
+            </div>
+            """), unsafe_allow_html=True)
+        with col_s2:
+            st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
             if st.button("🚪  Sign Out", use_container_width=True, key="btn_execute_signout"):
                 sign_out()
                 st.session_state["nav_open"] = False
                 st.success("You have signed out successfully.")
                 st.rerun()
 
-        st.markdown(f"""
-        <div style="font-size:0.95rem; font-weight:600; color:{t['text_primary']}; line-height:1.6; margin-top:12px; padding:10px 14px; background:{t['surface2']}; border-radius:8px; border:1px solid {t['border']};">
-            This will not delete your account or your old data. You will be temporarily out. When you will again come back and you will click 'Sign In', use your existing user ID in the 'Existing User' option.
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
     # ── 4. Delete Account (with Logo) ──
-    st.markdown(clean_html(f"""
-    <div style="max-width:880px; margin: 0 auto 20px; padding: 0 16px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <div style="width:38px; height:38px; border-radius:10px; background:#FEE2E2; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                🗑️
-            </div>
-            <div>
-                <h3 style="font-size:1.2rem; font-weight:700; color:#DC2626; margin:0;">
-                    Delete Account &amp; Associated Data
-                </h3>
-                <div style="font-size:0.85rem; color:{t['text_muted']};">
-                    Permanently delete your profile, unique User ID, resumes, and interview evaluations.
-                </div>
-            </div>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
     with st.container(border=True):
-        if user_id:
-            st.markdown(f"""
-            <div style="background:#FFF5F5; border:1px solid #FECACA; border-left:4px solid #EF4444; border-radius:8px; padding:14px 18px; margin-bottom:16px;">
-                <div style="font-weight:700; font-size:0.92rem; color:#991B1B; margin-bottom:4px;">
-                    ⚠️ Warning: This action cannot be undone
+        col_del1, col_del2 = st.columns([68, 32])
+        with col_del1:
+            st.markdown(clean_html(f"""
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:#FEE2E2; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    🗑️
                 </div>
-                <div style="font-size:0.84rem; color:#7F1D1D; line-height:1.6;">
-                    Deleting your account will permanently remove candidate <strong>{username}</strong> (ID: <code>{user_id}</code>), including all saved resume drafts, optimization history, mock interview recordings, and preparation analytics.
+                <div>
+                    <h3 style="font-size:1.15rem; font-weight:700; color:#DC2626; margin:0 0 4px;">
+                        Delete Account &amp; Associated Data
+                    </h3>
+                    <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
+                        Permanently remove your candidate profile ({username}), User ID (<code>{user_id if user_id else 'Guest'}</code>), saved resumes, and interview evaluations. This action cannot be undone.
+                    </div>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """), unsafe_allow_html=True)
+        with col_del2:
+            if user_id:
+                confirm_check = st.checkbox(
+                    "I confirm deletion",
+                    key="chk_confirm_delete"
+                )
+                if st.button("🗑️  Delete Account", type="primary", disabled=not confirm_check, key="btn_execute_delete", use_container_width=True):
+                    delete_user_account(user_id)
+                    st.session_state["ac_screen"] = "landing"
+                    st.session_state["nav_open"] = False
+                    st.success("Your account and all associated data have been permanently deleted.")
+                    st.rerun()
+            else:
+                st.markdown(f"<div style='font-size:0.82rem; color:{t['text_muted']}; margin-bottom:6px;'>Guest Session</div>", unsafe_allow_html=True)
+                if st.button("🧹  Clear Session", key="btn_clear_guest_session", use_container_width=True):
+                    st.session_state.clear()
+                    st.session_state["ac_screen"] = "landing"
+                    st.rerun()
 
-            confirm_check = st.checkbox(
-                f"I understand that deleting my account ({user_id}) is permanent and cannot be reversed.",
-                key="chk_confirm_delete"
-            )
-
-            if st.button("🗑️  Permanently Delete My Account", type="primary", disabled=not confirm_check, key="btn_execute_delete"):
-                delete_user_account(user_id)
-                st.session_state["ac_screen"] = "landing"
-                st.session_state["nav_open"] = False
-                st.success("Your account and all associated data have been permanently deleted.")
-                st.rerun()
-        else:
-            st.markdown(f"""
-            <div style="font-size:0.88rem; color:{t['text_secondary']}; line-height:1.6;">
-                You are currently in <strong>Guest Mode</strong> without a registered User ID. There is no permanent account data stored on the server.
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("🧹  Clear Current Session Cache", key="btn_clear_guest_session"):
-                st.session_state.clear()
-                st.session_state["ac_screen"] = "landing"
-                st.rerun()
