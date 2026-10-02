@@ -163,10 +163,10 @@ THEMES = {
         "principle_sub_color": "#475569",
         "principle_text_color": "#5B21B6",
         "principle_text_glow": "none",
-        "brand_ascend_color": "#4338CA",
-        "brand_ascend_glow": "rgba(67, 56, 202, 0.16)",
-        "brand_career_color": "#D97706",
-        "brand_career_glow": "rgba(217, 119, 6, 0.20)",
+        "brand_ascend_color": "#FF6B4A",
+        "brand_ascend_glow": "rgba(255, 107, 74, 0.20)",
+        "brand_career_color": "#5A9E19",
+        "brand_career_glow": "rgba(90, 158, 25, 0.20)",
     },
     "dark": {
         "label": "Toggle Theme",
@@ -197,10 +197,10 @@ THEMES = {
         "principle_sub_color": "#FDE68A",
         "principle_text_color": "#38BDF8",
         "principle_text_glow": "0 0 12px rgba(56, 189, 248, 0.28)",
-        "brand_ascend_color": "#818CF8",
-        "brand_ascend_glow": "rgba(129, 140, 248, 0.38)",
-        "brand_career_color": "#FCD34D",
-        "brand_career_glow": "rgba(252, 211, 77, 0.42)",
+        "brand_ascend_color": "#FF8A65",
+        "brand_ascend_glow": "0 0 16px rgba(255, 138, 101, 0.45)",
+        "brand_career_color": "#A3E635",
+        "brand_career_glow": "0 0 16px rgba(163, 230, 53, 0.45)",
     },
 }
 
@@ -1995,8 +1995,8 @@ def _render_hero(t: dict):
     st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding: 12px 24px 32px; margin-top: -6px;">
 
-        <!-- Logo — enlarged and with balanced distance to AscendCareer -->
-        <div style="margin-top: -52px; margin-bottom: 28px; position: relative; z-index: 2;">
+        <!-- Logo — elevated to top with proper gap before AscendCareer -->
+        <div style="margin-top: -85px; margin-bottom: 22px; position: relative; z-index: 2;">
             <img src="{logo_data_uri}"
                  alt="AscendCareer Logo"
                  style="height:172px; width:auto;
