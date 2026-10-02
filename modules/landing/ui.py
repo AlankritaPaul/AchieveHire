@@ -268,14 +268,31 @@ def _inject_css(t: dict):
         z-index: 1;
     }}
 
-    /* ── Header Row Alignment ─────────────────────────────────────────── */
-    div[data-testid="stHorizontalBlock"]:first-of-type {{
+    /* ── Header Row Alignment & Uncompromised Clickability ── */
+    div[data-testid="stHorizontalBlock"]:first-of-type,
+    div[data-testid="stHorizontalBlock"]:has(.st-key-ac_hamburger_btn),
+    div[data-testid="stHorizontalBlock"]:has(.st-key-ac_theme_toggle_btn) {{
         align-items: center !important;
         padding: 8px 16px 0 !important;
+        position: relative !important;
+        z-index: 9999 !important;
+        pointer-events: auto !important;
+    }}
+
+    .st-key-ac_hamburger_btn,
+    .st-key-ac_top_signin_btn,
+    .st-key-ac_theme_toggle_btn,
+    .st-key-ac_top_verified_user_btn {{
+        position: relative !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
     }}
 
     /* ── Hamburger Menu Button (Three Horizontal Lines) ─────────────────── */
     .st-key-ac_hamburger_btn button {{
+        position: relative !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
         width: 44px !important;
         height: 44px !important;
         min-width: 44px !important;
@@ -1993,19 +2010,19 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 def _render_hero(t: dict):
     logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 12px 24px 32px; margin-top: -6px;">
+    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -65px; position: relative; z-index: 10; pointer-events: none;">
 
-        <!-- Logo — elevated to top with proper gap before AscendCareer -->
-        <div style="margin-top: -85px; margin-bottom: 22px; position: relative; z-index: 2;">
+        <!-- Logo — elevated to maximum upward top, tightly pasted with AscendCareer -->
+        <div style="margin-top: -45px; margin-bottom: 2px; position: relative; z-index: 10; pointer-events: none;">
             <img src="{logo_data_uri}"
                  alt="AscendCareer Logo"
-                 style="height:172px; width:auto;
+                 style="height:175px; width:auto; pointer-events: auto;
                         filter: drop-shadow(0 14px 34px rgba(79,70,229,0.36))
                                 drop-shadow(0 3px 16px rgba(212,175,55,0.32));" />
         </div>
 
-        <!-- Brand name — stylish Cinzel dual-tone (Ascend in indigo/lavender, Career in radiant gold) -->
-        <div class="ac-brand-title"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
+        <!-- Brand name — stylish Cinzel dual-tone (Ascend in Peach, Career in Lime) -->
+        <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 6px; pointer-events: auto;"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
 
         <!-- Tagline 1: Ascend with Preparation -->
         <div style="

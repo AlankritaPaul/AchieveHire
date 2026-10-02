@@ -52,18 +52,34 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
 
     st.markdown(clean_html(f"""
     <style>
-    /* ── Top Bar Container Alignment ── */
-    .ac-top-nav-row {{
+    /* ── Top Bar Container Alignment & Click Guarantee ── */
+    .ac-top-nav-row,
+    div[data-testid="stHorizontalBlock"]:first-of-type,
+    div[data-testid="stHorizontalBlock"]:has(.st-key-ac_hamburger_btn),
+    div[data-testid="stHorizontalBlock"]:has(.st-key-ac_theme_toggle_btn) {{
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 8px 16px;
-        position: relative;
-        z-index: 100;
+        position: relative !important;
+        z-index: 9999 !important;
+        pointer-events: auto !important;
+    }}
+
+    .st-key-ac_hamburger_btn,
+    .st-key-ac_top_signin_btn,
+    .st-key-ac_theme_toggle_btn,
+    .st-key-ac_top_verified_user_btn {{
+        position: relative !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
     }}
 
     /* ── Hamburger Button (Three Horizontal Lines) ── */
     .st-key-ac_hamburger_btn button {{
+        position: relative !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
         width: 44px !important;
         height: 44px !important;
         min-width: 44px !important;
