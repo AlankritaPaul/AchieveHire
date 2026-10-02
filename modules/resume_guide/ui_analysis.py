@@ -100,12 +100,14 @@ def render_resume_analysis_flow():
     ]
     
     current_step = st.session_state.analysis_step
+    from modules.landing.ui import THEMES
+    t = THEMES[st.session_state.get("ac_theme", "light")]
 
-    st.markdown("""
-        <div style="background-color: #EDF2F7; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;">
-            <span style="font-size: 0.95rem; color: #2D3748; font-weight: 600;">Resume Analysis — Step %d of 5: %s</span>
+    st.markdown(f"""
+        <div style="background-color: {t['surface2']}; border: 1px solid {t['border']}; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px;">
+            <span style="font-size: 1.05rem; color: {t['text_primary']}; font-weight: 700;">Resume Analysis — Step {current_step} of 5: {steps[current_step - 1]}</span>
         </div>
-    """ % (current_step, steps[current_step - 1]), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     # PAGE 1: SELECT JOB ROLE
     if current_step == 1:

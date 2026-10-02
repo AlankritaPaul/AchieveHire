@@ -724,53 +724,80 @@ def _inject_css(t: dict):
             order: 3 !important;
             width: 100% !important;
         }}
-        /* ── Streamlit Radio Buttons, Tabs & Form Input Text Overrides ── */
+        /* ── Streamlit Radio Buttons Overrides (Targeting ALL level paragraphs, labels & spans) ── */
+        div[data-testid="stRadio"],
+        div[data-testid="stRadio"] *,
         div[data-testid="stRadio"] label,
         div[data-testid="stRadio"] label *,
+        div[data-testid="stRadio"] label p,
+        div[data-testid="stRadio"] label span,
         div[data-testid="stRadio"] [data-baseweb="radio"] *,
         div[data-testid="stRadio"] [data-baseweb="radio"] p,
         div[data-testid="stRadio"] [data-baseweb="radio"] span,
-        div[data-testid="stRadio"] [data-baseweb="radio"] div,
+        div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] *,
+        div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p,
+        div[role="radiogroup"],
+        div[role="radiogroup"] *,
         div[role="radiogroup"] label,
         div[role="radiogroup"] label *,
+        div[role="radiogroup"] label p,
         div[role="radiogroup"] p,
         div[role="radiogroup"] span {{
             color: {t["text_primary"]} !important;
             font-weight: 600 !important;
             font-size: 1.12rem !important;
             opacity: 1 !important;
+            visibility: visible !important;
         }}
 
-        /* Tabs (Both active & inactive) */
+        /* ── Streamlit Tabs Overrides (Active & Inactive headers, paragraphs & spans) ── */
+        [data-testid="stTabs"],
+        [data-testid="stTabs"] *,
+        [data-testid="stTabs"] button,
+        [data-testid="stTabs"] button *,
+        [data-testid="stTabs"] button p,
+        [data-testid="stTabs"] button span,
+        [data-testid="stTabs"] [data-testid="stMarkdownContainer"] *,
+        [data-testid="stTabs"] [data-testid="stMarkdownContainer"] p,
         button[data-baseweb="tab"],
         button[data-baseweb="tab"] *,
+        button[data-baseweb="tab"] p,
+        button[data-baseweb="tab"] span,
         div[data-baseweb="tab-list"] button,
         div[data-baseweb="tab-list"] button *,
-        [data-testid="stTabs"] button,
-        [data-testid="stTabs"] button * {{
+        div[data-baseweb="tab-list"] button p {{
             color: {t["text_secondary"]} !important;
             font-size: 1.15rem !important;
             font-weight: 600 !important;
             opacity: 1 !important;
+            visibility: visible !important;
         }}
+
+        /* Active Tab Header */
+        [data-testid="stTabs"] button[aria-selected="true"],
+        [data-testid="stTabs"] button[aria-selected="true"] *,
+        [data-testid="stTabs"] button[aria-selected="true"] p,
         button[data-baseweb="tab"][aria-selected="true"],
         button[data-baseweb="tab"][aria-selected="true"] *,
+        button[data-baseweb="tab"][aria-selected="true"] p,
         div[data-baseweb="tab-list"] button[aria-selected="true"],
         div[data-baseweb="tab-list"] button[aria-selected="true"] *,
-        [data-testid="stTabs"] button[aria-selected="true"],
-        [data-testid="stTabs"] button[aria-selected="true"] * {{
-            color: {t["accent"] if is_dark else "#000000"} !important;
+        div[data-baseweb="tab-list"] button[aria-selected="true"] p {{
+            color: {"#FCD34D" if is_dark else "#000000"} !important;
             font-weight: 700 !important;
             font-size: 1.15rem !important;
             opacity: 1 !important;
         }}
 
-        /* Input Field Labels */
+        /* ── Form Labels, Selectboxes, Inputs & Captions ── */
         [data-testid="stTextInput"] label,
+        [data-testid="stTextInput"] label *,
         [data-testid="stTextInput"] label p,
         [data-testid="stTextArea"] label,
+        [data-testid="stTextArea"] label *,
         [data-testid="stTextArea"] label p,
         [data-testid="stSelectbox"] label,
+        [data-testid="stSelectbox"] label *,
         [data-testid="stSelectbox"] label p,
         .stTextInput label,
         .stTextInput label p,
@@ -779,6 +806,18 @@ def _inject_css(t: dict):
             color: {t["text_primary"]} !important;
             font-weight: 700 !important;
             font-size: 1.12rem !important;
+            opacity: 1 !important;
+        }}
+
+        /* Captions */
+        [data-testid="stCaptionContainer"],
+        [data-testid="stCaptionContainer"] *,
+        [data-testid="stCaptionContainer"] p,
+        .stCaption,
+        .stCaption * {{
+            color: {t["text_muted"]} !important;
+            font-size: 1.02rem !important;
+            font-weight: 500 !important;
             opacity: 1 !important;
         }}
 

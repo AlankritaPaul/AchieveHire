@@ -178,12 +178,14 @@ def render_create_resume_flow():
     ]
 
     current_step = st.session_state.builder_step
-    
-    st.markdown("""
-        <div style="background-color: #EDF2F7; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;">
-            <span style="font-size: 0.95rem; color: #2D3748; font-weight: 600;">Create Resume — Step %d of 14: %s</span>
+    from modules.landing.ui import THEMES
+    t = THEMES[st.session_state.get("ac_theme", "light")]
+
+    st.markdown(f"""
+        <div style="background-color: {t['surface2']}; border: 1px solid {t['border']}; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px;">
+            <span style="font-size: 1.05rem; color: {t['text_primary']}; font-weight: 700;">Create Resume — Step {current_step} of 14: {steps_labels[current_step - 1]}</span>
         </div>
-    """ % (current_step, steps_labels[current_step - 1]), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     # -------------------------------------------------------------
     # STEP 1: SELECT JOB ROLE
