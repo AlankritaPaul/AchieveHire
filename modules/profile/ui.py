@@ -12,7 +12,7 @@ from modules.auth.user_service import (
     register_user,
     PURPOSE_OPTIONS,
 )
-from modules.landing.ui import THEMES, clean_html
+from modules.landing.ui import THEMES, _get_user_verified_symbol_uri, clean_html
 from modules.navigation.panel import render_top_nav_bar, render_navigation_drawer, _get_avatar_uri
 
 
@@ -27,6 +27,7 @@ def render_user_profile():
     # Load active user or fallback
     current_user = get_current_user()
     user_id = st.session_state.get("user_id")
+    verified_uri = _get_user_verified_symbol_uri()
 
     if not current_user:
         username = st.session_state.get("username", "Candidate")
@@ -45,6 +46,17 @@ def render_user_profile():
 
     avatar_uri = _get_avatar_uri()
 
+    verified_badge_html = f'''
+        <span style="background:{t["surface2"]}; border:1.5px solid #10B981; color:#10B981; font-family:monospace; font-weight:700; font-size:0.88rem; padding:4px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
+            <img src="{verified_uri}" style="height:20px; width:auto;" alt="Verified" />
+            <span>🆔 {user_id} · Verified</span>
+        </span>
+    ''' if user_id else f'''
+        <span style="background:{t['gold_soft']}; color:{t['gold']}; font-size:0.82rem; font-weight:700; padding:4px 12px; border-radius:6px;">
+            Guest Mode · No ID Generated
+        </span>
+    '''
+
     st.markdown(clean_html(f"""
     <div style="max-width:980px; margin: 24px auto; padding: 0 16px;">
         <div style="display:flex; align-items:center; gap:24px; padding:24px; background:{t['surface']}; border:1px solid {t['border']}; border-radius:16px; box-shadow:{t['card_shadow']}; margin-bottom:28px;">
@@ -56,7 +68,7 @@ def render_user_profile():
                     <h1 style="font-size:1.8rem; font-weight:800; color:{t['text_primary']}; margin:0;">
                         {username}
                     </h1>
-                    {f'<span style="background:{t["surface2"]}; border:1px solid {t["accent"]}; color:{t["accent"]}; font-family:monospace; font-weight:700; font-size:0.86rem; padding:3px 10px; border-radius:6px;">🆔 {user_id}</span>' if user_id else '<span style="background:' + t["gold_soft"] + '; color:' + t["gold"] + '; font-size:0.82rem; font-weight:700; padding:3px 10px; border-radius:6px;">Guest Mode</span>'}
+                    {verified_badge_html}
                 </div>
                 <div style="font-size:1.02rem; color:{t['text_secondary']}; font-weight:500;">
                     {user_headline}
@@ -111,7 +123,7 @@ def render_user_profile():
         with st.container(border=True):
             st.markdown(f"""
             <div style="font-size:0.86rem; color:{t['text_secondary']}; margin-bottom:12px; line-height:1.5;">
-                You are not required to upload a profile photo. If not provided, a clean default avatar is displayed automatically.
+                You are not required to upload a profile photo. If not provided, your verified user ID symbol is displayed automatically.
             </div>
             """, unsafe_allow_html=True)
 
@@ -131,7 +143,7 @@ def render_user_profile():
                 st.rerun()
 
             if "user_profile_pic" in st.session_state and st.session_state["user_profile_pic"]:
-                if st.button("🗑️  Remove Photo & Revert to Default Avatar", use_container_width=True, key="btn_remove_avatar"):
+                if st.button("🗑️  Remove Photo & Revert to Verified Avatar", use_container_width=True, key="btn_remove_avatar"):
                     st.session_state["user_profile_pic"] = None
                     if user_id:
                         update_user_record(user_id, {"profile_pic": None})
@@ -141,6 +153,13 @@ def render_user_profile():
         with st.container(border=True):
             if user_id:
                 st.markdown(f"""
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                    <img src="{verified_uri}" style="height:36px; width:auto;" alt="Verified" />
+                    <div>
+                        <div style="font-weight:700; font-size:0.95rem; color:#10B981;">User ID Active &amp; Verified</div>
+                        <div style="font-family:monospace; font-size:0.86rem; color:{t['text_primary']}; font-weight:700;">{user_id}</div>
+                    </div>
+                </div>
                 <div style="font-size:0.88rem; color:{t['text_secondary']}; line-height:1.6; margin-bottom:12px;">
                     Your account is tied to <strong>{user_id}</strong>. All your resumes, interview recordings, and score reports are isolated from other candidates.
                 </div>

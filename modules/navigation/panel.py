@@ -6,7 +6,13 @@ Clean, modern, professional, minimal navigation structure.
 import base64
 import streamlit as st
 import streamlit.components.v1 as components
-from modules.landing.ui import THEMES, _get_theme_icon_data_uri, clean_html
+from modules.landing.ui import (
+    THEMES,
+    _get_theme_icon_data_uri,
+    _get_signin_symbol_data_uri,
+    _get_user_verified_symbol_uri,
+    clean_html,
+)
 
 
 DEFAULT_AVATAR_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
@@ -20,15 +26,18 @@ DEFAULT_AVATAR_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 
 
 
 def _get_avatar_uri() -> str:
-    """Return avatar URI: custom uploaded picture if available, otherwise default avatar with + sign."""
+    """Return avatar URI: custom uploaded picture if available, otherwise second picture (verified user ID symbol) if user has ID, else default avatar."""
     if "user_profile_pic" in st.session_state and st.session_state["user_profile_pic"]:
         return st.session_state["user_profile_pic"]
+    if st.session_state.get("user_id"):
+        verified_uri = _get_user_verified_symbol_uri()
+        if verified_uri:
+            return verified_uri
     encoded = base64.b64encode(DEFAULT_AVATAR_SVG.encode("utf-8")).decode("ascii")
     return f"data:image/svg+xml;base64,{encoded}"
 
 
 def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show_theme: bool = False):
-
     """
     Renders top navigation header row across pages:
     - Left: Hamburger Menu Icon (3 horizontal lines)
@@ -38,6 +47,8 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
     theme_key = st.session_state.get("ac_theme", "light")
     other_key = "dark" if theme_key == "light" else "light"
     theme_icon_uri = _get_theme_icon_data_uri()
+    signin_symbol_uri = _get_signin_symbol_data_uri()
+    user_verified_uri = _get_user_verified_symbol_uri()
 
     st.markdown(clean_html(f"""
     <style>
@@ -94,31 +105,140 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
         box-shadow: 0 -7px 0 {t["accent"]}, 0 7px 0 {t["accent"]};
     }}
 
+    /* ── Sign In Button (Top Right — First Picture Symbol) ── */
+    .st-key-ac_top_signin_btn {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-right: -6px !important;
+    }}
+
+    .st-key-ac_top_signin_btn div[data-testid="stButton"] {{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }}
+
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button,
+    html body div.stApp .st-key-ac_top_signin_btn button,
+    html body div.stApp div[class*="st-key-ac_top_signin_btn"] button,
+    .st-key-ac_top_signin_btn button,
+    div[class*="st-key-ac_top_signin_btn"] button {{
+        background: transparent url('{signin_symbol_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        background-image: url('{signin_symbol_uri}') !important;
+        background-size: contain !important;
+        border: none !important;
+        border-width: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        cursor: pointer !important;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        padding: 0 !important;
+        min-height: 64px !important;
+        height: 64px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }}
+
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp .st-key-ac_top_signin_btn button:hover,
+    html body div.stApp div[class*="st-key-ac_top_signin_btn"] button:hover,
+    .st-key-ac_top_signin_btn button:hover,
+    div[class*="st-key-ac_top_signin_btn"] button:hover {{
+        transform: scale(1.08) translateY(-1px) !important;
+        background: transparent url('{signin_symbol_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        background-image: url('{signin_symbol_uri}') !important;
+        box-shadow: none !important;
+        border: none !important;
+    }}
+
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button *,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button *,
+    html body div.stApp .st-key-ac_top_signin_btn button *,
+    .st-key-ac_top_signin_btn button * {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }}
+
+    /* ── Verified User Badge (Top Right — Second Picture Symbol) ── */
+    .st-key-ac_top_verified_user_btn {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+    }}
+    .st-key-ac_top_verified_user_btn div[data-testid="stButton"] {{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }}
+    .st-key-ac_top_verified_user_btn button {{
+        background: {t["surface2"]} !important;
+        border: 1.5px solid #10B981 !important;
+        border-radius: 9999px !important;
+        color: {t["text_primary"]} !important;
+        font-weight: 700 !important;
+        font-size: 0.88rem !important;
+        padding: 6px 14px 6px 10px !important;
+        min-height: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.20) !important;
+        cursor: pointer !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }}
+    .st-key-ac_top_verified_user_btn button:hover {{
+        transform: translateY(-2px) scale(1.03) !important;
+        border-color: #059669 !important;
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35) !important;
+    }}
+
     /* ── Theme Toggle Button (Sun/Moon Split Icon) ── */
     .st-key-ac_theme_toggle_btn {{
         display: flex !important;
-        justify-content: flex-end !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         width: auto !important;
     }}
     .st-key-ac_theme_toggle_btn div[data-testid="stButton"] {{
         display: inline-flex !important;
-        justify-content: flex-end !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: 44px !important;
-        height: 44px !important;
+        width: 56px !important;
+        height: 56px !important;
     }}
-    .st-key-ac_theme_toggle_btn button {{
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
-        min-height: 44px !important;
-        max-height: 44px !important;
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_theme_toggle_btn div[data-testid="stButton"] button,
+    html body div.stApp div.st-key-ac_theme_toggle_btn div[data-testid="stButton"] button,
+    html body div.stApp .st-key-ac_theme_toggle_btn button,
+    html body div.stApp div[class*="st-key-ac_theme_toggle_btn"] button,
+    .st-key-ac_theme_toggle_btn button,
+    div[class*="st-key-ac_theme_toggle_btn"] button {{
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
+        background-image: url('{theme_icon_uri}') !important;
         background-size: contain !important;
         border: none !important;
         border-width: 0 !important;
@@ -133,14 +253,24 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
         cursor: pointer !important;
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }}
-    .st-key-ac_theme_toggle_btn button:hover {{
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_theme_toggle_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp div.st-key-ac_theme_toggle_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp .st-key-ac_theme_toggle_btn button:hover,
+    html body div.stApp div[class*="st-key-ac_theme_toggle_btn"] button:hover,
+    .st-key-ac_theme_toggle_btn button:hover,
+    div[class*="st-key-ac_theme_toggle_btn"] button:hover {{
         transform: scale(1.15) !important;
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }}
-    .st-key-ac_theme_toggle_btn button * {{
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_theme_toggle_btn div[data-testid="stButton"] button *,
+    html body div.stApp div.st-key-ac_theme_toggle_btn div[data-testid="stButton"] button *,
+    html body div.stApp .st-key-ac_theme_toggle_btn button *,
+    html body div.stApp div[class*="st-key-ac_theme_toggle_btn"] button *,
+    .st-key-ac_theme_toggle_btn button *,
+    div[class*="st-key-ac_theme_toggle_btn"] button * {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -149,48 +279,68 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
     """), unsafe_allow_html=True)
 
     if show_signin:
-        col_h, col_title, col_signin, col_theme = st.columns([6, 66, 19, 9])
+        col_h, col_title, col_signin, col_theme = st.columns([6, 73, 14, 7])
         with col_h:
             if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
                 st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
                 st.rerun()
         with col_title:
             if title:
-                st.markdown(f"""
-                <div style="display:flex; align-items:center; height:100%; padding-top:8px;">
-                    <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
-                        <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
+                bt_c1, bt_c2 = st.columns([18, 82])
+                with bt_c1:
+                    if st.button("← Back", key=f"ac_topnav_back_btn_s", use_container_width=True, help="Return to Landing Page"):
+                        st.session_state["ac_screen"] = "landing"
+                        st.rerun()
+                with bt_c2:
+                    st.markdown(f"""
+                    <div style="display:flex; align-items:center; height:100%; padding-top:4px;">
+                        <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
+                            <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                        </span>
+                    </div>
+                    """, unsafe_allow_html=True)
         with col_signin:
-            top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
-            if top_signin_clicked:
-                st.session_state["ac_screen"] = "app"
-                st.rerun()
+            active_uid = st.session_state.get("user_id")
+            if active_uid:
+                if st.button(f"🆔 {active_uid}", key="ac_top_verified_user_btn", use_container_width=True, help="Verified User ID · View Profile"):
+                    st.session_state["ac_screen"] = "profile"
+                    st.rerun()
+            else:
+                top_signin_clicked = st.button(" ", key="ac_top_signin_btn", use_container_width=True, help="Sign In / Generate User ID")
+                if top_signin_clicked:
+                    st.session_state["ac_screen"] = "signin"
+                    st.rerun()
         with col_theme:
             if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+                st.session_state["auth_popup_open"] = False
                 st.session_state["ac_theme"] = other_key
                 st.query_params["theme"] = other_key
                 st.rerun()
     else:
-        col_h, col_title, col_theme = st.columns([6, 85, 9])
+        col_h, col_title, col_theme = st.columns([6, 87, 7])
         with col_h:
             if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
                 st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
                 st.rerun()
         with col_title:
             if title:
-                st.markdown(f"""
-                <div style="display:flex; align-items:center; height:100%; padding-top:8px;">
-                    <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
-                        <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
+                bt_c1, bt_c2 = st.columns([16, 84])
+                with bt_c1:
+                    if st.button("← Back", key=f"ac_topnav_back_btn_m", use_container_width=True, help="Return to Landing Page"):
+                        st.session_state["ac_screen"] = "landing"
+                        st.rerun()
+                with bt_c2:
+                    st.markdown(f"""
+                    <div style="display:flex; align-items:center; height:100%; padding-top:4px;">
+                        <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
+                            <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                        </span>
+                    </div>
+                    """, unsafe_allow_html=True)
         with col_theme:
             if show_theme:
                 if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+                    st.session_state["auth_popup_open"] = False
                     st.session_state["ac_theme"] = other_key
                     st.query_params["theme"] = other_key
                     st.rerun()
@@ -474,23 +624,23 @@ def render_navigation_drawer(t: dict):
                 st.rerun()
 
         # Clean Brand Header Row (below exit button)
-        st.markdown(f"""
+        st.markdown(clean_html(f"""
         <div id="ac-drawer-brand-logo" class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px; cursor:pointer;" title="Click to go to Home Page">
             <span class="ac-drawer-brand">
                 <span style="color:{t['brand_ascend_color']};">Ascend</span><span style="color:{t['brand_career_color']};">Career</span>
             </span>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
         # Status / Brand Element (Subtle, non-promise indicator)
-        st.markdown(f"""
+        st.markdown(clean_html(f"""
         <div class="ac-brand-status-chip">
             <span class="ac-status-jewel"></span>
             <span>AscendPlatform · Ready</span>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
-        st.markdown(f'<div class="ac-nav-category-title">Core Preparation</div>', unsafe_allow_html=True)
+        st.markdown(clean_html(f'<div class="ac-nav-category-title">Core Preparation</div>'), unsafe_allow_html=True)
 
         # ── 1. Resume Category (Collapsible) ──
         resume_icon = "▾" if resume_open else "▸"
@@ -498,15 +648,22 @@ def render_navigation_drawer(t: dict):
             st.session_state["nav_resume_open"] = not resume_open
             st.rerun()
 
+        def _guard_nav_access(feature_name: str, target_screen: str):
+            if st.session_state.get("user_id"):
+                st.session_state["ac_screen"] = target_screen
+                st.session_state["nav_open"] = False
+                st.rerun()
+            else:
+                st.session_state["auth_popup_open"] = True
+                st.session_state["auth_popup_feature"] = feature_name
+                st.session_state["nav_open"] = False
+                st.rerun()
+
         if resume_open:
             if st.button("📝  Resume Create", key="nav_sub_resume_create", use_container_width=True):
-                st.session_state["ac_screen"] = "resume_create"
-                st.session_state["nav_open"] = False
-                st.rerun()
+                _guard_nav_access("Resume Create & Builder", "resume_create")
             if st.button("🔍  Resume Analysis", key="nav_sub_resume_analysis", use_container_width=True):
-                st.session_state["ac_screen"] = "resume_analysis"
-                st.session_state["nav_open"] = False
-                st.rerun()
+                _guard_nav_access("Resume Analysis & Audit", "resume_analysis")
 
         # ── 2. Interview Category (Collapsible) ──
         interview_icon = "▾" if interview_open else "▸"
@@ -516,31 +673,33 @@ def render_navigation_drawer(t: dict):
 
         if interview_open:
             if st.button("🎯  Specialized Interview", key="nav_sub_interview_spec", use_container_width=True):
-                st.session_state["ac_screen"] = "interview_specialized"
-                st.session_state["nav_open"] = False
-                st.rerun()
+                _guard_nav_access("Specialized Voice Interview", "interview_specialized")
             if st.button("💼  Job Related Interview", key="nav_sub_interview_job", use_container_width=True):
-                st.session_state["ac_screen"] = "interview_job"
-                st.session_state["nav_open"] = False
-                st.rerun()
+                _guard_nav_access("Job Related Voice Interview", "interview_job")
 
         user_id = st.session_state.get("user_id")
         user_purpose = st.session_state.get("user_purpose")
+        verified_uri = _get_user_verified_symbol_uri()
+
+        user_status_color = "#10B981" if user_id else t["accent"]
+        user_status_text = f"🆔 {user_id} · Verified" if user_id else "Guest · No ID Set"
+        verified_badge_html = f'<img src="{verified_uri}" style="height:18px; width:auto;" title="Verified User ID" />' if user_id and verified_uri else ''
 
         # ── 3. User Profile Area ──
-        st.markdown(f"""
+        st.markdown(clean_html(f"""
         <div class="ac-nav-profile-card">
             <img src="{avatar_uri}" alt="{username}" class="ac-nav-avatar" />
             <div style="overflow:hidden; flex:1;">
-                <div style="font-weight:700; font-size:0.95rem; color:{t['text_primary']}; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
-                    {username}
+                <div style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:0.95rem; color:{t['text_primary']}; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                    <span>{username}</span>
+                    {verified_badge_html}
                 </div>
-                <div style="font-size:0.75rem; font-family:'Consolas', monospace; font-weight:600; color:{t['accent']}; margin-top:2px;">
-                    {f"ID: {user_id}" if user_id else "Guest · No ID Set"}
+                <div style="font-size:0.75rem; font-family:'Consolas', monospace; font-weight:600; color:{user_status_color}; margin-top:2px;">
+                    {user_status_text}
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
         if user_id:
             if st.button("👤  View Complete Profile", key="nav_btn_profile", use_container_width=True):
@@ -559,7 +718,7 @@ def render_navigation_drawer(t: dict):
 
         # ── Founder Exclusive Dashboard ──
         if user_id == "ALANKRITA-FOUNDER":
-            st.markdown(f'<div class="ac-nav-category-title" style="margin-top:18px; color:{t["gold"]};">Founder Controls</div>', unsafe_allow_html=True)
+            st.markdown(clean_html(f'<div class="ac-nav-category-title" style="margin-top:18px; color:{t["gold"]};">Founder Controls</div>'), unsafe_allow_html=True)
             if st.button("📊  Platform Analytics", key="nav_btn_founder_analytics", use_container_width=True):
                 st.session_state["ac_screen"] = "founder_analytics"
                 st.session_state["nav_open"] = False

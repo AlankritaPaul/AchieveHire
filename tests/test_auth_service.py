@@ -2,7 +2,10 @@
 Unit tests for AscendCareer User Authentication & Unique User ID Isolation System.
 """
 
+import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 import streamlit as st
 from modules.auth.user_service import (
@@ -20,10 +23,20 @@ from modules.auth.signin_ui import render_signin_flow
 
 class TestAuthAndUserIdService(unittest.TestCase):
     def setUp(self):
+        # Create temp file for isolated user storage during tests
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_users_file = Path(self.temp_dir.name) / "test_users.json"
+        self.patcher = patch("modules.auth.user_service.USERS_FILE", self.temp_users_file)
+        self.patcher.start()
+
         # Reset session state for test isolation
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.session_state["ac_theme"] = "light"
+
+    def tearDown(self):
+        self.patcher.stop()
+        self.temp_dir.cleanup()
 
     def test_unique_user_id_generation(self):
         """Verify User ID is generated based on 4 capital letters + 4 numbers (e.g. XRYH3258) and guarantees uniqueness."""

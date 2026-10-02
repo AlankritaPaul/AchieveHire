@@ -141,7 +141,7 @@ def render_resume_analysis_flow():
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
             if st.button("← Back", key="btn_nav_back_step1", use_container_width=True):
-                st.session_state.resume_guide_mode = None
+                st.session_state["ac_screen"] = "landing"
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_nav_next_step1", use_container_width=True):
@@ -230,7 +230,7 @@ def render_resume_analysis_flow():
         )
 
         st.markdown(f"""
-            <div style="background: #F7FAFC; padding: 12px; border-radius: 6px; border: 1px solid #E2E8F0; margin: 15px 0;">
+            <div style="background: {t['surface2']}; padding: 12px; border-radius: 6px; border: 1.5px solid {t['border']}; margin: 15px 0; color: {t['text_primary']};">
                 <strong>Review Configuration:</strong><br>
                 • <strong>Selected Job Role:</strong> {st.session_state.get('selected_job_role', 'Software Developer')}<br>
                 • <strong>Selected Company:</strong> {st.session_state.get('selected_company', 'General Tech Company')}<br>
@@ -656,8 +656,8 @@ def render_resume_analysis_flow():
             prev_tab, raw_tab = st.tabs(["Preview Updated Resume", "Raw Formatted Text"])
             with prev_tab:
                 st.markdown(f"""
-                    <div style="background-color: #FFFFFF; border: 2px solid #E2E8F0; padding: 2rem; border-radius: 8px;">
-                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; color: #2D3748;">{st.session_state.final_resume_text}</pre>
+                    <div style="background-color: {t['surface2']}; border: 1.5px solid {t['border']}; padding: 2rem; border-radius: 8px;">
+                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; color: {t['text_primary']};">{st.session_state.final_resume_text}</pre>
                     </div>
                 """, unsafe_allow_html=True)
             with raw_tab:

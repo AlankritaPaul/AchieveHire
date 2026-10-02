@@ -16,6 +16,9 @@ st.set_page_config(
 
 
 def main():
+    from modules.admin.analytics_ui import track_platform_visit
+    track_platform_visit()
+
     # ── Session state defaults ────────────────────────────────────────────────
     if "ac_screen" not in st.session_state:
         st.session_state["ac_screen"] = "landing"   # Start on landing screen
@@ -25,6 +28,19 @@ def main():
     from modules.landing.ui import THEMES, _inject_css
     t = THEMES[st.session_state.get("ac_theme", "light")]
     _inject_css(t)
+
+    # ── Authentication Guard for Core Platform Features ───────────────────────
+    PROTECTED_SCREENS = {
+        "resume_create": "Resume Create & Builder",
+        "resume_analysis": "Resume Analysis & Audit",
+        "interview_specialized": "Specialized Voice Interview",
+        "interview_job": "Job Related Voice Interview",
+    }
+    if screen in PROTECTED_SCREENS and not st.session_state.get("user_id"):
+        st.session_state["auth_popup_open"] = True
+        st.session_state["auth_popup_feature"] = PROTECTED_SCREENS[screen]
+        st.session_state["ac_screen"] = "landing"
+        st.rerun()
 
     # ── Landing Screen ────────────────────────────────────────────────────────
     if screen == "landing":

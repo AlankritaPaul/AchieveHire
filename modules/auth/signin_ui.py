@@ -11,7 +11,7 @@ from modules.auth.user_service import (
     get_user_by_id,
     set_active_user,
 )
-from modules.landing.ui import THEMES, clean_html
+from modules.landing.ui import THEMES, _get_user_verified_symbol_uri, clean_html
 from modules.navigation.panel import render_top_nav_bar, render_navigation_drawer
 
 
@@ -30,29 +30,27 @@ def render_signin_flow():
     just_generated = st.session_state["just_generated_user"]
 
     st.markdown(clean_html(f"""
-    <div style="max-width:760px; margin: 28px auto 16px; padding: 0 16px; text-align:center;">
-        <div style="display:inline-block; background:{t['accent_soft']}; color:{t['accent']}; font-size:0.80rem; font-weight:700; padding:4px 16px; border-radius:50px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">
+    <div style="max-width:520px; margin: 16px auto 12px; padding: 0 12px; text-align:center;">
+        <div style="display:inline-block; background:{t['accent_soft']}; color:{t['accent']}; font-size:0.75rem; font-weight:700; padding:3px 12px; border-radius:50px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
             Candidate Authentication &amp; Identity
         </div>
-        <h1 style="font-size: 2.2rem; font-weight: 800; color:{t['text_primary']}; margin:0 0 8px;">
-            AscendCareer Account Setup
+        <h1 style="font-size: 1.65rem; font-weight: 800; color:{t['text_primary']}; margin:0 0 6px;">
+            AscendCareer Sign In
         </h1>
-        <p style="font-size: 1.05rem; color:{t['text_secondary']}; line-height:1.6; max-width:620px; margin:0 auto;">
-            Generate your personal, unique User ID to keep your resumes, interview practice sessions, evaluations, and progress reports completely separated and private.
+        <p style="font-size: 0.92rem; color:{t['text_secondary']}; line-height:1.5; max-width:460px; margin:0 auto 10px;">
+            Generate your personal User ID or sign in with an existing User ID to keep your workspace private.
         </p>
-
     </div>
     """), unsafe_allow_html=True)
 
-    # If user was just generated, show the Identity Confirmation Card
+    # If user was just generated or loaded via direct access, show the Identity Confirmation Card
     if just_generated:
         _render_user_id_success_card(just_generated, t)
         return
 
-    # Main Setup Container
+    # Main Setup Container (Medium sized max-width 520px)
     st.markdown(clean_html(f"""
-    <div style="max-width:680px; margin: 0 auto 32px; padding: 0 16px;">
-    </div>
+    <div style="max-width:520px; margin: 0 auto 24px; padding: 0 12px;">
     """), unsafe_allow_html=True)
 
     tab_new, tab_existing = st.tabs(["✨  New Candidate Setup", "🔑  Existing User ID"])
@@ -60,28 +58,26 @@ def render_signin_flow():
     with tab_new:
         with st.container(border=True):
             st.markdown(f"""
-            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:12px;">
+            <div style="font-size:1.08rem; font-weight:700; color:{t['text_primary']}; margin-bottom:10px;">
                 1. Enter Your Full Name
             </div>
             """, unsafe_allow_html=True)
 
-            col_name, _ = st.columns([55, 45])
-            with col_name:
-                candidate_name = st.text_input(
-                    "Full Name",
-                    placeholder="Enter your full name",
-                    key="input_candidate_name",
-                    label_visibility="collapsed"
-                )
+            candidate_name = st.text_input(
+                "Full Name",
+                placeholder="Enter your full name",
+                key="input_candidate_name",
+                label_visibility="collapsed"
+            )
 
-            st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
 
             st.markdown(f"""
-            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
+            <div style="font-size:1.08rem; font-weight:700; color:{t['text_primary']}; margin-bottom:4px;">
                 2. What would you like to use AscendCareer for?
             </div>
-            <div style="font-size:1.02rem; font-weight:500; color:{t['text_muted']}; margin-bottom:14px;">
-                Select your intended preparation focus. You can practice all features at any time.
+            <div style="font-size:0.90rem; font-weight:500; color:{t['text_muted']}; margin-bottom:10px;">
+                Select your primary preparation focus.
             </div>
             """, unsafe_allow_html=True)
 
@@ -94,7 +90,7 @@ def render_signin_flow():
                 key="input_candidate_purpose"
             )
 
-            st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
             is_founder = candidate_name and candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]
 
@@ -107,7 +103,7 @@ def render_signin_flow():
 
             with btn_col1:
                 generate_clicked = st.button(
-                    "🚀  Generate User ID",
+                    "🚀  Generate ID",
                     type="primary",
                     use_container_width=True,
                     key="btn_generate_user_id"
@@ -143,8 +139,7 @@ def render_signin_flow():
                 elif candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]:
                     from modules.auth.user_service import ensure_founder_user_record
                     user_record = ensure_founder_user_record(selected_purpose)
-                    st.session_state["just_generated_user"] = None
-                    st.session_state["ac_screen"] = "resume_create" if selected_purpose != "Interview Preparation" else "interview_specialized"
+                    st.session_state["just_generated_user"] = user_record
                     st.rerun()
                 else:
                     st.error("Access Denied: Only the Founder can open an account without generating a User ID. Please click 'Generate User ID' instead.")
@@ -152,22 +147,20 @@ def render_signin_flow():
     with tab_existing:
         with st.container(border=True):
             st.markdown(f"""
-            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
+            <div style="font-size:1.08rem; font-weight:700; color:{t['text_primary']}; margin-bottom:4px;">
                 Sign In with Existing User ID
             </div>
-            <div style="font-size:1.02rem; font-weight:500; color:{t['text_muted']}; margin-bottom:16px;">
-                Enter your unique AscendCareer User ID to restore your personal resumes and interview attempts.
+            <div style="font-size:0.90rem; font-weight:500; color:{t['text_muted']}; margin-bottom:12px;">
+                Enter your unique User ID to restore your workspace.
             </div>
             """, unsafe_allow_html=True)
 
-            col_id, _ = st.columns([55, 45])
-            with col_id:
-                existing_id_input = st.text_input(
-                    "User ID",
-                    placeholder="Your unique User ID",
-                    key="input_existing_user_id",
-                    label_visibility="collapsed"
-                )
+            existing_id_input = st.text_input(
+                "User ID",
+                placeholder="Your unique User ID",
+                key="input_existing_user_id",
+                label_visibility="collapsed"
+            )
 
             st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
 
@@ -194,61 +187,68 @@ def render_signin_flow():
                     st.session_state["ac_screen"] = "landing"
                     st.rerun()
 
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 def _render_user_id_success_card(user: dict, t: dict):
     """Renders a prominent confirmation card showing the generated unique User ID."""
     user_id = user["user_id"]
     name = user["name"]
     purpose = user.get("purpose", "Both")
+    is_founder_user = (user_id == "ALANKRITA-FOUNDER")
+    verified_uri = _get_user_verified_symbol_uri()
 
     st.markdown(clean_html(f"""
-    <div style="max-width:680px; margin: 12px auto 32px; padding: 0 16px;">
-        <div style="background:{t['surface']}; border:2px solid {t['accent']}; border-radius:18px; padding:32px 28px; box-shadow:{t['card_shadow']}; text-align:center;">
-            <div style="font-size:2.8rem; margin-bottom:8px;">🎉</div>
-            <h2 style="font-size:1.65rem; font-weight:800; color:{t['text_primary']}; margin:0 0 6px;">
-                Welcome, {name}!
+    <div style="max-width:520px; margin: 12px auto 24px; padding: 0 12px;">
+        <div style="background:{t['surface']}; border:2px solid {t['accent']}; border-radius:16px; padding:24px 20px; box-shadow:{t['card_shadow']}; text-align:center;">
+            <div style="margin-bottom:8px;">
+                <img src="{verified_uri}" alt="User ID Generated" style="height:64px; width:auto; filter:drop-shadow(0 4px 14px rgba(16,185,129,0.40));" />
+            </div>
+            <h2 style="font-size:1.45rem; font-weight:800; color:{t['text_primary']}; margin:0 0 4px;">
+                Welcome, {name}! {' (Founder Access)' if is_founder_user else ''}
             </h2>
-            <div style="font-size:0.95rem; color:{t['text_secondary']}; margin-bottom:20px;">
-                Your unique AscendCareer identity has been successfully generated.
+            <div style="font-size:0.90rem; color:{t['text_secondary']}; margin-bottom:16px;">
+                Your unique AscendCareer user ID has been generated &amp; verified.
             </div>
 
             <!-- Unique User ID Display Card -->
-            <div style="background:{t['surface2']}; border:1.5px dashed {t['accent']}; border-radius:12px; padding:18px 24px; margin:0 auto 20px; display:inline-block;">
-                <div style="font-size:0.75rem; font-weight:800; color:{t['text_muted']}; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">
+            <div style="background:{t['surface2']}; border:1.5px dashed #10B981; border-radius:12px; padding:14px 20px; margin:0 auto 16px; display:inline-block;">
+                <div style="font-size:0.72rem; font-weight:800; color:{t['text_muted']}; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px;">
                     Your Unique AscendCareer User ID
                 </div>
-                <div style="font-family:'Consolas', 'Courier New', monospace; font-size:1.9rem; font-weight:800; color:{t['accent']}; letter-spacing:0.06em;">
+                <div style="font-family:'Consolas', 'Courier New', monospace; font-size:1.65rem; font-weight:800; color:{t['accent']}; letter-spacing:0.06em;">
                     {user_id}
                 </div>
             </div>
 
             <!-- Purpose & Isolation Guarantee -->
-            <div style="background:{t['accent_soft']}; border-radius:10px; padding:12px 16px; margin-bottom:24px; text-align:left;">
-                <div style="font-size:0.86rem; color:{t['text_primary']}; font-weight:600; margin-bottom:4px;">
-                    🔒 Data Separation &amp; Privacy Guarantee:
+            <div style="background:{t['accent_soft']}; border-radius:10px; padding:10px 14px; margin-bottom:18px; text-align:left;">
+                <div style="font-size:0.84rem; color:{t['text_primary']}; font-weight:600; margin-bottom:2px;">
+                    🔒 Data Isolation &amp; Privacy:
                 </div>
-                <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.55;">
-                    This User ID is uniquely assigned to you. All your resume drafts, analysis scores, mock interview recordings, and progress analytics will be strictly isolated under <strong>{user_id}</strong>.
+                <div style="font-size:0.82rem; color:{t['text_secondary']}; line-height:1.45;">
+                    All resume drafts, evaluations, and mock interview attempts are strictly saved under <strong>{user_id}</strong>.
                 </div>
             </div>
 
-            <div style="display:inline-block; background:{t['gold_soft']}; color:{t['gold']}; font-size:0.82rem; font-weight:700; padding:4px 14px; border-radius:50px; margin-bottom:24px;">
+            <div style="display:inline-block; background:{t['gold_soft']}; color:{t['gold']}; font-size:0.80rem; font-weight:700; padding:3px 12px; border-radius:50px; margin-bottom:18px;">
                 🎯 Target Focus: {purpose}
             </div>
         </div>
     </div>
     """), unsafe_allow_html=True)
 
-    col_btn1, col_btn2 = st.columns([60, 40])
-    with col_btn1:
+    c1, c2 = st.columns([50, 50])
+
+    with c1:
         if purpose == "Resume Preparation":
-            next_label = "📝  Start Resume Preparation"
+            next_label = "📝 Start Resume"
             target_screen = "resume_create"
         elif purpose == "Interview Preparation":
-            next_label = "🎙️  Start Interview Preparation"
+            next_label = "🎙️ Start Interview"
             target_screen = "interview_specialized"
         else:
-            next_label = "🚀  Enter AscendCareer Workspace"
+            next_label = "🚀 Enter Workspace"
             target_screen = "resume_create"
 
         if st.button(next_label, type="primary", use_container_width=True, key="btn_continue_to_prep"):
@@ -256,8 +256,20 @@ def _render_user_id_success_card(user: dict, t: dict):
             st.session_state["ac_screen"] = target_screen
             st.rerun()
 
-    with col_btn2:
-        if st.button("👤  View Candidate Profile", use_container_width=True, key="btn_view_profile_after_gen"):
-            st.session_state["just_generated_user"] = None
-            st.session_state["ac_screen"] = "profile"
-            st.rerun()
+    with c2:
+        if is_founder_user:
+            if st.button("📊 Founder Analytics", use_container_width=True, key="btn_founder_analytics_after_gen"):
+                st.session_state["just_generated_user"] = None
+                st.session_state["ac_screen"] = "founder_analytics"
+                st.rerun()
+        else:
+            if st.button("👤 View Profile", use_container_width=True, key="btn_view_profile_after_gen"):
+                st.session_state["just_generated_user"] = None
+                st.session_state["ac_screen"] = "profile"
+                st.rerun()
+
+    st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+    if st.button("← Back to Landing", use_container_width=True, key="btn_back_to_landing_after_gen"):
+        st.session_state["just_generated_user"] = None
+        st.session_state["ac_screen"] = "landing"
+        st.rerun()

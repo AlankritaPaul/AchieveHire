@@ -33,22 +33,90 @@ def _get_logo_data_uri() -> str:
 _CACHED_THEME_ICON_URI = ""
 def _get_theme_icon_data_uri() -> str:
     """Return data URI of the Sun/Moon split theme icon."""
-    global _CACHED_THEME_ICON_URI
-    if _CACHED_THEME_ICON_URI:
-        return _CACHED_THEME_ICON_URI
+    p_svg = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.svg"
+    if p_svg.exists():
+        encoded = base64.b64encode(p_svg.read_bytes()).decode("ascii")
+        return f"data:image/svg+xml;base64,{encoded}"
     p_png = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.png"
     if p_png.exists():
         encoded = base64.b64encode(p_png.read_bytes()).decode("ascii")
-        _CACHED_THEME_ICON_URI = f"data:image/png;base64,{encoded}"
-        return _CACHED_THEME_ICON_URI
-    p = Path(__file__).resolve().parent.parent.parent / "assets" / "theme_icon.svg"
-    if p.exists():
-        import urllib.parse
-        svg_text = p.read_text(encoding="utf-8")
-        encoded = urllib.parse.quote(svg_text)
-        _CACHED_THEME_ICON_URI = f"data:image/svg+xml;utf8,{encoded}"
-        return _CACHED_THEME_ICON_URI
+        return f"data:image/png;base64,{encoded}"
     return ""
+
+
+_CACHED_SIGNIN_SYMBOL_URI = ""
+def _get_signin_symbol_data_uri() -> str:
+    """Return inline base64 data URI of the Sign In symbol."""
+    global _CACHED_SIGNIN_SYMBOL_URI
+    if _CACHED_SIGNIN_SYMBOL_URI:
+        return _CACHED_SIGNIN_SYMBOL_URI
+    p = Path(__file__).resolve().parent.parent.parent / "assets" / "signin_symbol.png"
+    if p.exists():
+        encoded = base64.b64encode(p.read_bytes()).decode("utf-8")
+        _CACHED_SIGNIN_SYMBOL_URI = f"data:image/png;base64,{encoded}"
+        return _CACHED_SIGNIN_SYMBOL_URI
+    return ""
+
+
+_CACHED_USER_VERIFIED_URI = ""
+def _get_user_verified_symbol_uri() -> str:
+    """Return inline base64 data URI of the verified user ID avatar symbol."""
+    global _CACHED_USER_VERIFIED_URI
+    if _CACHED_USER_VERIFIED_URI:
+        return _CACHED_USER_VERIFIED_URI
+    p = Path(__file__).resolve().parent.parent.parent / "assets" / "user_verified_symbol.png"
+    if p.exists():
+        encoded = base64.b64encode(p.read_bytes()).decode("utf-8")
+        _CACHED_USER_VERIFIED_URI = f"data:image/png;base64,{encoded}"
+        return _CACHED_USER_VERIFIED_URI
+    return ""
+
+
+_CACHED_SUMMIT_URI = ""
+def _get_summit_data_uri() -> str:
+    """Return inline base64 data URI of the dark theme summit left hero image."""
+    global _CACHED_SUMMIT_URI
+    if _CACHED_SUMMIT_URI:
+        return _CACHED_SUMMIT_URI
+    p = Path(__file__).resolve().parent.parent.parent / "assets" / "summit_left_dark.png"
+    if p.exists():
+        encoded = base64.b64encode(p.read_bytes()).decode("utf-8")
+        _CACHED_SUMMIT_URI = f"data:image/png;base64,{encoded}"
+        return _CACHED_SUMMIT_URI
+    return ""
+
+
+@st.dialog("🔒 Sign In Required")
+def render_signin_required_dialog(feature_name: str = "this feature"):
+    """Pop-up modal displayed when unauthenticated users try to access protected modules."""
+    theme_key = st.session_state.get("ac_theme", "light")
+    t = THEMES[theme_key]
+    signin_uri = _get_signin_symbol_data_uri()
+
+    st.markdown(clean_html(f"""
+    <div style="text-align:center; padding: 4px 0 16px;">
+        <div style="margin-bottom:14px;">
+            <img src="{signin_uri}" alt="Sign In Symbol" style="height:56px; width:auto; filter:drop-shadow(0 4px 14px rgba(37,99,235,0.30));" />
+        </div>
+        <h2 style="font-size:1.35rem; font-weight:800; color:{t['text_primary']} !important; margin:0 0 8px;">
+            Sign In to Get Started
+        </h2>
+        <p style="font-size:0.96rem; color:{t['text_secondary']} !important; line-height:1.55; margin:0 auto; max-width:420px;">
+            Welcome! Please sign in or create your candidate User ID to unlock full access to <span style="color:{t['accent']}; font-weight:700;">{feature_name}</span> and track your progress.
+        </p>
+    </div>
+    """), unsafe_allow_html=True)
+
+    c1, c2 = st.columns([60, 40])
+    with c1:
+        if st.button("🚀  Sign In / Generate ID", type="primary", use_container_width=True, key="dlg_btn_signin_action"):
+            st.session_state["auth_popup_open"] = False
+            st.session_state["ac_screen"] = "signin"
+            st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True, key="dlg_btn_cancel_action"):
+            st.session_state["auth_popup_open"] = False
+            st.rerun()
 
 
 def clean_html(html_str: str) -> str:
@@ -90,6 +158,11 @@ THEMES = {
         "qa_answer_bg": "#F0F4FF",
         "qa_border": "#DDE3F0",
         "principle_border": "#A7F3D0",
+        "principle_title_color": "#D97706",
+        "principle_title_glow": "none",
+        "principle_sub_color": "#475569",
+        "principle_text_color": "#5B21B6",
+        "principle_text_glow": "none",
         "brand_ascend_color": "#4338CA",
         "brand_ascend_glow": "rgba(67, 56, 202, 0.16)",
         "brand_career_color": "#D97706",
@@ -119,6 +192,11 @@ THEMES = {
         "qa_answer_bg": "#1A1F36",
         "qa_border": "#2D3450",
         "principle_border": "#3730A3",
+        "principle_title_color": "#FCD34D",
+        "principle_title_glow": "0 0 16px rgba(252, 211, 77, 0.45)",
+        "principle_sub_color": "#FDE68A",
+        "principle_text_color": "#38BDF8",
+        "principle_text_glow": "0 0 12px rgba(56, 189, 248, 0.28)",
         "brand_ascend_color": "#818CF8",
         "brand_ascend_glow": "rgba(129, 140, 248, 0.38)",
         "brand_career_color": "#FCD34D",
@@ -133,6 +211,8 @@ THEMES = {
 
 def _inject_css(t: dict):
     theme_icon_uri = _get_theme_icon_data_uri()
+    signin_symbol_uri = _get_signin_symbol_data_uri()
+    user_verified_uri = _get_user_verified_symbol_uri()
     is_dark = (t.get("bg") == "#0D0F1A")
     metal_primary = "#F1F5F9" if is_dark else "#334155"
     metal_secondary = "#CBD5E1" if is_dark else "#475569"
@@ -238,85 +318,143 @@ def _inject_css(t: dict):
         box-shadow: 0 -7px 0 {t["accent"]}, 0 7px 0 {t["accent"]};
     }}
 
-    /* ── Pink Sign In Option (Top Right — Vibrant & Visible in both themes) ─ */
+    /* ── Sign In Button (Top Right — First Picture Symbol) ── */
     .st-key-ac_top_signin_btn {{
         display: flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
         width: 100% !important;
+        margin-right: -6px !important;
     }}
 
     .st-key-ac_top_signin_btn div[data-testid="stButton"] {{
         width: 100% !important;
+        display: flex !important;
+        justify-content: flex-end !important;
     }}
 
-    .st-key-ac_top_signin_btn button {{
-        background: linear-gradient(135deg, #EC4899 0%, #DB2777 50%, #BE185D 100%) !important;
-        background-color: #DB2777 !important;
-        color: #FFFFFF !important;
-        border: 1.5px solid #F472B6 !important;
-        border-radius: 50px !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.03em !important;
-        box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button,
+    html body div.stApp .st-key-ac_top_signin_btn button,
+    html body div.stApp div[class*="st-key-ac_top_signin_btn"] button,
+    .st-key-ac_top_signin_btn button,
+    div[class*="st-key-ac_top_signin_btn"] button {{
+        background: transparent url('{signin_symbol_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        background-image: url('{signin_symbol_uri}') !important;
+        background-size: contain !important;
+        border: none !important;
+        border-width: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
         cursor: pointer !important;
-        transition: all 0.22s ease !important;
-        padding: 8px 22px !important;
-        font-size: 0.98rem !important;
-        min-height: 44px !important;
-        height: 44px !important;
-        width: 100% !important;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        padding: 0 !important;
+        min-height: 64px !important;
+        height: 64px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         margin: 0 !important;
-    }}
-
-    .st-key-ac_top_signin_btn button:hover {{
-        background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
-        background-color: #E11D48 !important;
-        color: #FFFFFF !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 24px rgba(236, 72, 153, 0.65) !important;
-        border-color: #FDA4AF !important;
-    }}
-
-    .st-key-ac_top_signin_btn button * {{
-        color: #FFFFFF !important;
-        font-weight: 700 !important;
-        font-size: 0.98rem !important;
-        display: inline !important;
-        visibility: visible !important;
         opacity: 1 !important;
+        visibility: visible !important;
+    }}
+
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button:hover,
+    html body div.stApp .st-key-ac_top_signin_btn button:hover,
+    html body div.stApp div[class*="st-key-ac_top_signin_btn"] button:hover,
+    .st-key-ac_top_signin_btn button:hover,
+    div[class*="st-key-ac_top_signin_btn"] button:hover {{
+        transform: scale(1.08) translateY(-1px) !important;
+        background: transparent url('{signin_symbol_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        background-image: url('{signin_symbol_uri}') !important;
+        box-shadow: none !important;
+        border: none !important;
+    }}
+
+    html body div.stApp div[data-testid="stElementContainer"].st-key-ac_top_signin_btn div[data-testid="stButton"] button *,
+    html body div.stApp div.st-key-ac_top_signin_btn div[data-testid="stButton"] button *,
+    html body div.stApp .st-key-ac_top_signin_btn button *,
+    .st-key-ac_top_signin_btn button * {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }}
+
+    /* ── Verified User Badge (Top Right — Second Picture Symbol) ── */
+    .st-key-ac_top_verified_user_btn {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+    }}
+    .st-key-ac_top_verified_user_btn div[data-testid="stButton"] {{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }}
+    .st-key-ac_top_verified_user_btn button {{
+        background: {t["surface2"]} !important;
+        border: 1.5px solid #10B981 !important;
+        border-radius: 9999px !important;
+        color: {t["text_primary"]} !important;
+        font-weight: 700 !important;
+        font-size: 0.92rem !important;
+        padding: 8px 16px 8px 12px !important;
+        min-height: 48px !important;
+        height: 48px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.20) !important;
+        cursor: pointer !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }}
+    .st-key-ac_top_verified_user_btn button:hover {{
+        transform: translateY(-2px) scale(1.03) !important;
+        border-color: #059669 !important;
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35) !important;
     }}
 
     /* ── Instant Theme Toggle Button (Exact reference icon, 100% transparent) ── */
     .st-key-ac_theme_toggle_btn {{
         display: flex !important;
-        justify-content: flex-end !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         width: auto !important;
     }}
 
     .st-key-ac_theme_toggle_btn div[data-testid="stButton"] {{
         display: inline-flex !important;
-        justify-content: flex-end !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: 48px !important;
-        height: 48px !important;
+        width: 56px !important;
+        height: 56px !important;
     }}
 
-    .st-key-ac_theme_toggle_btn button {{
-        width: 48px !important;
-        height: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-        min-height: 48px !important;
-        max-height: 48px !important;
+    .st-key-ac_theme_toggle_btn button,
+    .st-key-ac_theme_toggle_btn button:hover,
+    .st-key-ac_theme_toggle_btn button:focus,
+    .st-key-ac_theme_toggle_btn button:focus-visible,
+    .st-key-ac_theme_toggle_btn button:active,
+    .st-key-ac_theme_toggle_btn button:disabled,
+    .st-key-ac_theme_toggle_btn button[disabled] {{
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
         background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
         background-color: transparent !important;
+        background-image: url('{theme_icon_uri}') !important;
         background-size: contain !important;
         border: none !important;
         border-width: 0 !important;
@@ -329,28 +467,21 @@ def _inject_css(t: dict):
         align-items: center !important;
         justify-content: center !important;
         cursor: pointer !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        filter: none !important;
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }}
 
     .st-key-ac_theme_toggle_btn button:hover {{
         transform: scale(1.15) !important;
-        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }}
-
-    .st-key-ac_theme_toggle_btn button:focus,
-    .st-key-ac_theme_toggle_btn button:active {{
-        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
     }}
 
     /* Completely hide any inner text / icon inside ONLY the theme toggle button */
-    .st-key-ac_theme_toggle_btn button * {{
+    .st-key-ac_theme_toggle_btn button *,
+    .st-key-ac_theme_toggle_btn button:hover *,
+    .st-key-ac_theme_toggle_btn button:focus *,
+    .st-key-ac_theme_toggle_btn button:active * {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -422,6 +553,72 @@ def _inject_css(t: dict):
         font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.02em;
+    }}
+
+    /* ── Right-Side Perpendicular Oval Length Boxes ───────────────────── */
+    .ac-right-features-rail {{
+        position: fixed;
+        top: 56%;
+        right: 28px;
+        transform: translateY(-38%);
+        display: flex;
+        flex-direction: column;
+        gap: 14px; /* Comfortable spacing between perpendicular boxes */
+        z-index: 90;
+        pointer-events: auto;
+    }}
+    .ac-feature-oval-pill {{
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: {t["surface"]} !important;
+        border: 1.5px solid {t["border"]} !important;
+        border-radius: 9999px !important;
+        padding: 8px 18px 8px 10px !important;
+        box-shadow: {t["card_shadow"]} !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        cursor: default;
+        text-align: left;
+    }}
+    .ac-feature-oval-pill:hover {{
+        transform: translateX(-6px);
+        border-color: {t["accent"]} !important;
+        background: {t["surface2"]} !important;
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.18) !important;
+    }}
+    .ac-feature-oval-icon {{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: {t["accent_soft"]};
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+    }}
+    .ac-feature-oval-text {{
+        font-family: 'DM Sans', 'Inter', system-ui, sans-serif !important;
+        font-size: 0.92rem !important;
+        font-weight: 700 !important;
+        color: {t["text_primary"]} !important;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }}
+
+    @media (max-width: 1024px) {{
+        .ac-right-features-rail {{
+            position: static;
+            transform: none;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 24px auto 0;
+            right: auto;
+            top: auto;
+        }}
     }}
 
     /* ── Streamlit Expander styling ───────────────────────────────────── */
@@ -519,17 +716,41 @@ def _inject_css(t: dict):
     }}
 
     /* ── Core Principle block ────────────────────────────────────────── */
+    .ac-principle-title {{
+        font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif !important;
+        font-size: 1.85rem !important;
+        font-weight: 800 !important;
+        color: {t["principle_title_color"]} !important;
+        text-shadow: {t["principle_title_glow"]} !important;
+        letter-spacing: -0.01em !important;
+        margin: 0 0 8px !important;
+    }}
+
+    .ac-principle-sub {{
+        font-family: 'DM Sans', 'Inter', system-ui, sans-serif !important;
+        font-size: 1.14rem !important;
+        color: {t["principle_sub_color"]} !important;
+        margin-top: 6px !important;
+        font-weight: 500 !important;
+    }}
+
     .ac-principle-block {{
-        background: {t["surface"]};
-        border: 1px solid {t["principle_border"]};
-        border-left: 5px solid {t["accent"]};
-        border-radius: 12px;
-        padding: 24px 28px;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 16px 0 !important;
+        max-width: 860px !important;
+        margin: 0 auto !important;
         font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
-        font-size: 1.15rem;
-        line-height: 1.90;
-        color: {t["text_secondary"]};
-        box-shadow: {t["card_shadow"]};
+        font-size: 1.18rem !important;
+        line-height: 1.95 !important;
+        color: {t["principle_text_color"]} !important;
+        text-shadow: {t["principle_text_glow"]} !important;
+        text-align: justify !important;
+        text-justify: inter-word !important;
+        font-weight: 500 !important;
     }}
 
     /* ── Privacy statement banner ────────────────────────────────────── */
@@ -724,126 +945,253 @@ def _inject_css(t: dict):
             order: 3 !important;
             width: 100% !important;
         }}
-        /* ── Streamlit Radio Buttons Overrides (Targeting ALL level paragraphs, labels & spans) ── */
-        div[data-testid="stRadio"],
-        div[data-testid="stRadio"] *,
-        div[data-testid="stRadio"] label,
-        div[data-testid="stRadio"] label *,
-        div[data-testid="stRadio"] label p,
-        div[data-testid="stRadio"] label span,
-        div[data-testid="stRadio"] [data-baseweb="radio"] *,
-        div[data-testid="stRadio"] [data-baseweb="radio"] p,
-        div[data-testid="stRadio"] [data-baseweb="radio"] span,
-        div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] *,
-        div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p,
-        div[role="radiogroup"],
-        div[role="radiogroup"] *,
-        div[role="radiogroup"] label,
-        div[role="radiogroup"] label *,
-        div[role="radiogroup"] label p,
-        div[role="radiogroup"] p,
-        div[role="radiogroup"] span {{
-            color: {t["text_primary"]} !important;
-            font-weight: 600 !important;
-            font-size: 1.12rem !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }}
+    }}
 
-        /* ── Streamlit Tabs Overrides (Active & Inactive headers, paragraphs & spans) ── */
-        [data-testid="stTabs"],
-        [data-testid="stTabs"] *,
-        [data-testid="stTabs"] button,
-        [data-testid="stTabs"] button *,
-        [data-testid="stTabs"] button p,
-        [data-testid="stTabs"] button span,
-        [data-testid="stTabs"] [data-testid="stMarkdownContainer"] *,
-        [data-testid="stTabs"] [data-testid="stMarkdownContainer"] p,
-        button[data-baseweb="tab"],
-        button[data-baseweb="tab"] *,
-        button[data-baseweb="tab"] p,
-        button[data-baseweb="tab"] span,
-        div[data-baseweb="tab-list"] button,
-        div[data-baseweb="tab-list"] button *,
-        div[data-baseweb="tab-list"] button p {{
-            color: {t["text_secondary"]} !important;
-            font-size: 1.15rem !important;
-            font-weight: 600 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }}
+    /* ── Streamlit Generic & Secondary Button Overrides (High Visibility in Dark & Light) ── */
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]),
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"],
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"] {{
+        background: {"#1C2035" if is_dark else "#FFFFFF"} !important;
+        background-color: {"#1C2035" if is_dark else "#FFFFFF"} !important;
+        color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        border: 1.5px solid {"#2D3450" if is_dark else "#DDE3F0"} !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.18s ease !important;
+    }}
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"]:hover,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"]:hover {{
+        background: {"#252B48" if is_dark else "#F0F4FF"} !important;
+        background-color: {"#252B48" if is_dark else "#F0F4FF"} !important;
+        border-color: {"#818CF8" if is_dark else "#4F46E5"} !important;
+        color: {"#FFFFFF" if is_dark else "#4F46E5"} !important;
+        box-shadow: 0 4px 14px {"rgba(129, 140, 248, 0.25)" if is_dark else "rgba(79, 70, 229, 0.15)"} !important;
+    }}
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) p,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) span,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) div,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] p,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] span,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] div {{
+        color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        -webkit-text-fill-color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        font-weight: 600 !important;
+        font-size: 1.02rem !important;
+    }}
 
-        /* Active Tab Header */
-        [data-testid="stTabs"] button[aria-selected="true"],
-        [data-testid="stTabs"] button[aria-selected="true"] *,
-        [data-testid="stTabs"] button[aria-selected="true"] p,
-        button[data-baseweb="tab"][aria-selected="true"],
-        button[data-baseweb="tab"][aria-selected="true"] *,
-        button[data-baseweb="tab"][aria-selected="true"] p,
-        div[data-baseweb="tab-list"] button[aria-selected="true"],
-        div[data-baseweb="tab-list"] button[aria-selected="true"] *,
-        div[data-baseweb="tab-list"] button[aria-selected="true"] p {{
-            color: {"#FCD34D" if is_dark else "#000000"} !important;
-            font-weight: 700 !important;
-            font-size: 1.15rem !important;
-            opacity: 1 !important;
-        }}
+    /* ── Streamlit Primary Button Overrides ── */
+    div[data-testid="stButton"] > button[kind="primary"],
+    button[data-testid="baseButton-primary"],
+    button[kind="primary"] {{
+        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%) !important;
+        background-color: #4F46E5 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.40) !important;
+    }}
+    div[data-testid="stButton"] > button[kind="primary"] p,
+    div[data-testid="stButton"] > button[kind="primary"] span,
+    div[data-testid="stButton"] > button[kind="primary"] div,
+    button[data-testid="baseButton-primary"] p,
+    button[data-testid="baseButton-primary"] span,
+    button[data-testid="baseButton-primary"] div {{
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+    }}
+    div[data-testid="stButton"] > button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover,
+    button[kind="primary"]:hover {{
+        background: linear-gradient(135deg, #4338CA 0%, #4F46E5 100%) !important;
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55) !important;
+        transform: translateY(-1px) !important;
+    }}
 
-        /* ── Form Labels, Selectboxes, Inputs & Captions ── */
-        [data-testid="stTextInput"] label,
-        [data-testid="stTextInput"] label *,
-        [data-testid="stTextInput"] label p,
-        [data-testid="stTextArea"] label,
-        [data-testid="stTextArea"] label *,
-        [data-testid="stTextArea"] label p,
-        [data-testid="stSelectbox"] label,
-        [data-testid="stSelectbox"] label *,
-        [data-testid="stSelectbox"] label p,
-        .stTextInput label,
-        .stTextInput label p,
-        .stTextArea label,
-        .stTextArea label p {{
-            color: {t["text_primary"]} !important;
-            font-weight: 700 !important;
-            font-size: 1.12rem !important;
-            opacity: 1 !important;
-        }}
+    /* ── Streamlit Border Containers ── */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {{
+        background: {"#141827" if is_dark else "#FFFFFF"} !important;
+        background-color: {"#141827" if is_dark else "#FFFFFF"} !important;
+        border: 1.5px solid {t["border"]} !important;
+        border-radius: 12px !important;
+        box-shadow: {t["card_shadow"]} !important;
+    }}
 
-        /* Captions */
-        [data-testid="stCaptionContainer"],
-        [data-testid="stCaptionContainer"] *,
-        [data-testid="stCaptionContainer"] p,
-        .stCaption,
-        .stCaption * {{
-            color: {t["text_muted"]} !important;
-            font-size: 1.02rem !important;
-            font-weight: 500 !important;
-            opacity: 1 !important;
-        }}
+    /* ── Streamlit Dialogs & Modals ── */
+    div[data-testid="stModal"],
+    div[data-baseweb="modal"],
+    div[role="dialog"],
+    div[data-testid="stDialog"] {{
+        background-color: {"#141827" if is_dark else "#FFFFFF"} !important;
+        border: 1.5px solid {t["border"]} !important;
+        border-radius: 14px !important;
+        color: {t["text_primary"]} !important;
+    }}
 
-        div[data-baseweb="input"] input,
-        div[data-baseweb="textarea"] textarea {{
-            color: {"#000000" if not is_dark else "#FFFFFF"} !important;
-            background-color: {"#FFFFFF" if not is_dark else "#1E2337"} !important;
-            font-weight: 600 !important;
-            font-size: 1.08rem !important;
-            border-color: {t["border"]} !important;
-        }}
-        div[data-baseweb="input"] input::placeholder,
-        div[data-baseweb="textarea"] textarea::placeholder {{
-            color: {"#64748B" if not is_dark else "#94A3B8"} !important;
-            font-weight: 500 !important;
-            font-size: 1.05rem !important;
-            opacity: 1 !important;
-        }}
+    /* ── Streamlit Radio Buttons Overrides (Targeting ALL level paragraphs, labels & spans) ── */
+    div[data-testid="stRadio"],
+    div[data-testid="stRadio"] *,
+    div[data-testid="stRadio"] label,
+    div[data-testid="stRadio"] label *,
+    div[data-testid="stRadio"] label p,
+    div[data-testid="stRadio"] label span,
+    div[data-testid="stRadio"] [data-baseweb="radio"] *,
+    div[data-testid="stRadio"] [data-baseweb="radio"] p,
+    div[data-testid="stRadio"] [data-baseweb="radio"] span,
+    div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] *,
+    div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p,
+    div[role="radiogroup"],
+    div[role="radiogroup"] *,
+    div[role="radiogroup"] label,
+    div[role="radiogroup"] label *,
+    div[role="radiogroup"] label p,
+    div[role="radiogroup"] p,
+    div[role="radiogroup"] span {{
+        color: {t["text_primary"]} !important;
+        font-weight: 600 !important;
+        font-size: 1.12rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }}
 
-        [data-testid="stMarkdownContainer"] p,
-        [data-testid="stMarkdownContainer"] span,
-        [data-testid="stMarkdownContainer"] li,
-        [data-testid="stMarkdownContainer"] div {{
-            color: inherit;
-            opacity: 1 !important;
-        }}
+    /* ── Streamlit Tabs Overrides (Active & Inactive headers, paragraphs & spans) ── */
+    [data-testid="stTabs"],
+    [data-testid="stTabs"] *,
+    [data-testid="stTabs"] button,
+    [data-testid="stTabs"] button *,
+    [data-testid="stTabs"] button p,
+    [data-testid="stTabs"] button span,
+    [data-testid="stTabs"] [data-testid="stMarkdownContainer"] *,
+    [data-testid="stTabs"] [data-testid="stMarkdownContainer"] p,
+    button[data-baseweb="tab"],
+    button[data-baseweb="tab"] *,
+    button[data-baseweb="tab"] p,
+    button[data-baseweb="tab"] span,
+    div[data-baseweb="tab-list"] button,
+    div[data-baseweb="tab-list"] button *,
+    div[data-baseweb="tab-list"] button p {{
+        color: {t["text_secondary"]} !important;
+        font-size: 1.15rem !important;
+        font-weight: 600 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }}
+
+    /* Active Tab Header */
+    [data-testid="stTabs"] button[aria-selected="true"],
+    [data-testid="stTabs"] button[aria-selected="true"] *,
+    [data-testid="stTabs"] button[aria-selected="true"] p,
+    button[data-baseweb="tab"][aria-selected="true"],
+    button[data-baseweb="tab"][aria-selected="true"] *,
+    button[data-baseweb="tab"][aria-selected="true"] p,
+    div[data-baseweb="tab-list"] button[aria-selected="true"],
+    div[data-baseweb="tab-list"] button[aria-selected="true"] *,
+    div[data-baseweb="tab-list"] button[aria-selected="true"] p {{
+        color: {"#FCD34D" if is_dark else "#000000"} !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem !important;
+        opacity: 1 !important;
+    }}
+
+    /* ── Form Labels, Selectboxes, Inputs & Captions ── */
+    [data-testid="stTextInput"] label,
+    [data-testid="stTextInput"] label *,
+    [data-testid="stTextInput"] label p,
+    [data-testid="stTextArea"] label,
+    [data-testid="stTextArea"] label *,
+    [data-testid="stTextArea"] label p,
+    [data-testid="stSelectbox"] label,
+    [data-testid="stSelectbox"] label *,
+    [data-testid="stSelectbox"] label p,
+    .stTextInput label,
+    .stTextInput label p,
+    .stTextArea label,
+    .stTextArea label p {{
+        color: {t["text_primary"]} !important;
+        font-weight: 700 !important;
+        font-size: 1.12rem !important;
+        opacity: 1 !important;
+    }}
+
+    /* Captions */
+    [data-testid="stCaptionContainer"],
+    [data-testid="stCaptionContainer"] *,
+    [data-testid="stCaptionContainer"] p,
+    .stCaption,
+    .stCaption * {{
+        color: {t["text_muted"]} !important;
+        font-size: 1.02rem !important;
+        font-weight: 500 !important;
+        opacity: 1 !important;
+    }}
+
+    div[data-baseweb="input"],
+    div[data-baseweb="textarea"],
+    div[data-baseweb="select"] > div {{
+        background-color: {"#1C2035" if is_dark else "#FFFFFF"} !important;
+        border-color: {t["border"]} !important;
+        border-radius: 8px !important;
+    }}
+
+    div[data-baseweb="input"] input,
+    div[data-baseweb="textarea"] textarea,
+    div[data-baseweb="select"] * {{
+        color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        -webkit-text-fill-color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        background-color: transparent !important;
+        font-weight: 600 !important;
+        font-size: 1.08rem !important;
+    }}
+    div[data-baseweb="input"] input::placeholder,
+    div[data-baseweb="textarea"] textarea::placeholder {{
+        color: {"#94A3B8" if is_dark else "#64748B"} !important;
+        font-weight: 500 !important;
+        font-size: 1.05rem !important;
+        opacity: 1 !important;
+    }}
+
+    /* Selectbox dropdown menu & options */
+    div[data-baseweb="popover"],
+    div[data-baseweb="menu"],
+    ul[role="listbox"] {{
+        background-color: {"#141827" if is_dark else "#FFFFFF"} !important;
+        border: 1px solid {t["border"]} !important;
+    }}
+    li[role="option"] {{
+        background-color: {"#141827" if is_dark else "#FFFFFF"} !important;
+        color: {t["text_primary"]} !important;
+    }}
+    li[role="option"]:hover,
+    li[role="option"][aria-selected="true"] {{
+        background-color: {"#1C2035" if is_dark else "#F0F4FF"} !important;
+        color: {"#818CF8" if is_dark else "#4F46E5"} !important;
+    }}
+
+    /* Pills & Segmented Controls */
+    div[data-testid="stPills"] button,
+    div[data-testid="stSegmentedControl"] button {{
+        background: {"#1C2035" if is_dark else "#FFFFFF"} !important;
+        border: 1.5px solid {"#2D3450" if is_dark else "#DDE3F0"} !important;
+        color: {"#FFFFFF" if is_dark else "#000000"} !important;
+        border-radius: 9999px !important;
+        font-weight: 600 !important;
+    }}
+    div[data-testid="stPills"] button[aria-selected="true"],
+    div[data-testid="stSegmentedControl"] button[aria-selected="true"] {{
+        background: #4F46E5 !important;
+        border-color: #818CF8 !important;
+        color: #FFFFFF !important;
+    }}
+
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] span,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] div {{
+        color: inherit;
+        opacity: 1 !important;
     }}
     </style>
     """), unsafe_allow_html=True)
@@ -853,15 +1201,15 @@ def _inject_css(t: dict):
     active_tab_color = "#FCD34D" if is_dark else "#000000"
     muted_color = "#F3F4F6" if is_dark else "#1F2937"
 
-    input_bg = "#1E2337" if is_dark else "#FFFFFF"
+    input_bg = "#1C2035" if is_dark else "#FFFFFF"
     input_text = "#FFFFFF" if is_dark else "#000000"
     input_placeholder = "#94A3B8" if is_dark else "#64748B"
-    input_border = "#374151" if is_dark else "#D1D5DB"
+    input_border = "#2D3450" if is_dark else "#D1D5DB"
 
-    btn_sec_bg = "#1E2337" if is_dark else "#FFFFFF"
+    btn_sec_bg = "#1C2035" if is_dark else "#FFFFFF"
     btn_sec_text = "#FFFFFF" if is_dark else "#000000"
-    btn_sec_border = "#374151" if is_dark else "#D1D5DB"
-    btn_sec_hover_bg = "#272D45" if is_dark else "#F3F4F6"
+    btn_sec_border = "#2D3450" if is_dark else "#D1D5DB"
+    btn_sec_hover_bg = "#252B48" if is_dark else "#F0F4FF"
     btn_sec_hover_border = "#818CF8" if is_dark else "#4F46E5"
 
     components.html(f"""
@@ -878,6 +1226,32 @@ def _inject_css(t: dict):
         }}
 
         styleEl.textContent = `
+            /* Force Generic / Secondary Buttons Contrast */
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]),
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"],
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"] {{
+                background-color: {btn_sec_bg} !important;
+                background: {btn_sec_bg} !important;
+                color: {btn_sec_text} !important;
+                border: 1.5px solid {btn_sec_border} !important;
+                border-radius: 8px !important;
+            }}
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"]:hover,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"]:hover {{
+                background-color: {btn_sec_hover_bg} !important;
+                background: {btn_sec_hover_bg} !important;
+                border-color: {btn_sec_hover_border} !important;
+                color: {btn_sec_text} !important;
+            }}
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) p,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) span,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] p,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] span {{
+                color: {btn_sec_text} !important;
+                -webkit-text-fill-color: {btn_sec_text} !important;
+            }}
+
             /* Force Radio Button Options Visibility */
             div[data-testid="stRadio"] *,
             div[data-testid="stRadio"] p,
@@ -960,7 +1334,8 @@ def _inject_css(t: dict):
 
             /* Force Input Fields Background, Text Color & Webkit Fill Color */
             div[data-baseweb="input"],
-            div[data-baseweb="textarea"] {{
+            div[data-baseweb="textarea"],
+            div[data-baseweb="select"] > div {{
                 background-color: {input_bg} !important;
                 border-color: {input_border} !important;
                 border-radius: 8px !important;
@@ -969,7 +1344,8 @@ def _inject_css(t: dict):
             div[data-baseweb="input"] input,
             div[data-baseweb="textarea"] textarea,
             [data-testid="stTextInput"] input,
-            [data-testid="stTextArea"] textarea {{
+            [data-testid="stTextArea"] textarea,
+            div[data-baseweb="select"] * {{
                 color: {input_text} !important;
                 -webkit-text-fill-color: {input_text} !important;
                 background-color: {input_bg} !important;
@@ -988,31 +1364,70 @@ def _inject_css(t: dict):
                 opacity: 1 !important;
             }}
 
-            /* Force Secondary Button Styling (Dark Navy in Dark Mode, White in Light Mode) */
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]),
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"] {{
-                background-color: {btn_sec_bg} !important;
-                background: {btn_sec_bg} !important;
-                color: {btn_sec_text} !important;
-                -webkit-text-fill-color: {btn_sec_text} !important;
-                border: 1.5px solid {btn_sec_border} !important;
-                border-radius: 10px !important;
-                font-size: 1.08rem !important;
-                font-weight: 600 !important;
+            /* Ultra-High Specificity Theme Toggle Button Protection (Sun/Moon Split Icon on 100% Transparent BG) */
+            html body div.stApp div[data-testid="stElementContainer"].st-key-ac_theme_toggle_btn div[data-testid="stButton"] button,
+            html body div.stApp div.st-key-ac_theme_toggle_btn div[data-testid="stButton"] button,
+            html body div.stApp .st-key-ac_theme_toggle_btn button,
+            html body div.stApp div[class*="st-key-ac_theme_toggle_btn"] button,
+            .st-key-ac_theme_toggle_btn button,
+            div[class*="st-key-ac_theme_toggle_btn"] button,
+            .st-key-ac_theme_toggle_btn button:hover,
+            .st-key-ac_theme_toggle_btn button:focus,
+            .st-key-ac_theme_toggle_btn button:focus-visible,
+            .st-key-ac_theme_toggle_btn button:active,
+            .st-key-ac_theme_toggle_btn button:disabled,
+            .st-key-ac_theme_toggle_btn button[disabled] {{
+                background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
+                background-color: transparent !important;
+                background-image: url('{theme_icon_uri}') !important;
+                background-size: contain !important;
+                border: none !important;
+                border-width: 0 !important;
+                border-radius: 50% !important;
+                box-shadow: none !important;
+                outline: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                filter: none !important;
+                width: 56px !important;
+                height: 56px !important;
+                min-width: 56px !important;
+                max-width: 56px !important;
+                min-height: 56px !important;
+                max-height: 56px !important;
             }}
 
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]) *,
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"] * {{
-                color: {btn_sec_text} !important;
-                -webkit-text-fill-color: {btn_sec_text} !important;
+            html body div.stApp div[data-testid="stElementContainer"].st-key-ac_theme_toggle_btn div[data-testid="stButton"] button *,
+            html body div.stApp div.st-key-ac_theme_toggle_btn div[data-testid="stButton"] button *,
+            html body div.stApp .st-key-ac_theme_toggle_btn button *,
+            html body div.stApp div[class*="st-key-ac_theme_toggle_btn"] button *,
+            .st-key-ac_theme_toggle_btn button *,
+            div[class*="st-key-ac_theme_toggle_btn"] button *,
+            .st-key-ac_theme_toggle_btn button:hover *,
+            .st-key-ac_theme_toggle_btn button:focus *,
+            .st-key-ac_theme_toggle_btn button:active * {{
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
             }}
 
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]):hover,
-            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"]:hover {{
-                background-color: {btn_sec_hover_bg} !important;
-                background: {btn_sec_hover_bg} !important;
-                border-color: {btn_sec_hover_border} !important;
-                color: {btn_sec_text} !important;
+            /* Core Principle Golden Heading & Soft Neon Text Override (No Background Box) */
+            .ac-principle-title {{
+                color: {t["principle_title_color"]} !important;
+                text-shadow: {t["principle_title_glow"]} !important;
+            }}
+            .ac-principle-sub {{
+                color: {t["principle_sub_color"]} !important;
+            }}
+            .ac-principle-block {{
+                background: transparent !important;
+                background-color: transparent !important;
+                color: {t["principle_text_color"]} !important;
+                text-shadow: {t["principle_text_glow"]} !important;
+                text-align: justify !important;
+                text-justify: inter-word !important;
+                border: none !important;
+                box-shadow: none !important;
             }}
         `;
     }})();
@@ -1028,10 +1443,16 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
     """Injects a canvas-based animated background per theme."""
 
     if theme_key == "light":
-        # ── Light: Full-Screen Curved Career Path ─────────────────────────
-        # Original delicate curved bezier lines with traveling dots, expanded across 100% full screen
+        # ── Light: Realistic Rear-View Ladder Climbing Scene ──────────────
+        # Grounded back-view candidate (matching user photo) climbing the left ladder.
+        # Hand only arrives when person reaches the top to support the ladder switch,
+        # strictly contained on the left side to prevent any overlap with center logo/text.
         anim_js = r"""
     const ctx = canvas.getContext('2d');
+
+    if (window.parent._ac_anim_req) {
+        window.parent.cancelAnimationFrame(window.parent._ac_anim_req);
+    }
 
     function resize() {
         canvas.width  = window.parent.innerWidth  || window.innerWidth;
@@ -1040,74 +1461,389 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
     resize();
     window.parent.addEventListener('resize', resize);
 
-    const PATH_DEFS = [
-        { cp: [[0.02,0.98],[0.08,0.65],[0.15,0.45],[0.05,0.25],[0.18,0.02]], hue: 220, a: 0.16 },
-        { cp: [[0.10,1.00],[0.22,0.70],[0.12,0.40],[0.25,0.20],[0.10,0.05]], hue: 240, a: 0.14 },
-        { cp: [[0.20,0.95],[0.35,0.75],[0.25,0.50],[0.40,0.30],[0.30,0.02]], hue: 230, a: 0.15 },
-        { cp: [[0.28,1.00],[0.15,0.60],[0.38,0.45],[0.22,0.20],[0.42,0.05]], hue: 250, a: 0.12 },
-        { cp: [[0.40,0.98],[0.52,0.70],[0.42,0.40],[0.58,0.22],[0.48,0.02]], hue: 215, a: 0.16 },
-        { cp: [[0.50,1.00],[0.38,0.65],[0.60,0.48],[0.45,0.18],[0.55,0.05]], hue: 235, a: 0.14 },
-        { cp: [[0.60,0.95],[0.72,0.72],[0.58,0.45],[0.75,0.25],[0.68,0.02]], hue: 225, a: 0.15 },
-        { cp: [[0.68,1.00],[0.55,0.58],[0.78,0.40],[0.62,0.15],[0.82,0.05]], hue: 245, a: 0.13 },
-        { cp: [[0.78,0.98],[0.88,0.70],[0.75,0.48],[0.92,0.28],[0.85,0.02]], hue: 210, a: 0.16 },
-        { cp: [[0.85,1.00],[0.95,0.65],[0.82,0.38],[0.98,0.18],[0.92,0.05]], hue: 250, a: 0.12 },
+    // Drifting background clouds (subtle, soft)
+    const clouds = [
+        { x: 0.04, y: 0.08, s: 1.0, speed: 0.00010 },
+        { x: 0.35, y: 0.15, s: 1.3, speed: 0.00008 },
+        { x: 0.68, y: 0.06, s: 0.85, speed: 0.00012 },
+        { x: 0.08, y: 0.48, s: 1.1, speed: 0.00009 },
+        { x: 0.75, y: 0.38, s: 1.4, speed: 0.00007 },
+        { x: 0.42, y: 0.68, s: 0.8, speed: 0.00010 },
     ];
 
-    function evalPath(cp, t, W, H) {
-        const n   = cp.length - 1;
-        const seg = Math.min(Math.floor(t * n), n - 1);
-        const lt  = t * n - seg;
-        const p0  = cp[seg];
-        const p1  = cp[seg + 1];
-        return { x: (p0[0] + (p1[0] - p0[0]) * lt) * W,
-                 y: (p0[1] + (p1[1] - p0[1]) * lt) * H };
-    }
-
-    const paths = PATH_DEFS.map(def => ({
-        def,
-        dots: Array.from({ length: 3 }, (_, i) => ({
-            t:     (i / 3) + Math.random() * 0.2,
-            speed: 0.0006 + Math.random() * 0.0008,
-            r:     1.8  + Math.random() * 2.2,
-            alpha: 0.55 + Math.random() * 0.35,
-        })),
-    }));
-
-    function drawPath(def) {
-        const W = canvas.width, H = canvas.height;
+    function drawCloud(cx, cy, scale) {
+        ctx.fillStyle = 'rgba(220, 235, 252, 0.70)';
         ctx.beginPath();
-        for (let i = 0; i <= 120; i++) {
-            const pt = evalPath(def.cp, i / 120, W, H);
-            i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y);
-        }
-        ctx.strokeStyle = `hsla(${def.hue}, 60%, 55%, ${def.a})`;
-        ctx.lineWidth   = 1.2;
-        ctx.stroke();
+        const r = 24 * scale;
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.arc(cx + r * 0.95, cy - r * 0.35, r * 1.15, 0, Math.PI * 2);
+        ctx.arc(cx + r * 1.85, cy, r * 0.85, 0, Math.PI * 2);
+        ctx.arc(cx + r * 0.95, cy + r * 0.22, r * 0.95, 0, Math.PI * 2);
+        ctx.fill();
     }
 
-    function drawAnim() {
+    let startTime = performance.now();
+
+    function drawScene(now) {
+        const elapsed = (now - startTime) / 1000;
+        const loopDuration = 11.0; // 11-second cycle
+        const progress = (elapsed % loopDuration) / loopDuration;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#F8FAFF';
+
+        // Sky background
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        bgGrad.addColorStop(0, '#EBF4FD');
+        bgGrad.addColorStop(0.45, '#F3F8FE');
+        bgGrad.addColorStop(1, '#FAFCFF');
+        ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        const W = canvas.width, H = canvas.height;
-        paths.forEach(({ def, dots }) => {
-            drawPath(def);
-            dots.forEach(dot => {
-                dot.t += dot.speed;
-                if (dot.t > 1) dot.t -= 1;
-                const pt = evalPath(def.cp, dot.t, W, H);
-                const glow = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, dot.r * 5);
-                glow.addColorStop(0, `hsla(${def.hue}, 70%, 60%, ${dot.alpha * 0.5})`);
-                glow.addColorStop(1, `hsla(${def.hue}, 70%, 60%, 0)`);
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r * 5, 0, Math.PI * 2);
-                ctx.fillStyle = glow; ctx.fill();
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, dot.r, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${def.hue}, 65%, 52%, ${dot.alpha})`; ctx.fill();
-            });
+
+        const W = canvas.width;
+        const H = canvas.height;
+        const scale = Math.min(Math.max(W / 1280, 0.75), 1.20);
+
+        // 1. Draw Clouds
+        clouds.forEach(c => {
+            c.x = (c.x + c.speed) % 1.25;
+            const drawX = (c.x > 1.1 ? c.x - 1.2 : c.x) * W;
+            drawCloud(drawX, c.y * H, c.s * scale);
         });
-        requestAnimationFrame(drawAnim);
+
+        // 2. Strict Left-Side Alignment (Zero overlap with center content)
+        const sceneLeft = Math.max(28 * scale, W * 0.04);
+        const ladderW = 42 * scale;
+        const ladderGap = 58 * scale;
+        const rungDist = 28 * scale;
+        const railThick = 4.5 * scale;
+        const rungThick = 3.5 * scale;
+        const ladderColor = '#50282E';
+
+        const leftLadderX = sceneLeft;
+        const leftLadderBottom = H + 40;
+        const leftLadderTop = H * 0.38;
+
+        const rightLadderX = leftLadderX + ladderW + ladderGap;
+        const rightLadderBottom = H * 0.42;
+        const rightLadderTop = -40;
+
+        // Draw Left Ladder
+        ctx.fillStyle = ladderColor;
+        ctx.strokeStyle = ladderColor;
+        ctx.lineWidth = railThick;
+        ctx.beginPath();
+        ctx.moveTo(leftLadderX, leftLadderBottom);
+        ctx.lineTo(leftLadderX, leftLadderTop);
+        ctx.moveTo(leftLadderX + ladderW, leftLadderBottom);
+        ctx.lineTo(leftLadderX + ladderW, leftLadderTop);
+        ctx.stroke();
+
+        ctx.lineWidth = rungThick;
+        for (let y = leftLadderBottom; y >= leftLadderTop + 4; y -= rungDist) {
+            ctx.beginPath();
+            ctx.moveTo(leftLadderX, y);
+            ctx.lineTo(leftLadderX + ladderW, y);
+            ctx.stroke();
+        }
+
+        // Draw Right Ladder
+        ctx.lineWidth = railThick;
+        ctx.beginPath();
+        ctx.moveTo(rightLadderX, rightLadderBottom);
+        ctx.lineTo(rightLadderX, rightLadderTop);
+        ctx.moveTo(rightLadderX + ladderW, rightLadderBottom);
+        ctx.lineTo(rightLadderX + ladderW, rightLadderTop);
+        ctx.stroke();
+
+        ctx.lineWidth = rungThick;
+        for (let y = rightLadderBottom; y >= rightLadderTop - 10; y -= rungDist) {
+            ctx.beginPath();
+            ctx.moveTo(rightLadderX, y);
+            ctx.lineTo(rightLadderX + ladderW, y);
+            ctx.stroke();
+        }
+
+        // 3. Ascend Career Supportive Hand (ONLY enters when person reaches the top!)
+        // Appears at progress 0.36, fully in place by 0.46, stays through 0.72, retreats by 0.82
+        let handSlide = 0; // 0 = fully hidden to right of scene, 1 = in place
+        if (progress >= 0.36 && progress < 0.46) {
+            // Smooth slide-in
+            handSlide = (progress - 0.36) / 0.10;
+        } else if (progress >= 0.46 && progress < 0.72) {
+            // Fully supporting
+            handSlide = 1.0;
+        } else if (progress >= 0.72 && progress < 0.82) {
+            // Smooth retreat
+            handSlide = 1.0 - (progress - 0.72) / 0.10;
+        } else {
+            handSlide = 0;
+        }
+
+        if (handSlide > 0.01) {
+            ctx.save();
+            const handTargetX = rightLadderX - 22 * scale;
+            const handTargetY = rightLadderBottom + 12 * scale;
+            const handOffscreenX = handTargetX + 220 * scale;
+            const currentHandX = handOffscreenX - handSlide * (handOffscreenX - handTargetX);
+            const handAlpha = Math.min(1.0, handSlide * 1.5);
+            ctx.globalAlpha = handAlpha;
+
+            const armEndX = currentHandX + 125 * scale;
+
+            // Arm Sleeve (Confined strictly to local left scene width)
+            ctx.fillStyle = '#112240';
+            ctx.beginPath();
+            ctx.moveTo(armEndX, handTargetY - 22 * scale);
+            ctx.lineTo(currentHandX + 90 * scale, handTargetY - 18 * scale);
+            ctx.lineTo(currentHandX + 85 * scale, handTargetY + 38 * scale);
+            ctx.lineTo(armEndX, handTargetY + 44 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // White Cuff
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(currentHandX + 90 * scale, handTargetY - 18 * scale);
+            ctx.lineTo(currentHandX + 80 * scale, handTargetY - 16 * scale);
+            ctx.lineTo(currentHandX + 75 * scale, handTargetY + 36 * scale);
+            ctx.lineTo(currentHandX + 85 * scale, handTargetY + 38 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // Palm & Supporting Platform Fingers
+            ctx.fillStyle = '#F4BA94';
+            ctx.beginPath();
+            ctx.moveTo(currentHandX + 80 * scale, handTargetY - 16 * scale);
+            ctx.bezierCurveTo(currentHandX + 58 * scale, handTargetY - 24 * scale, currentHandX + 38 * scale, handTargetY - 30 * scale, currentHandX + 26 * scale, handTargetY - 22 * scale);
+            ctx.bezierCurveTo(currentHandX + 30 * scale, handTargetY - 12 * scale, currentHandX + 46 * scale, handTargetY - 8 * scale, currentHandX + 54 * scale, handTargetY - 4 * scale);
+            ctx.bezierCurveTo(currentHandX + 26 * scale, handTargetY - 8 * scale, currentHandX + 4 * scale, handTargetY - 6 * scale, currentHandX - 16 * scale, handTargetY + 4 * scale);
+            ctx.bezierCurveTo(currentHandX - 22 * scale, handTargetY + 12 * scale, currentHandX - 14 * scale, handTargetY + 22 * scale, currentHandX + 4 * scale, handTargetY + 24 * scale);
+            ctx.bezierCurveTo(currentHandX + 34 * scale, handTargetY + 28 * scale, currentHandX + 64 * scale, handTargetY + 32 * scale, currentHandX + 75 * scale, handTargetY + 36 * scale);
+            ctx.closePath();
+            ctx.fill();
+
+            // Crease details
+            ctx.strokeStyle = '#D89972';
+            ctx.lineWidth = 1.6 * scale;
+            ctx.beginPath();
+            ctx.moveTo(currentHandX - 2 * scale, handTargetY + 12 * scale);
+            ctx.lineTo(currentHandX + 32 * scale, handTargetY + 10 * scale);
+            ctx.moveTo(currentHandX - 8 * scale, handTargetY + 19 * scale);
+            ctx.lineTo(currentHandX + 28 * scale, handTargetY + 18 * scale);
+            ctx.stroke();
+
+            // Subtle empowering glow
+            const handGlow = ctx.createRadialGradient(currentHandX + 18 * scale, handTargetY + 4 * scale, 0, currentHandX + 18 * scale, handTargetY + 4 * scale, 65 * scale);
+            handGlow.addColorStop(0, 'rgba(79, 70, 229, 0.20)');
+            handGlow.addColorStop(0.5, 'rgba(212, 175, 55, 0.15)');
+            handGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = handGlow;
+            ctx.beginPath();
+            ctx.arc(currentHandX + 18 * scale, handTargetY + 4 * scale, 65 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // 4. Character State Machine (Grounded Rear-View Climber)
+        let climberCenterX = leftLadderX + ladderW * 0.5;
+        let climberY = H * 0.90;
+        let climbCycle = 0;
+        let isTransferring = false;
+        let charOpacity = 1.0;
+
+        if (progress < 0.38) {
+            // Climbing Left Ladder (Hard-working steady upward progress)
+            const p = progress / 0.38;
+            climberCenterX = leftLadderX + ladderW * 0.5;
+            climberY = (H * 0.92) - p * (H * 0.92 - (leftLadderTop + 30 * scale));
+            climbCycle = (progress * 14) % 1;
+        } else if (progress < 0.48) {
+            // At Top of Left Ladder (Waiting for support)
+            climberCenterX = leftLadderX + ladderW * 0.5;
+            climberY = leftLadderTop + 30 * scale;
+            climbCycle = 0;
+        } else if (progress < 0.68) {
+            // Stepping Across on the Hand & Right Ladder Base
+            const p = (progress - 0.48) / 0.20;
+            const startX = leftLadderX + ladderW * 0.5;
+            const targetX = rightLadderX + ladderW * 0.5;
+            climberCenterX = startX + p * (targetX - startX);
+            climberY = (leftLadderTop + 30 * scale) - Math.sin(p * Math.PI) * (10 * scale) - p * (16 * scale);
+            isTransferring = true;
+            climbCycle = p;
+        } else if (progress < 0.92) {
+            // Climbing Right Ladder upward into the clouds
+            const p = (progress - 0.68) / 0.24;
+            climberCenterX = rightLadderX + ladderW * 0.5;
+            climberY = (rightLadderBottom + 4 * scale) - p * (rightLadderBottom + 4 * scale - (-35));
+            climbCycle = ((progress - 0.68) * 14) % 1;
+        } else {
+            // Fade out at upper sky before reset
+            const p = (progress - 0.92) / 0.08;
+            charOpacity = Math.max(0, 1 - p);
+            climberCenterX = rightLadderX + ladderW * 0.5;
+            climberY = -35 - p * 20;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = charOpacity;
+
+        // 5. Draw Person from REAR VIEW (Back View matching user photo)
+        const pScale = 0.92 * scale;
+        const stride = Math.sin(climbCycle * Math.PI * 2);
+
+        // Body center points
+        const bodyX = climberCenterX;
+        const bodyY = climberY;
+
+        // ── LEGS (Rear View with realistic knee bending outward like the photo) ──
+        const legThickness = 7.0 * pScale;
+        const hipY = bodyY + 18 * pScale;
+        const leftHipX = bodyX - 7 * pScale;
+        const rightHipX = bodyX + 7 * pScale;
+
+        // One leg is straight support, other leg knee flares out and lifts (matching reference photo)
+        const leftLegLift = isTransferring ? 0.3 : stride;
+        const rightLegLift = isTransferring ? -0.3 : -stride;
+
+        // Left Leg (Rear view)
+        const leftKneeX = leftHipX - (leftLegLift > 0 ? 12 * pScale : 3 * pScale);
+        const leftKneeY = hipY + (leftLegLift > 0 ? 14 * pScale : 22 * pScale);
+        const leftFootX = leftHipX - (leftLegLift > 0 ? 4 * pScale : 2 * pScale);
+        const leftFootY = leftKneeY + (leftLegLift > 0 ? 14 * pScale : 20 * pScale);
+
+        ctx.strokeStyle = '#142035';
+        ctx.lineWidth = legThickness;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(leftHipX, hipY);
+        ctx.lineTo(leftKneeX, leftKneeY);
+        ctx.lineTo(leftFootX, leftFootY);
+        ctx.stroke();
+
+        // Left Shoe Heel (Solid black dress shoe rear view)
+        ctx.fillStyle = '#0A0E18';
+        ctx.fillRect(leftFootX - 4 * pScale, leftFootY - 1, 9 * pScale, 6 * pScale);
+
+        // Right Leg (Rear view)
+        const rightKneeX = rightHipX + (rightLegLift > 0 ? 12 * pScale : 3 * pScale);
+        const rightKneeY = hipY + (rightLegLift > 0 ? 14 * pScale : 22 * pScale);
+        const rightFootX = rightHipX + (rightLegLift > 0 ? 4 * pScale : 2 * pScale);
+        const rightFootY = rightKneeY + (rightLegLift > 0 ? 14 * pScale : 20 * pScale);
+
+        ctx.beginPath();
+        ctx.moveTo(rightHipX, hipY);
+        ctx.lineTo(rightKneeX, rightKneeY);
+        ctx.lineTo(rightFootX, rightFootY);
+        ctx.stroke();
+
+        // Right Shoe Heel
+        ctx.fillStyle = '#0A0E18';
+        ctx.fillRect(rightFootX - 4 * pScale, rightFootY - 1, 9 * pScale, 6 * pScale);
+
+        // ── SUIT JACKET (Back View, tailored navy suit) ──
+        const shoulderY = bodyY - 18 * pScale;
+        const shoulderLeftX = bodyX - 16 * pScale;
+        const shoulderRightX = bodyX + 16 * pScale;
+
+        // Main jacket back panel
+        ctx.fillStyle = '#16243D';
+        ctx.beginPath();
+        ctx.moveTo(shoulderLeftX, shoulderY);
+        ctx.lineTo(shoulderRightX, shoulderY);
+        ctx.lineTo(bodyX + 14 * pScale, bodyY + 18 * pScale); // Lower right jacket hem
+        ctx.lineTo(bodyX - 14 * pScale, bodyY + 18 * pScale); // Lower left jacket hem
+        ctx.closePath();
+        ctx.fill();
+
+        // Center Back Seam & Tailoring Shadow
+        ctx.strokeStyle = '#0F1A2E';
+        ctx.lineWidth = 1.4 * pScale;
+        ctx.beginPath();
+        ctx.moveTo(bodyX, shoulderY + 4 * pScale);
+        ctx.lineTo(bodyX, bodyY + 18 * pScale);
+        ctx.stroke();
+
+        // White Shirt Collar (Visible at nape of neck)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.moveTo(bodyX - 6 * pScale, shoulderY - 1);
+        ctx.lineTo(bodyX + 6 * pScale, shoulderY - 1);
+        ctx.lineTo(bodyX + 5 * pScale, shoulderY + 4 * pScale);
+        ctx.lineTo(bodyX - 5 * pScale, shoulderY + 4 * pScale);
+        ctx.closePath();
+        ctx.fill();
+
+        // ── ARMS & HANDS (Reaching forward to grip ladder rungs in front) ──
+        const armThickness = 5.5 * pScale;
+
+        // Left Arm (Reaching up/forward to grip rung)
+        const leftHandGripY = shoulderY - (stride > 0 ? 18 * pScale : 6 * pScale);
+        const leftHandGripX = bodyX - 12 * pScale;
+        const leftElbowX = bodyX - 20 * pScale;
+        const leftElbowY = shoulderY + 2 * pScale;
+
+        ctx.strokeStyle = '#16243D';
+        ctx.lineWidth = armThickness;
+        ctx.beginPath();
+        ctx.moveTo(shoulderLeftX, shoulderY + 2 * pScale);
+        ctx.lineTo(leftElbowX, leftElbowY);
+        ctx.lineTo(leftHandGripX, leftHandGripY);
+        ctx.stroke();
+
+        // Left Hand (Back of hand gripping rung)
+        ctx.fillStyle = '#F4BA94';
+        ctx.beginPath();
+        ctx.arc(leftHandGripX, leftHandGripY, 4.0 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Right Arm (Reaching up/forward to grip rung)
+        const rightHandGripY = shoulderY - (stride < 0 ? 18 * pScale : 6 * pScale);
+        const rightHandGripX = bodyX + (isTransferring ? 18 * pScale : 12 * pScale);
+        const rightElbowX = bodyX + (isTransferring ? 24 * pScale : 20 * pScale);
+        const rightElbowY = shoulderY + 2 * pScale;
+
+        ctx.beginPath();
+        ctx.moveTo(shoulderRightX, shoulderY + 2 * pScale);
+        ctx.lineTo(rightElbowX, rightElbowY);
+        ctx.lineTo(rightHandGripX, rightHandGripY);
+        ctx.stroke();
+
+        // Right Hand (Back of hand gripping rung)
+        ctx.fillStyle = '#F4BA94';
+        ctx.beginPath();
+        ctx.arc(rightHandGripX, rightHandGripY, 4.0 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ── HEAD & HAIR (Back View, matching photo) ──
+        const headCenterY = shoulderY - 12 * pScale;
+
+        // Neck (Visible at back)
+        ctx.fillStyle = '#E8B08A';
+        ctx.fillRect(bodyX - 4 * pScale, shoulderY - 6 * pScale, 8 * pScale, 6 * pScale);
+
+        // Head Base
+        ctx.fillStyle = '#E8B08A';
+        ctx.beginPath();
+        ctx.arc(bodyX, headCenterY, 8.5 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Short Business Haircut (Back view covering top/sides of head)
+        ctx.fillStyle = '#422F22';
+        ctx.beginPath();
+        ctx.arc(bodyX, headCenterY - 1.5 * pScale, 9.0 * pScale, Math.PI * 0.9, Math.PI * 2.1);
+        ctx.bezierCurveTo(bodyX + 7 * pScale, headCenterY + 4 * pScale, bodyX - 7 * pScale, headCenterY + 4 * pScale, bodyX - 8.5 * pScale, headCenterY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+
+        window.parent._ac_anim_req = requestAnimationFrame(drawScene);
     }
-    drawAnim();
+
+    window.parent._ac_anim_req = requestAnimationFrame(drawScene);
         """
 
     else:
@@ -1115,6 +1851,10 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
         # Tiny glowing particles slowly rise; some fade away while new ones appear
         anim_js = r"""
     const ctx = canvas.getContext('2d');
+
+    if (window.parent._ac_anim_req) {
+        window.parent.cancelAnimationFrame(window.parent._ac_anim_req);
+    }
 
     function resize() {
         canvas.width  = window.parent.innerWidth  || window.innerWidth;
@@ -1149,8 +1889,6 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 
     function drawGlow() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0D0F1A';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         while (particles.length < MAX) { particles.push(spawn()); }
 
@@ -1182,27 +1920,61 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             ctx.fillStyle = `hsla(${p.hue}, 90%, 85%, ${Math.min(1, p.alpha * 1.6)})`;
             ctx.fill();
         }
-        requestAnimationFrame(drawGlow);
+        window.parent._ac_anim_req = requestAnimationFrame(drawGlow);
     }
-    drawGlow();
+    window.parent._ac_anim_req = requestAnimationFrame(drawGlow);
         """
 
-    # Inject canvas element into parent Streamlit DOM
-    st.markdown(
-        '<canvas id="ac-anim-canvas" '
-        'style="position:fixed;top:0;left:0;width:100%;height:100%;'
-        'z-index:0;pointer-events:none;"></canvas>',
-        unsafe_allow_html=True,
-    )
+    # Inject canvas element (and left summit picture for dark theme) into parent Streamlit DOM
+    if theme_key == "dark":
+        summit_uri = _get_summit_data_uri()
+        st.markdown(textwrap.dedent(f"""
+            <div id="ac-dark-summit-hero" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 440px;
+                max-width: 36vw;
+                height: 100vh;
+                z-index: 0;
+                pointer-events: none;
+                overflow: hidden;
+            ">
+                <img src="{summit_uri}" alt="Summit Achiever" style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: left bottom;
+                    opacity: 0.86;
+                    -webkit-mask-image: radial-gradient(ellipse at 35% 55%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.65) 65%, rgba(0,0,0,0) 95%),
+                                        linear-gradient(to right, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%),
+                                        linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%),
+                                        linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
+                    -webkit-mask-composite: destination-in;
+                    mask-image: radial-gradient(ellipse at 35% 55%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.65) 65%, rgba(0,0,0,0) 95%),
+                                linear-gradient(to right, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%);
+                    mask-composite: intersect;
+                    filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.16));
+                " />
+            </div>
+            <canvas id="ac-anim-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+        """), unsafe_allow_html=True)
+    else:
+        st.markdown(
+            '<canvas id="ac-anim-canvas" '
+            'style="position:fixed;top:0;left:0;width:100%;height:100%;'
+            'z-index:0;pointer-events:none;"></canvas>',
+            unsafe_allow_html=True,
+        )
 
     # Run the animation JS via components.html (which properly executes scripts).
     # The script uses window.parent.document to reach the canvas in the parent page,
     # since components.html runs inside an iframe that shares origin with Streamlit.
     components.html(
         f"""
+        <!-- AscendCareer Canvas Animation Engine v2 -->
         <script>
         (function run() {{
-            // Retry until parent canvas is available
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
             if (!canvas) {{ setTimeout(run, 50); return; }}
             {anim_js}
@@ -1221,15 +1993,15 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 def _render_hero(t: dict):
     logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 48px 24px 36px;">
+    <div class="ac-content" style="text-align:center; padding: 12px 24px 32px; margin-top: -6px;">
 
-        <!-- Logo — transparent background with base64 data URI -->
-        <div style="margin-bottom:24px;">
+        <!-- Logo — enlarged and with balanced distance to AscendCareer -->
+        <div style="margin-top: -52px; margin-bottom: 28px; position: relative; z-index: 2;">
             <img src="{logo_data_uri}"
                  alt="AscendCareer Logo"
-                 style="height:125px; width:auto;
-                        filter: drop-shadow(0 8px 24px rgba(79,70,229,0.30))
-                                drop-shadow(0 2px 10px rgba(212,175,55,0.25));" />
+                 style="height:172px; width:auto;
+                        filter: drop-shadow(0 14px 34px rgba(79,70,229,0.36))
+                                drop-shadow(0 3px 16px rgba(212,175,55,0.32));" />
         </div>
 
         <!-- Brand name — stylish Cinzel dual-tone (Ascend in indigo/lavender, Career in radiant gold) -->
@@ -1270,15 +2042,32 @@ def _render_hero(t: dict):
             voice-to-voice practice, multi-persona panels, and adaptive difficulty.
         </p>
 
-        <!-- Feature pills -->
-        <div style="margin-top:22px; display:flex; flex-wrap:wrap;
-                    gap:8px; justify-content:center;">
-            <span class="ac-tag">📄 Resume Analysis</span>
-            <span class="ac-tag">🏗️ Resume Builder</span>
-            <span class="ac-tag">🎙️ Voice Interviews</span>
-            <span class="ac-tag">👥 Multi-Panel Simulations</span>
-            <span class="ac-tag">📊 Progress Analytics</span>
-            <span class="ac-tag">🏆 6-Stage Ladder</span>
+        <!-- Right-Side Perpendicular Oval Length Boxes -->
+        <div class="ac-right-features-rail">
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">📄</span>
+                <span class="ac-feature-oval-text">Resume Analysis</span>
+            </div>
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">🏗️</span>
+                <span class="ac-feature-oval-text">Resume Builder</span>
+            </div>
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">🎙️</span>
+                <span class="ac-feature-oval-text">Voice Interviews</span>
+            </div>
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">👥</span>
+                <span class="ac-feature-oval-text">Multi-Panel Simulations</span>
+            </div>
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">📊</span>
+                <span class="ac-feature-oval-text">Progress Analytics</span>
+            </div>
+            <div class="ac-feature-oval-pill">
+                <span class="ac-feature-oval-icon">🏆</span>
+                <span class="ac-feature-oval-text">6-Stage Ladder</span>
+            </div>
         </div>
     </div>
     """), unsafe_allow_html=True)
@@ -1297,8 +2086,8 @@ def _render_core_principle(t: dict):
     <div class="ac-content" style="padding: 0 24px;">
         <hr class="ac-divider" style="margin-bottom:32px;" />
         <div style="text-align:center; margin-bottom:20px;">
-            <div class="ac-section-title">💡 Core Principle</div>
-            <p style="font-family:'DM Sans','Inter',system-ui,sans-serif; font-size:1.12rem; color:{t['text_muted']}; margin-top:6px; font-weight: 500;">
+            <div class="ac-principle-title">💡 Core Principle</div>
+            <p class="ac-principle-sub">
                 The philosophy behind everything AscendCareer does.
             </p>
         </div>
@@ -1378,16 +2167,32 @@ def render_landing() -> dict:
     from modules.navigation.panel import render_navigation_drawer
     render_navigation_drawer(t)
 
+    # ── Auth Required Pop-up Dialog Check (Only triggered when accessing protected Resume / Interview) ──
+    if st.session_state.get("auth_popup_open", False):
+        feature_name = st.session_state.get("auth_popup_feature", "this feature")
+        st.session_state["auth_popup_open"] = False
+        render_signin_required_dialog(feature_name)
+
     # ── Top Bar: Hamburger (Left), Spacer, Sign In (Right) & Sun/Moon Theme Switcher ──
-    top_col_h, top_col_spacer, top_col_signin, top_col_theme = st.columns([6, 66, 19, 9])
+    top_col_h, top_col_spacer, top_col_signin, top_col_theme = st.columns([6, 73, 14, 7])
     with top_col_h:
         if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
+            st.session_state["auth_popup_open"] = False
             st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
             st.rerun()
     with top_col_signin:
-        top_signin_clicked = st.button("👤  Sign In", key="ac_top_signin_btn", type="primary", use_container_width=True)
+        active_user_id = st.session_state.get("user_id")
+        if active_user_id:
+            top_signin_clicked = False
+            if st.button(f"🆔 {active_user_id}", key="ac_top_verified_user_btn", use_container_width=True, help="Verified User ID · Click to View Profile"):
+                st.session_state["auth_popup_open"] = False
+                st.session_state["ac_screen"] = "profile"
+                st.rerun()
+        else:
+            top_signin_clicked = st.button(" ", key="ac_top_signin_btn", use_container_width=True, help="Sign In / Generate User ID")
     with top_col_theme:
         if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+            st.session_state["auth_popup_open"] = False
             st.session_state["ac_theme"] = other_key
             st.query_params["theme"] = other_key
             st.rerun()

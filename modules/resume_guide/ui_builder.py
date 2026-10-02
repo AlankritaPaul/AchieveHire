@@ -221,7 +221,7 @@ def render_create_resume_flow():
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
             if st.button("← Back", key="btn_bld_back_1", use_container_width=True):
-                st.session_state.resume_guide_mode = None
+                st.session_state["ac_screen"] = "landing"
                 st.rerun()
         with col_next:
             if st.button("Next →", type="primary", key="btn_bld_next_1", use_container_width=True):
@@ -420,10 +420,10 @@ def render_create_resume_flow():
         )
 
         st.markdown(
-            """
-            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #3B82F6; padding: 14px 16px; border-radius: 6px; margin-top: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+            f"""
+            <div style="background-color: {t['surface2']}; border: 1.5px solid {t['border']}; border-left: 4px solid {t['accent']}; padding: 14px 16px; border-radius: 6px; margin-top: 14px; font-size: 0.88rem; color: {t['text_primary']}; line-height: 1.6;">
                 <strong>📌 Headline Placement & Header Logic:</strong>
-                <ul style="margin: 6px 0 0 16px; padding: 0;">
+                <ul style="margin: 6px 0 0 16px; padding: 0; color: {t['text_secondary']};">
                     <li><strong>Entered Headline:</strong> If provided, this exact headline appears directly below your name on your final resume.</li>
                     <li><strong>Ongoing Experience Fallback:</strong> If left empty, the builder will look at your <em>Work Experience</em>. If you have an entry marked as <em>Currently Ongoing</em>, its job position title will be displayed.</li>
                     <li><strong>Clean & Empty:</strong> If there is no headline and no ongoing experience, the space below your name remains completely clean and empty.</li>
