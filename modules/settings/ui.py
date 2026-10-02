@@ -7,7 +7,7 @@ Provides candidate settings:
 """
 
 import streamlit as st
-from modules.auth.user_service import get_current_user, delete_user_account, sign_out
+from modules.auth.user_service import get_current_user, delete_user_account, sign_out, save_user_settings
 from modules.landing.ui import THEMES, clean_html
 from modules.navigation.panel import render_top_nav_bar, render_navigation_drawer
 
@@ -45,7 +45,7 @@ def render_settings_page():
     </div>
     """), unsafe_allow_html=True)
 
-    # ── 1. Notification Preferences (with Logo) ──
+    # ── 1. Notification Preferences (with Logo & Persistent Save) ──
     with st.container(border=True):
         st.markdown(clean_html(f"""
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
@@ -77,7 +77,6 @@ def render_settings_page():
                 key="toggle_notif_prep",
                 label_visibility="collapsed"
             )
-            st.session_state["notif_prep_enabled"] = prep_notifs
 
         st.markdown("<hr style='border:none; border-top:1px solid " + t["border"] + "; margin:12px 0;'>", unsafe_allow_html=True)
 
@@ -98,7 +97,30 @@ def render_settings_page():
                 key="toggle_notif_milestone",
                 label_visibility="collapsed"
             )
-            st.session_state["notif_milestones_enabled"] = milestone_notifs
+
+        # Auto-persist current toggle states
+        save_user_settings(user_id, {
+            "notif_prep_enabled": prep_notifs,
+            "notif_milestones_enabled": milestone_notifs
+        })
+
+        st.markdown("<hr style='border:none; border-top:1px solid " + t["border"] + "; margin:12px 0;'>", unsafe_allow_html=True)
+
+        col_save1, col_save2 = st.columns([68, 32])
+        with col_save1:
+            st.markdown(f"""
+            <div style="font-size:0.84rem; color:{t['text_muted']}; line-height:1.5;">
+                Save your notification edits permanently so they persist across sessions.
+            </div>
+            """, unsafe_allow_html=True)
+        with col_save2:
+            if st.button("💾  Save Preferences", key="btn_save_notif_prefs", type="primary", use_container_width=True):
+                save_user_settings(user_id, {
+                    "notif_prep_enabled": prep_notifs,
+                    "notif_milestones_enabled": milestone_notifs
+                })
+                st.success("✓ Notification preferences saved successfully.")
+
 
     st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 

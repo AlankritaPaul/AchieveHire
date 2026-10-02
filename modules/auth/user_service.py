@@ -100,6 +100,10 @@ def register_user(name: str, purpose: str) -> dict:
             "resumes_analyzed": 0,
             "interviews_practiced": 0,
         },
+        "settings": {
+            "notif_prep_enabled": True,
+            "notif_milestones_enabled": True,
+        },
         "resumes": [],
         "interview_attempts": [],
         "reports": [],
@@ -139,6 +143,10 @@ def ensure_founder_user_record(purpose: str = "Both") -> dict:
                 "resumes_analyzed": 0,
                 "interviews_practiced": 0,
             },
+            "settings": {
+                "notif_prep_enabled": True,
+                "notif_milestones_enabled": True,
+            },
             "resumes": [],
             "interview_attempts": [],
             "reports": [],
@@ -175,6 +183,22 @@ def update_user_record(user_id: str, updates: dict) -> Optional[dict]:
     return users[user_id]
 
 
+def save_user_settings(user_id: Optional[str], settings_dict: dict) -> None:
+    """Saves user notification & platform preferences to persistent storage and session state."""
+    st.session_state["notif_prep_enabled"] = settings_dict.get("notif_prep_enabled", True)
+    st.session_state["notif_milestones_enabled"] = settings_dict.get("notif_milestones_enabled", True)
+
+    if user_id:
+        users = _ensure_data_store()
+        if user_id in users:
+            if "settings" not in users[user_id]:
+                users[user_id]["settings"] = {}
+            users[user_id]["settings"].update(settings_dict)
+            _save_all_users(users)
+            if st.session_state.get("user_id") == user_id:
+                st.session_state["user_data"] = users[user_id]
+
+
 def set_active_user(user_record: dict) -> None:
     """Sets the active user across the entire session state."""
     st.session_state["user_id"] = user_record["user_id"]
@@ -187,6 +211,11 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["user_location"] = user_record.get("location", "India")
     st.session_state["user_bio"] = user_record.get("bio", "")
     st.session_state["user_profile_pic"] = user_record.get("profile_pic")
+
+    settings = user_record.get("settings", {})
+    st.session_state["notif_prep_enabled"] = settings.get("notif_prep_enabled", True)
+    st.session_state["notif_milestones_enabled"] = settings.get("notif_milestones_enabled", True)
+
 
 
 def get_current_user() -> Optional[dict]:
