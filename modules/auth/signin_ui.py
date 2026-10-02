@@ -59,7 +59,7 @@ def render_signin_flow():
     with tab_new:
         with st.container(border=True):
             st.markdown(f"""
-            <div style="font-size:1.02rem; font-weight:700; color:{t['text_primary']}; margin-bottom:12px;">
+            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:12px;">
                 1. Enter Your Full Name
             </div>
             """, unsafe_allow_html=True)
@@ -71,13 +71,13 @@ def render_signin_flow():
                 label_visibility="collapsed"
             )
 
-            st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
             st.markdown(f"""
-            <div style="font-size:1.02rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
+            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
                 2. What would you like to use AscendCareer for?
             </div>
-            <div style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:12px;">
+            <div style="font-size:1.02rem; font-weight:500; color:{t['text_muted']}; margin-bottom:14px;">
                 Select your intended preparation focus. You can practice all features at any time.
             </div>
             """, unsafe_allow_html=True)
@@ -149,10 +149,10 @@ def render_signin_flow():
     with tab_existing:
         with st.container(border=True):
             st.markdown(f"""
-            <div style="font-size:1.02rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
+            <div style="font-size:1.22rem; font-weight:700; color:{t['text_primary']}; margin-bottom:6px;">
                 Sign In with Existing User ID
             </div>
-            <div style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:14px;">
+            <div style="font-size:1.02rem; font-weight:500; color:{t['text_muted']}; margin-bottom:16px;">
                 Enter your unique AscendCareer User ID to restore your personal resumes and interview attempts.
             </div>
             """, unsafe_allow_html=True)

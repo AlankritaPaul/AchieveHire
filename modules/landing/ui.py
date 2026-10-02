@@ -72,9 +72,9 @@ THEMES = {
         "surface": "#FFFFFF",
         "surface2": "#F0F4FF",
         "border": "#DDE3F0",
-        "text_primary": "#1A1F36",
-        "text_secondary": "#0B4619",        # Bottle Green (user specified)
-        "text_muted": "#145A32",            # Clear medium Bottle Green (user specified)
+        "text_primary": "#000000",          # Pure Black for all primary text, form titles, labels
+        "text_secondary": "#000000",        # Pure Black for all options, tabs, radio buttons
+        "text_muted": "#1F2937",            # Dark Charcoal for muted instructions
         "accent": "#4F46E5",
         "accent_hover": "#4338CA",
         "accent_soft": "#EEF2FF",
@@ -101,9 +101,9 @@ THEMES = {
         "surface": "#141827",
         "surface2": "#1C2035",
         "border": "#2D3450",
-        "text_primary": "#FFFFFF",
-        "text_secondary": "#FDFBF7",        # Off Cream (user specified)
-        "text_muted": "#EAE5D9",            # Soft warm Off Cream (user specified)
+        "text_primary": "#FFFFFF",          # Pure White for all primary text, form titles, labels
+        "text_secondary": "#FFFFFF",        # Pure White for all options, tabs, radio buttons
+        "text_muted": "#F3F4F6",            # Bright Off-White for muted instructions
         "accent": "#818CF8",
         "accent_hover": "#A5B4FC",
         "accent_soft": "#1E2347",
@@ -726,57 +726,85 @@ def _inject_css(t: dict):
         }}
         /* ── Streamlit Radio Buttons, Tabs & Form Input Text Overrides ── */
         div[data-testid="stRadio"] label,
-        div[data-testid="stRadio"] label p,
-        div[data-testid="stRadio"] div[role="radiogroup"] label *,
-        div[data-testid="stRadio"] div[role="radiogroup"] span {
+        div[data-testid="stRadio"] label *,
+        div[data-testid="stRadio"] [data-baseweb="radio"] *,
+        div[data-testid="stRadio"] [data-baseweb="radio"] p,
+        div[data-testid="stRadio"] [data-baseweb="radio"] span,
+        div[data-testid="stRadio"] [data-baseweb="radio"] div,
+        div[role="radiogroup"] label,
+        div[role="radiogroup"] label *,
+        div[role="radiogroup"] p,
+        div[role="radiogroup"] span {{
             color: {t["text_primary"]} !important;
             font-weight: 600 !important;
-            font-size: 0.98rem !important;
+            font-size: 1.12rem !important;
             opacity: 1 !important;
-        }
+        }}
 
+        /* Tabs (Both active & inactive) */
+        button[data-baseweb="tab"],
         button[data-baseweb="tab"] *,
-        div[data-baseweb="tab-list"] button * {
+        div[data-baseweb="tab-list"] button,
+        div[data-baseweb="tab-list"] button *,
+        [data-testid="stTabs"] button,
+        [data-testid="stTabs"] button * {{
             color: {t["text_secondary"]} !important;
-            font-size: 0.98rem !important;
+            font-size: 1.15rem !important;
             font-weight: 600 !important;
             opacity: 1 !important;
-        }
+        }}
+        button[data-baseweb="tab"][aria-selected="true"],
         button[data-baseweb="tab"][aria-selected="true"] *,
-        div[data-baseweb="tab-list"] button[aria-selected="true"] * {
-            color: {t["accent"]} !important;
+        div[data-baseweb="tab-list"] button[aria-selected="true"],
+        div[data-baseweb="tab-list"] button[aria-selected="true"] *,
+        [data-testid="stTabs"] button[aria-selected="true"],
+        [data-testid="stTabs"] button[aria-selected="true"] * {{
+            color: {t["accent"] if is_dark else "#000000"} !important;
             font-weight: 700 !important;
-        }
+            font-size: 1.15rem !important;
+            opacity: 1 !important;
+        }}
 
+        /* Input Field Labels */
         [data-testid="stTextInput"] label,
+        [data-testid="stTextInput"] label p,
         [data-testid="stTextArea"] label,
+        [data-testid="stTextArea"] label p,
         [data-testid="stSelectbox"] label,
+        [data-testid="stSelectbox"] label p,
+        .stTextInput label,
         .stTextInput label p,
-        .stTextArea label p {
+        .stTextArea label,
+        .stTextArea label p {{
             color: {t["text_primary"]} !important;
             font-weight: 700 !important;
-            font-size: 0.98rem !important;
-        }
-        div[data-baseweb="input"] input,
-        div[data-baseweb="textarea"] textarea {
-            color: #0D0F1A !important;
-            background-color: #FFFFFF !important;
-            font-weight: 600 !important;
-            font-size: 0.98rem !important;
-        }
-        div[data-baseweb="input"] input::placeholder,
-        div[data-baseweb="textarea"] textarea::placeholder {
-            color: #64748B !important;
-            font-weight: 500 !important;
+            font-size: 1.12rem !important;
             opacity: 1 !important;
-        }
+        }}
+
+        div[data-baseweb="input"] input,
+        div[data-baseweb="textarea"] textarea {{
+            color: {"#000000" if not is_dark else "#FFFFFF"} !important;
+            background-color: {"#FFFFFF" if not is_dark else "#1E2337"} !important;
+            font-weight: 600 !important;
+            font-size: 1.08rem !important;
+            border-color: {t["border"]} !important;
+        }}
+        div[data-baseweb="input"] input::placeholder,
+        div[data-baseweb="textarea"] textarea::placeholder {{
+            color: {"#64748B" if not is_dark else "#94A3B8"} !important;
+            font-weight: 500 !important;
+            font-size: 1.05rem !important;
+            opacity: 1 !important;
+        }}
 
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] span,
         [data-testid="stMarkdownContainer"] li,
-        [data-testid="stMarkdownContainer"] div {
+        [data-testid="stMarkdownContainer"] div {{
             color: inherit;
-        }
+            opacity: 1 !important;
+        }}
     }}
     </style>
     """), unsafe_allow_html=True)
