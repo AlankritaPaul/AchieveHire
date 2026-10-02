@@ -5,6 +5,7 @@ Clean, modern, professional, minimal navigation structure.
 
 import base64
 import streamlit as st
+import streamlit.components.v1 as components
 from modules.landing.ui import THEMES, _get_theme_icon_data_uri, clean_html
 
 
@@ -162,6 +163,7 @@ def render_navigation_drawer(t: dict):
     interview_open = st.session_state["nav_interview_open"]
 
     st.markdown(clean_html(f"""
+    <div id="ac-nav-backdrop-el" class="ac-nav-backdrop"></div>
     <style>
     /* ── Navigation Backdrop Blur ── */
     .ac-nav-backdrop {{
@@ -171,6 +173,7 @@ def render_navigation_drawer(t: dict):
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         z-index: 9998;
+        cursor: pointer;
     }}
 
     /* ── Navigation Drawer Box ── */
@@ -411,7 +414,7 @@ def render_navigation_drawer(t: dict):
 
         # Clean Brand Header Row (below exit button)
         st.markdown(f"""
-        <div class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px;">
+        <div id="ac-drawer-brand-logo" class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px; cursor:pointer;" title="Click to go to Home Page">
             <span class="ac-drawer-brand">
                 <span style="color:{t['brand_ascend_color']};">Ascend</span><span style="color:{t['brand_career_color']};">Career</span>
             </span>
@@ -523,7 +526,7 @@ def render_navigation_drawer(t: dict):
 
         # ── 7. Home / Landing Screen ──
         st.markdown("<hr style='border:none; border-top:1px solid " + t["border"] + "; margin:16px 0 12px;'>", unsafe_allow_html=True)
-        if st.button("🏠  AscendCareer Home", key="nav_btn_home", use_container_width=True):
+        if st.button("🏠  Home Page", key="nav_btn_home", use_container_width=True):
             st.session_state["ac_screen"] = "landing"
             st.session_state["nav_open"] = False
             st.rerun()
@@ -533,3 +536,36 @@ def render_navigation_drawer(t: dict):
             st.session_state["ac_screen"] = "settings"
             st.session_state["nav_open"] = False
             st.rerun()
+
+    components.html("""
+    <script>
+    (function run() {
+        const parentDoc = window.parent.document;
+        const backdrop = parentDoc.getElementById('ac-nav-backdrop-el');
+        const brandLogo = parentDoc.getElementById('ac-drawer-brand-logo');
+        const homeBtn = parentDoc.querySelector('.st-key-nav_btn_home button');
+
+        if (!homeBtn) {
+            setTimeout(run, 50);
+            return;
+        }
+
+        if (backdrop && !backdrop.dataset.hasListener) {
+            backdrop.dataset.hasListener = "true";
+            backdrop.style.cursor = "pointer";
+            backdrop.onclick = function() {
+                homeBtn.click();
+            };
+        }
+
+        if (brandLogo && !brandLogo.dataset.hasListener) {
+            brandLogo.dataset.hasListener = "true";
+            brandLogo.style.cursor = "pointer";
+            brandLogo.onclick = function() {
+                homeBtn.click();
+            };
+        }
+    })();
+    </script>
+    """, height=0, scrolling=False)
+
