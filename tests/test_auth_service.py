@@ -26,14 +26,16 @@ class TestAuthAndUserIdService(unittest.TestCase):
         st.session_state["ac_theme"] = "light"
 
     def test_unique_user_id_generation(self):
-        """Verify User ID is generated based on name + unique number and guarantees uniqueness."""
+        """Verify User ID is generated based on 4 capital letters + 4 numbers (e.g. XRYH3258) and guarantees uniqueness."""
         name = "Test Candidate"
         user_id_1 = generate_unique_user_id(name)
         user_id_2 = generate_unique_user_id(name)
 
-        # Structure check: contains base name and 6 digits
-        self.assertTrue(user_id_1.startswith("TESTCANDIDAT-"))
-        self.assertTrue(user_id_2.startswith("TESTCANDIDAT-"))
+        # Structure check: exactly 8 characters, starting with 4 uppercase letters 'TEST' followed by 4 digits
+        self.assertEqual(len(user_id_1), 8)
+        self.assertEqual(len(user_id_2), 8)
+        self.assertTrue(user_id_1[:4] == "TEST" and user_id_1[4:].isdigit())
+        self.assertTrue(user_id_2[:4] == "TEST" and user_id_2[4:].isdigit())
         
         # Guaranteed uniqueness even with identical names
         self.assertNotEqual(user_id_1, user_id_2)
@@ -48,7 +50,8 @@ class TestAuthAndUserIdService(unittest.TestCase):
         user_a = register_user("User Alpha", "Resume Preparation")
         self.assertEqual(user_a["name"], "User Alpha")
         self.assertEqual(user_a["purpose"], "Resume Preparation")
-        self.assertTrue(user_a["user_id"].startswith("USERALPHA-"))
+        self.assertEqual(len(user_a["user_id"]), 8)
+        self.assertTrue(user_a["user_id"][:4] == "USER" and user_a["user_id"][4:].isdigit())
 
         # Register User B (Interview Preparation with exact same name)
         user_b = register_user("User Alpha", "Interview Preparation")

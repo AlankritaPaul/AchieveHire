@@ -50,23 +50,25 @@ def _save_all_users(users: Dict[str, dict]) -> None:
 
 def generate_unique_user_id(name: str) -> str:
     """
-    Generates a guaranteed unique User ID based on the candidate's name
-    combined with a unique number (e.g. 'JOHNDOE-784291').
+    Generates a guaranteed unique User ID consisting of:
+    1st 4 letters of user's name in uppercase + 4 random digits (e.g. 'XRYH3258').
     Ensures complete uniqueness even when multiple candidates share the exact same name.
     """
     users = _ensure_data_store()
     existing_ids = set(users.keys())
 
-    # Extract clean alphabetical/numeric characters from the candidate's name
-    clean_name = re.sub(r"[^A-Za-z0-9]", "", name).upper()
-    if not clean_name:
-        clean_name = "CANDIDATE"
-    prefix = clean_name[:12]
+    # Extract clean alphabetical characters from the candidate's name
+    clean_letters = re.sub(r"[^A-Za-z]", "", name).upper()
+    if not clean_letters:
+        clean_letters = "USER"
+    
+    # 1st 4 letters of user's name in capital (padded with 'X' if under 4 letters)
+    prefix = (clean_letters + "XXXX")[:4]
 
-    # Generate until guaranteed unique
+    # Generate 4 random digits until guaranteed unique
     while True:
-        num = random.randint(100000, 999999)
-        candidate_id = f"{prefix}-{num}"
+        num = random.randint(1000, 9999)
+        candidate_id = f"{prefix}{num}"
         if candidate_id not in existing_ids:
             return candidate_id
 
