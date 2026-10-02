@@ -761,11 +761,11 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             x:        Math.random() * canvas.width,
             y:        spreadY !== undefined ? spreadY : canvas.height + 8,
             r:        1.2 + Math.random() * 2.8,
-            vy:       0.35 + Math.random() * 0.9,
+            vy:       0.45 + Math.random() * 1.0,
             vx:       (Math.random() - 0.5) * 0.25,
             hue:      210 + Math.random() * 50,
             life:     0,
-            maxLife:  180 + Math.random() * 260,
+            maxLife:  450 + Math.random() * 500,
             maxAlpha: 0.25 + Math.random() * 0.45,
             alpha:    0,
         };
@@ -788,8 +788,8 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             const p = particles[i];
             p.life++; p.x += p.vx; p.y -= p.vy;
 
-            const fadeIn  = p.maxLife * 0.30;
-            const fadeOut = p.maxLife * 0.70;
+            const fadeIn  = p.maxLife * 0.15;
+            const fadeOut = p.maxLife * 0.85;
             if (p.life < fadeIn) {
                 p.alpha = p.maxAlpha * (p.life / fadeIn);
             } else if (p.life < fadeOut) {
@@ -838,11 +838,11 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             x:        Math.random() * canvas.width,
             y:        spreadY !== undefined ? spreadY : canvas.height + 8,
             r:        1.2 + Math.random() * 2.8,
-            vy:       0.35 + Math.random() * 0.9,
+            vy:       0.45 + Math.random() * 1.0,
             vx:       (Math.random() - 0.5) * 0.25,
             hue:      200 + Math.random() * 90,
             life:     0,
-            maxLife:  180 + Math.random() * 260,
+            maxLife:  450 + Math.random() * 500,
             maxAlpha: 0.35 + Math.random() * 0.55,
             alpha:    0,
         };
@@ -865,8 +865,8 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             const p = particles[i];
             p.life++; p.x += p.vx; p.y -= p.vy;
 
-            const fadeIn  = p.maxLife * 0.30;
-            const fadeOut = p.maxLife * 0.70;
+            const fadeIn  = p.maxLife * 0.15;
+            const fadeOut = p.maxLife * 0.85;
             if (p.life < fadeIn) {
                 p.alpha = p.maxAlpha * (p.life / fadeIn);
             } else if (p.life < fadeOut) {
