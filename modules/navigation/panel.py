@@ -259,20 +259,33 @@ def render_navigation_drawer(t: dict):
     }}
 
     /* ── Navigation Buttons in Drawer ── */
+    .st-key-nav_close_btn button,
+    .st-key-nav_close_btn button *,
+    .st-key-nav_close_btn button p,
+    .st-key-nav_close_btn button div,
+    .st-key-nav_close_btn button span {{
+        font-size: 2.2rem !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        color: {t["text_primary"]} !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
     .st-key-nav_close_btn button {{
         background: transparent !important;
         border: none !important;
-        font-size: 1.7rem !important;
-        font-weight: 800 !important;
-        line-height: 1 !important;
-        color: {t["text_primary"]} !important;
         cursor: pointer !important;
-        padding: 4px 10px !important;
+        padding: 2px 8px !important;
         border-radius: 8px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }}
     .st-key-nav_close_btn button:hover {{
         background: {t["surface2"]} !important;
-        color: {t["text_primary"]} !important;
+        color: {t["accent"]} !important;
     }}
 
     /* Category Accordion Header Buttons */
