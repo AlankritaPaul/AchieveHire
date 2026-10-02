@@ -113,6 +113,46 @@ def register_user(name: str, purpose: str) -> dict:
     return user_record
 
 
+def ensure_founder_user_record(purpose: str = "Both") -> dict:
+    """
+    Ensures the Founder account (ALANKRITA-FOUNDER) exists in the persistent JSON registry 
+    with a full candidate profile & workspace, allowing the founder to use and test 
+    all candidate account features without restrictions.
+    """
+    users = _ensure_data_store()
+    founder_id = "ALANKRITA-FOUNDER"
+
+    if founder_id not in users:
+        now_iso = datetime.now().isoformat()
+        users[founder_id] = {
+            "user_id": founder_id,
+            "name": "Alankrita Pal",
+            "purpose": purpose if purpose in PURPOSE_OPTIONS else "Both",
+            "created_at": now_iso,
+            "headline": "Platform Founder & Leader · Career Readiness",
+            "email": "alankrita.pal@ascendcareer.ai",
+            "location": "India",
+            "bio": "Founder of AscendCareer. Dedicated to helping candidates achieve career excellence.",
+            "profile_pic": None,
+            "stats": {
+                "resumes_created": 0,
+                "resumes_analyzed": 0,
+                "interviews_practiced": 0,
+            },
+            "resumes": [],
+            "interview_attempts": [],
+            "reports": [],
+        }
+        _save_all_users(users)
+    else:
+        if purpose in PURPOSE_OPTIONS:
+            users[founder_id]["purpose"] = purpose
+            _save_all_users(users)
+
+    set_active_user(users[founder_id])
+    return users[founder_id]
+
+
 def get_user_by_id(user_id: str) -> Optional[dict]:
     """Retrieves a user record by their unique User ID."""
     users = _ensure_data_store()

@@ -138,13 +138,8 @@ def render_signin_flow():
                 if not candidate_name or len(candidate_name.strip()) < 2:
                     st.error("Please enter your name first.")
                 elif candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]:
-                    user_record = {
-                        "user_id": "ALANKRITA-FOUNDER",
-                        "name": "Alankrita Pal",
-                        "purpose": selected_purpose
-                    }
-                    from modules.auth.user_service import set_active_user
-                    set_active_user(user_record)
+                    from modules.auth.user_service import ensure_founder_user_record
+                    user_record = ensure_founder_user_record(selected_purpose)
                     st.session_state["just_generated_user"] = None
                     st.session_state["ac_screen"] = "resume_create" if selected_purpose != "Interview Preparation" else "interview_specialized"
                     st.rerun()
@@ -177,13 +172,8 @@ def render_signin_flow():
                     if not existing_id_input.strip():
                         st.error("Please enter your User ID.")
                     elif existing_id_input.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita", "alankrita-founder"]:
-                        user_record = {
-                            "user_id": "ALANKRITA-FOUNDER",
-                            "name": "Alankrita Pal",
-                            "purpose": "Both"
-                        }
-                        from modules.auth.user_service import set_active_user
-                        set_active_user(user_record)
+                        from modules.auth.user_service import ensure_founder_user_record
+                        user_record = ensure_founder_user_record("Both")
                         st.session_state["just_generated_user"] = user_record
                         st.rerun()
                     else:

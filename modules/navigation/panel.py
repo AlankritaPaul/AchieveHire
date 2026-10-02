@@ -379,20 +379,22 @@ def render_navigation_drawer(t: dict):
 
     # Render drawer container inside sidebar or fixed container
     with st.sidebar:
-        # Header Row
-        hdr_col, close_col = st.columns([80, 20])
-        with hdr_col:
-            st.markdown(f"""
-            <div class="ac-drawer-header">
-                <span class="ac-drawer-brand">
-                    <span style="color:{t['brand_ascend_color']};">Ascend</span><span style="color:{t['brand_career_color']};">Career</span>
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-        with close_col:
-            if st.button("✕", key="nav_close_btn", help="Close Menu"):
+        # Exit / Close Button (placed cleanly above the brand text)
+        close_col1, close_col2 = st.columns([82, 18])
+        with close_col2:
+            if st.button("✕", key="nav_close_btn", help="Close Menu & Go to Home"):
                 st.session_state["nav_open"] = False
+                st.session_state["ac_screen"] = "landing"
                 st.rerun()
+
+        # Clean Brand Header Row (below exit button)
+        st.markdown(f"""
+        <div class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px;">
+            <span class="ac-drawer-brand">
+                <span style="color:{t['brand_ascend_color']};">Ascend</span><span style="color:{t['brand_career_color']};">Career</span>
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
 
         # Status / Brand Element (Subtle, non-promise indicator)
         st.markdown(f"""
