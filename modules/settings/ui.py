@@ -177,27 +177,29 @@ def render_settings_page():
                         Delete Account &amp; Associated Data
                     </h3>
                     <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
-                        Permanently remove your candidate profile ({username}), User ID (<code>{user_id if user_id else 'Guest'}</code>), saved resumes, and interview evaluations. This action cannot be undone.
+                        Permanently remove your candidate profile, unique User ID, saved resumes, and interview evaluations. This action cannot be undone.
                     </div>
                 </div>
             </div>
             """), unsafe_allow_html=True)
         with col_del2:
-            if user_id:
-                confirm_check = st.checkbox(
-                    "I confirm deletion",
-                    key="chk_confirm_delete"
-                )
-                if st.button("🗑️  Delete Account", type="primary", disabled=not confirm_check, key="btn_execute_delete", use_container_width=True):
-                    delete_user_account(user_id)
+            st.markdown(f"""
+            <div style="font-weight:600; font-size:0.85rem; color:#DC2626; margin-bottom:6px; text-align:center;">
+                Delete Account?
+            </div>
+            """, unsafe_allow_html=True)
+            col_y, col_n = st.columns(2)
+            with col_y:
+                if st.button("Yes", key="btn_delete_account_yes", type="primary", use_container_width=True):
+                    if user_id:
+                        delete_user_account(user_id)
+                    st.session_state.clear()
                     st.session_state["ac_screen"] = "landing"
                     st.session_state["nav_open"] = False
                     st.success("Your account and all associated data have been permanently deleted.")
                     st.rerun()
-            else:
-                st.markdown(f"<div style='font-size:0.82rem; color:{t['text_muted']}; margin-bottom:6px;'>Guest Session</div>", unsafe_allow_html=True)
-                if st.button("🧹  Clear Session", key="btn_clear_guest_session", use_container_width=True):
-                    st.session_state.clear()
-                    st.session_state["ac_screen"] = "landing"
-                    st.rerun()
+            with col_n:
+                if st.button("No", key="btn_delete_account_no", use_container_width=True):
+                    st.info("Account deletion cancelled. Your account remains active.")
+
 
