@@ -858,6 +858,12 @@ def _inject_css(t: dict):
     input_placeholder = "#94A3B8" if is_dark else "#64748B"
     input_border = "#374151" if is_dark else "#D1D5DB"
 
+    btn_sec_bg = "#1E2337" if is_dark else "#FFFFFF"
+    btn_sec_text = "#FFFFFF" if is_dark else "#000000"
+    btn_sec_border = "#374151" if is_dark else "#D1D5DB"
+    btn_sec_hover_bg = "#272D45" if is_dark else "#F3F4F6"
+    btn_sec_hover_border = "#818CF8" if is_dark else "#4F46E5"
+
     components.html(f"""
     <script>
     (function run() {{
@@ -980,6 +986,33 @@ def _inject_css(t: dict):
                 font-weight: 500 !important;
                 font-size: 1.05rem !important;
                 opacity: 1 !important;
+            }}
+
+            /* Force Secondary Button Styling (Dark Navy in Dark Mode, White in Light Mode) */
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]),
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"] {{
+                background-color: {btn_sec_bg} !important;
+                background: {btn_sec_bg} !important;
+                color: {btn_sec_text} !important;
+                -webkit-text-fill-color: {btn_sec_text} !important;
+                border: 1.5px solid {btn_sec_border} !important;
+                border-radius: 10px !important;
+                font-size: 1.08rem !important;
+                font-weight: 600 !important;
+            }}
+
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]) *,
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"] * {{
+                color: {btn_sec_text} !important;
+                -webkit-text-fill-color: {btn_sec_text} !important;
+            }}
+
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button:not([kind="primary"]):hover,
+            div[data-testid="stButton"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn) button[kind="secondary"]:hover {{
+                background-color: {btn_sec_hover_bg} !important;
+                background: {btn_sec_hover_bg} !important;
+                border-color: {btn_sec_hover_border} !important;
+                color: {btn_sec_text} !important;
             }}
         `;
     }})();
