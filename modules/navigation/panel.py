@@ -214,7 +214,7 @@ def render_navigation_drawer(t: dict):
     }}
     .ac-drawer-brand {{
         font-family: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
-        font-size: 1.45rem;
+        font-size: 1.75rem;
         font-weight: 800;
         letter-spacing: 0em !important;
         margin: 0;
@@ -228,16 +228,16 @@ def render_navigation_drawer(t: dict):
         background: {t["surface2"]};
         border: 1px solid {t["border"]};
         border-radius: 9999px;
-        padding: 3px 12px;
+        padding: 4px 14px;
         margin-bottom: 20px;
-        font-size: 0.76rem;
+        font-size: 0.88rem;
         font-weight: 600;
         color: {t["text_muted"]};
         letter-spacing: 0.02em;
     }}
     .ac-status-jewel {{
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
         background: #10B981;
         box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
@@ -250,22 +250,22 @@ def render_navigation_drawer(t: dict):
 
     /* ── Navigation Section Category Headers ── */
     .ac-nav-category-title {{
-        font-size: 0.74rem;
+        font-size: 0.88rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: {t["text_muted"]};
-        margin: 16px 0 6px 6px;
+        margin: 18px 0 8px 6px;
     }}
 
-    /* ── Navigation Buttons in Drawer ── */
+    /* ── Navigation Buttons in Drawer (Exit Symbol >) ── */
     .st-key-nav_close_btn button,
     .st-key-nav_close_btn button *,
     .st-key-nav_close_btn button p,
     .st-key-nav_close_btn button div,
     .st-key-nav_close_btn button span {{
-        font-size: 2.2rem !important;
-        font-weight: 900 !important;
+        font-size: 1.45rem !important;
+        font-weight: 800 !important;
         line-height: 1 !important;
         color: {t["text_primary"]} !important;
         margin: 0 !important;
@@ -277,8 +277,8 @@ def render_navigation_drawer(t: dict):
         cursor: pointer !important;
         padding: 2px 8px !important;
         border-radius: 8px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -295,9 +295,9 @@ def render_navigation_drawer(t: dict):
         border: 1px solid {t["border"]} !important;
         color: {t["text_primary"]} !important;
         font-weight: 700 !important;
-        font-size: 0.96rem !important;
+        font-size: 1.15rem !important;
         border-radius: 10px !important;
-        padding: 10px 14px !important;
+        padding: 11px 16px !important;
         text-align: left !important;
         width: 100% !important;
         display: flex !important;
@@ -321,9 +321,9 @@ def render_navigation_drawer(t: dict):
         border: 1px solid transparent !important;
         color: {t["text_secondary"]} !important;
         font-weight: 600 !important;
-        font-size: 0.88rem !important;
+        font-size: 1.05rem !important;
         border-radius: 8px !important;
-        padding: 8px 14px 8px 24px !important;
+        padding: 9px 14px 9px 26px !important;
         text-align: left !important;
         width: 100% !important;
         display: block !important;
@@ -337,23 +337,26 @@ def render_navigation_drawer(t: dict):
         background: {t["surface2"]} !important;
         border-color: {t["border"]} !important;
         color: {t["text_primary"]} !important;
-        padding-left: 28px !important;
+        padding-left: 30px !important;
     }}
 
-    /* Profile, FAQ, Privacy, Terms, Home, Settings items */
+    /* Profile, FAQ, Privacy, Terms, Home, Settings, Founder Analytics items */
     .st-key-nav_btn_profile button,
+    .st-key-nav_btn_switch_user button,
+    .st-key-nav_btn_generate_id_drawer button,
     .st-key-nav_btn_faq button,
     .st-key-nav_btn_privacy button,
     .st-key-nav_btn_terms button,
     .st-key-nav_btn_home button,
-    .st-key-nav_btn_settings button {{
+    .st-key-nav_btn_settings button,
+    .st-key-nav_btn_founder_analytics button {{
         background: transparent !important;
         border: 1px solid {t["border"]} !important;
         color: {t["text_primary"]} !important;
         font-weight: 600 !important;
-        font-size: 0.90rem !important;
+        font-size: 1.08rem !important;
         border-radius: 10px !important;
-        padding: 9px 14px !important;
+        padding: 10px 16px !important;
         text-align: left !important;
         width: 100% !important;
         display: block !important;
@@ -361,9 +364,14 @@ def render_navigation_drawer(t: dict):
         transition: all 0.18s ease !important;
     }}
     .st-key-nav_btn_profile button:hover,
+    .st-key-nav_btn_switch_user button:hover,
+    .st-key-nav_btn_generate_id_drawer button:hover,
+    .st-key-nav_btn_faq button:hover,
     .st-key-nav_btn_privacy button:hover,
     .st-key-nav_btn_terms button:hover,
-    .st-key-nav_btn_home button:hover {{
+    .st-key-nav_btn_home button:hover,
+    .st-key-nav_btn_settings button:hover,
+    .st-key-nav_btn_founder_analytics button:hover {{
         background: {t["surface2"]} !important;
         border-color: {t["accent"]} !important;
     }}
