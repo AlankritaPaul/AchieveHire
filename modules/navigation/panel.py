@@ -28,14 +28,16 @@ def _get_avatar_uri() -> str:
 
 
 def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show_theme: bool = False):
+
     """
     Renders top navigation header row across pages:
     - Left: Hamburger Menu Icon (3 horizontal lines)
-    - Center/Right: Screen Title / Breadcrumb
-    - Optional (Home page only): Sign In button + Sun/Moon Theme Toggle icon
+    - Center: Screen Title / Breadcrumb
+    - Right: Sun/Moon Theme Toggle icon & optional Sign In button
     """
     theme_key = st.session_state.get("ac_theme", "light")
     other_key = "dark" if theme_key == "light" else "light"
+    theme_icon_uri = _get_theme_icon_data_uri()
 
     st.markdown(clean_html(f"""
     <style>
@@ -91,10 +93,62 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
         background-color: {t["accent"]};
         box-shadow: 0 -7px 0 {t["accent"]}, 0 7px 0 {t["accent"]};
     }}
+
+    /* ── Theme Toggle Button (Sun/Moon Split Icon) ── */
+    .st-key-ac_theme_toggle_btn {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: auto !important;
+    }}
+    .st-key-ac_theme_toggle_btn div[data-testid="stButton"] {{
+        display: inline-flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 44px !important;
+        height: 44px !important;
+    }}
+    .st-key-ac_theme_toggle_btn button {{
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        background-size: contain !important;
+        border: none !important;
+        border-width: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }}
+    .st-key-ac_theme_toggle_btn button:hover {{
+        transform: scale(1.15) !important;
+        background: transparent url('{theme_icon_uri}') no-repeat center center / contain !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    .st-key-ac_theme_toggle_btn button * {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }}
     </style>
     """), unsafe_allow_html=True)
 
-    if show_signin and show_theme:
+    if show_signin:
         col_h, col_title, col_signin, col_theme = st.columns([6, 66, 19, 9])
         with col_h:
             if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
@@ -120,7 +174,7 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
                 st.query_params["theme"] = other_key
                 st.rerun()
     else:
-        col_h, col_title = st.columns([6, 94])
+        col_h, col_title, col_theme = st.columns([6, 85, 9])
         with col_h:
             if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
                 st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
@@ -134,6 +188,13 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
                     </span>
                 </div>
                 """, unsafe_allow_html=True)
+        with col_theme:
+            if show_theme:
+                if st.button(" ", key="ac_theme_toggle_btn", help=f"Switch to {'Dark' if theme_key == 'light' else 'Light'} Theme"):
+                    st.session_state["ac_theme"] = other_key
+                    st.query_params["theme"] = other_key
+                    st.rerun()
+
 
 
 def render_navigation_drawer(t: dict):
