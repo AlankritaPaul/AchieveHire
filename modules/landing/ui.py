@@ -848,6 +848,109 @@ def _inject_css(t: dict):
     </style>
     """), unsafe_allow_html=True)
 
+    # ── Parent DOM Style Injection (Guarantees 100% white/black contrast for BaseWeb/Emotion elements) ──
+    target_color = "#FFFFFF" if is_dark else "#000000"
+    active_tab_color = "#FCD34D" if is_dark else "#000000"
+    muted_color = "#F3F4F6" if is_dark else "#1F2937"
+
+    components.html(f"""
+    <script>
+    (function run() {{
+        const parentDoc = window.parent.document;
+        if (!parentDoc || !parentDoc.head) {{ setTimeout(run, 50); return; }}
+        
+        let styleEl = parentDoc.getElementById('ac-parent-force-styles');
+        if (!styleEl) {{
+            styleEl = parentDoc.createElement('style');
+            styleEl.id = 'ac-parent-force-styles';
+            parentDoc.head.appendChild(styleEl);
+        }}
+
+        styleEl.textContent = `
+            /* Force Radio Button Options Visibility */
+            div[data-testid="stRadio"] *,
+            div[data-testid="stRadio"] p,
+            div[data-testid="stRadio"] span,
+            div[data-testid="stRadio"] label,
+            div[data-testid="stRadio"] div,
+            div[data-baseweb="radio"] *,
+            div[data-baseweb="radio"] p,
+            div[data-baseweb="radio"] span,
+            div[data-baseweb="radio"] label,
+            label[data-baseweb="radio"] *,
+            label[data-baseweb="radio"] p,
+            label[data-baseweb="radio"] span,
+            div[role="radiogroup"] *,
+            div[role="radiogroup"] p,
+            div[role="radiogroup"] span,
+            div[role="radiogroup"] label {{
+                color: {target_color} !important;
+                fill: {target_color} !important;
+                font-size: 1.12rem !important;
+                font-weight: 600 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }}
+
+            /* Force Tab Headers Visibility (Active & Inactive) */
+            [data-testid="stTabs"] *,
+            [data-testid="stTabs"] p,
+            [data-testid="stTabs"] span,
+            [data-testid="stTabs"] button,
+            button[data-baseweb="tab"],
+            button[data-baseweb="tab"] *,
+            button[data-baseweb="tab"] p,
+            button[data-baseweb="tab"] span,
+            div[data-baseweb="tab-list"] *,
+            div[data-baseweb="tab-list"] p,
+            div[data-baseweb="tab-list"] button {{
+                color: {target_color} !important;
+                fill: {target_color} !important;
+                font-size: 1.15rem !important;
+                font-weight: 600 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }}
+
+            /* Force Active Tab Color */
+            button[data-baseweb="tab"][aria-selected="true"],
+            button[data-baseweb="tab"][aria-selected="true"] *,
+            button[data-baseweb="tab"][aria-selected="true"] p,
+            [data-testid="stTabs"] button[aria-selected="true"],
+            [data-testid="stTabs"] button[aria-selected="true"] * {{
+                color: {active_tab_color} !important;
+                font-weight: 700 !important;
+            }}
+
+            /* Force Captions & Muted Text */
+            [data-testid="stCaptionContainer"],
+            [data-testid="stCaptionContainer"] *,
+            [data-testid="stCaptionContainer"] p,
+            .stCaption,
+            .stCaption * {{
+                color: {muted_color} !important;
+                font-size: 1.02rem !important;
+                font-weight: 500 !important;
+                opacity: 1 !important;
+            }}
+
+            /* Force Form Labels */
+            [data-testid="stTextInput"] label,
+            [data-testid="stTextInput"] label *,
+            [data-testid="stTextArea"] label,
+            [data-testid="stTextArea"] label *,
+            [data-testid="stSelectbox"] label,
+            [data-testid="stSelectbox"] label * {{
+                color: {target_color} !important;
+                font-weight: 700 !important;
+                font-size: 1.12rem !important;
+                opacity: 1 !important;
+            }}
+        `;
+    }})();
+    </script>
+    """, height=0, scrolling=False)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Animated Backgrounds
