@@ -155,7 +155,7 @@ def render_settings_page():
             """), unsafe_allow_html=True)
         with col_s2:
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
-            if st.button("🚪  Sign Out", use_container_width=True, key="btn_execute_signout"):
+            if st.button("Yes", use_container_width=True, key="btn_execute_signout"):
                 sign_out()
                 st.session_state["nav_open"] = False
                 st.success("You have signed out successfully.")
@@ -183,23 +183,45 @@ def render_settings_page():
             </div>
             """), unsafe_allow_html=True)
         with col_del2:
-            st.markdown(f"""
-            <div style="font-weight:600; font-size:0.85rem; color:#DC2626; margin-bottom:6px; text-align:center;">
-                Delete Account?
+            st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
+            if st.button("Yes", key="btn_delete_account_yes", type="primary", use_container_width=True):
+                if user_id:
+                    delete_user_account(user_id)
+                st.session_state.clear()
+                st.session_state["ac_screen"] = "landing"
+                st.session_state["nav_open"] = False
+                st.success("Your account and all associated data have been permanently deleted.")
+                st.rerun()
+
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+
+    # ── 5. Clear Session Cache (with Logo) ──
+    with st.container(border=True):
+        col_cs1, col_cs2 = st.columns([68, 32])
+        with col_cs1:
+            st.markdown(clean_html(f"""
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:36px; height:36px; border-radius:8px; background:{t['surface2']}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    🧹
+                </div>
+                <div>
+                    <h3 style="font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin:0 0 4px;">
+                        Clear Session Cache
+                    </h3>
+                    <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
+                        Clear current browser session state and temporary cached data without deleting stored account records.
+                    </div>
+                </div>
             </div>
-            """, unsafe_allow_html=True)
-            col_y, col_n = st.columns(2)
-            with col_y:
-                if st.button("Yes", key="btn_delete_account_yes", type="primary", use_container_width=True):
-                    if user_id:
-                        delete_user_account(user_id)
-                    st.session_state.clear()
-                    st.session_state["ac_screen"] = "landing"
-                    st.session_state["nav_open"] = False
-                    st.success("Your account and all associated data have been permanently deleted.")
-                    st.rerun()
-            with col_n:
-                if st.button("No", key="btn_delete_account_no", use_container_width=True):
-                    st.info("Account deletion cancelled. Your account remains active.")
+            """), unsafe_allow_html=True)
+        with col_cs2:
+            st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
+            if st.button("Yes", key="btn_clear_session_yes", use_container_width=True):
+                st.session_state.clear()
+                st.session_state["ac_screen"] = "landing"
+                st.session_state["nav_open"] = False
+                st.success("Current session cache cleared successfully.")
+                st.rerun()
+
 
 
