@@ -38,8 +38,9 @@ def render_signin_flow():
             AscendCareer Account Setup
         </h1>
         <p style="font-size: 1.05rem; color:{t['text_secondary']}; line-height:1.6; max-width:620px; margin:0 auto;">
-            Generate your permanent, unique User ID to keep your resumes, interview practice sessions, evaluations, and progress reports completely separated and private.
+            Generate your personal, unique User ID to keep your resumes, interview practice sessions, evaluations, and progress reports completely separated and private.
         </p>
+
     </div>
     """), unsafe_allow_html=True)
 
