@@ -64,12 +64,14 @@ def render_signin_flow():
             </div>
             """, unsafe_allow_html=True)
 
-            candidate_name = st.text_input(
-                "Full Name",
-                placeholder="Enter your full name",
-                key="input_candidate_name",
-                label_visibility="collapsed"
-            )
+            col_name, _ = st.columns([55, 45])
+            with col_name:
+                candidate_name = st.text_input(
+                    "Full Name",
+                    placeholder="Enter your full name",
+                    key="input_candidate_name",
+                    label_visibility="collapsed"
+                )
 
             st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
@@ -157,12 +159,14 @@ def render_signin_flow():
             </div>
             """, unsafe_allow_html=True)
 
-            existing_id_input = st.text_input(
-                "User ID",
-                placeholder="Your unique User ID will appear here",
-                key="input_existing_user_id",
-                label_visibility="collapsed"
-            )
+            col_id, _ = st.columns([55, 45])
+            with col_id:
+                existing_id_input = st.text_input(
+                    "User ID",
+                    placeholder="Your unique User ID",
+                    key="input_existing_user_id",
+                    label_visibility="collapsed"
+                )
 
             st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
 

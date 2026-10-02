@@ -7,7 +7,7 @@ Provides candidate settings:
 """
 
 import streamlit as st
-from modules.auth.user_service import get_current_user, delete_user_account
+from modules.auth.user_service import get_current_user, delete_user_account, sign_out
 from modules.landing.ui import THEMES, clean_html
 from modules.navigation.panel import render_top_nav_bar, render_navigation_drawer
 
@@ -136,7 +136,43 @@ def render_settings_page():
 
     st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
 
-    # ── 3. Delete Account (with Logo) ──
+    # ── 3. Sign Out of Account (with Logo) ──
+    st.markdown(clean_html(f"""
+    <div style="max-width:880px; margin: 0 auto 12px; padding: 0 16px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+            <div style="width:38px; height:38px; border-radius:10px; background:{t['accent_soft']}; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+                🚪
+            </div>
+            <div>
+                <h3 style="font-size:1.2rem; font-weight:700; color:{t['text_primary']}; margin:0;">
+                    Sign Out of Account
+                </h3>
+                <div style="font-size:0.85rem; color:{t['text_muted']};">
+                    Temporarily exit your current session while keeping all your old data completely safe.
+                </div>
+            </div>
+        </div>
+    </div>
+    """), unsafe_allow_html=True)
+
+    with st.container(border=True):
+        col_so1, _ = st.columns([50, 50])
+        with col_so1:
+            if st.button("🚪  Sign Out", use_container_width=True, key="btn_execute_signout"):
+                sign_out()
+                st.session_state["nav_open"] = False
+                st.success("You have signed out successfully.")
+                st.rerun()
+
+        st.markdown(f"""
+        <div style="font-size:0.95rem; font-weight:600; color:{t['text_primary']}; line-height:1.6; margin-top:12px; padding:10px 14px; background:{t['surface2']}; border-radius:8px; border:1px solid {t['border']};">
+            This will not delete your account or your old data. You will be temporarily out. When you will again come back and you will click 'Sign In', use your existing user ID in the 'Existing User' option.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+
+    # ── 4. Delete Account (with Logo) ──
     st.markdown(clean_html(f"""
     <div style="max-width:880px; margin: 0 auto 20px; padding: 0 16px;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
