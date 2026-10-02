@@ -724,10 +724,59 @@ def _inject_css(t: dict):
             order: 3 !important;
             width: 100% !important;
         }}
-        .ac-footer-creator {{
-            white-space: normal !important;
-            text-align: left !important;
-        }}
+        /* ── Streamlit Radio Buttons, Tabs & Form Input Text Overrides ── */
+        div[data-testid="stRadio"] label,
+        div[data-testid="stRadio"] label p,
+        div[data-testid="stRadio"] div[role="radiogroup"] label *,
+        div[data-testid="stRadio"] div[role="radiogroup"] span {
+            color: {t["text_primary"]} !important;
+            font-weight: 600 !important;
+            font-size: 0.98rem !important;
+            opacity: 1 !important;
+        }
+
+        button[data-baseweb="tab"] *,
+        div[data-baseweb="tab-list"] button * {
+            color: {t["text_secondary"]} !important;
+            font-size: 0.98rem !important;
+            font-weight: 600 !important;
+            opacity: 1 !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] *,
+        div[data-baseweb="tab-list"] button[aria-selected="true"] * {
+            color: {t["accent"]} !important;
+            font-weight: 700 !important;
+        }
+
+        [data-testid="stTextInput"] label,
+        [data-testid="stTextArea"] label,
+        [data-testid="stSelectbox"] label,
+        .stTextInput label p,
+        .stTextArea label p {
+            color: {t["text_primary"]} !important;
+            font-weight: 700 !important;
+            font-size: 0.98rem !important;
+        }
+        div[data-baseweb="input"] input,
+        div[data-baseweb="textarea"] textarea {
+            color: #0D0F1A !important;
+            background-color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 0.98rem !important;
+        }
+        div[data-baseweb="input"] input::placeholder,
+        div[data-baseweb="textarea"] textarea::placeholder {
+            color: #64748B !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] span,
+        [data-testid="stMarkdownContainer"] li,
+        [data-testid="stMarkdownContainer"] div {
+            color: inherit;
+        }
     }}
     </style>
     """), unsafe_allow_html=True)
