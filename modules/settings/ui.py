@@ -110,7 +110,7 @@ def render_settings_page():
         with col_save1:
             st.markdown(f"""
             <div style="font-size:0.84rem; color:{t['text_muted']}; line-height:1.5;">
-                Save your notification edits permanently so they persist across sessions.
+                Save your current notification choices. You can edit or change these preferences anytime.
             </div>
             """, unsafe_allow_html=True)
         with col_save2:
@@ -119,7 +119,8 @@ def render_settings_page():
                     "notif_prep_enabled": prep_notifs,
                     "notif_milestones_enabled": milestone_notifs
                 })
-                st.success("✓ Notification preferences saved successfully.")
+                st.success("✓ Notification preferences saved. You can update your choices anytime.")
+
 
 
     st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
