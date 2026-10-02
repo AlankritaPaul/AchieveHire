@@ -262,12 +262,13 @@ def render_navigation_drawer(t: dict):
     .st-key-nav_close_btn button {{
         background: transparent !important;
         border: none !important;
-        font-size: 1.25rem !important;
-        font-weight: 700 !important;
-        color: {t["text_muted"]} !important;
+        font-size: 1.7rem !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        color: {t["text_primary"]} !important;
         cursor: pointer !important;
-        padding: 4px 8px !important;
-        border-radius: 6px !important;
+        padding: 4px 10px !important;
+        border-radius: 8px !important;
     }}
     .st-key-nav_close_btn button:hover {{
         background: {t["surface2"]} !important;
