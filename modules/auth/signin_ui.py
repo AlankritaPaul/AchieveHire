@@ -93,7 +93,7 @@ def render_signin_flow():
 
             st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
 
-            is_founder = candidate_name and candidate_name.strip().lower() in ["alankrita pal", "alankrita paul", "alankrita"]
+            is_founder = candidate_name and candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]
 
             if is_founder:
                 btn_col1, btn_col2, btn_col3 = st.columns([40, 35, 25])
@@ -137,10 +137,10 @@ def render_signin_flow():
             if founder_clicked:
                 if not candidate_name or len(candidate_name.strip()) < 2:
                     st.error("Please enter your name first.")
-                elif candidate_name.strip().lower() in ["alankrita pal", "alankrita paul", "alankrita"]:
+                elif candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]:
                     user_record = {
                         "user_id": "ALANKRITA-FOUNDER",
-                        "name": candidate_name.strip(),
+                        "name": "Alankrita Pal",
                         "purpose": selected_purpose
                     }
                     from modules.auth.user_service import set_active_user
@@ -176,7 +176,7 @@ def render_signin_flow():
                 if st.button("🔑  Load Workspace", type="primary", use_container_width=True, key="btn_login_existing_id"):
                     if not existing_id_input.strip():
                         st.error("Please enter your User ID.")
-                    elif existing_id_input.strip().lower() in ["alankrita pal", "alankrita paul", "alankrita", "alankrita-founder"]:
+                    elif existing_id_input.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita", "alankrita-founder"]:
                         user_record = {
                             "user_id": "ALANKRITA-FOUNDER",
                             "name": "Alankrita Pal",
