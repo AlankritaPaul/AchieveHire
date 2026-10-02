@@ -23,10 +23,16 @@ def main():
     if "ac_screen" not in st.session_state:
         st.session_state["ac_screen"] = "landing"   # Start on landing screen
 
+    if "ac_theme" not in st.session_state:
+        if "theme" in st.query_params and st.query_params.get("theme") in ["light", "dark"]:
+            st.session_state["ac_theme"] = st.query_params.get("theme")
+        else:
+            st.session_state["ac_theme"] = "light"
+
     screen = st.session_state["ac_screen"]
     
     from modules.landing.ui import THEMES, _inject_css
-    t = THEMES[st.session_state.get("ac_theme", "light")]
+    t = THEMES[st.session_state["ac_theme"]]
     _inject_css(t)
 
     # ── Authentication Guard for Core Platform Features ───────────────────────

@@ -2008,21 +2008,11 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_hero(t: dict):
-    logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -65px; position: relative; z-index: 10; pointer-events: none;">
+    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -24px; position: relative; z-index: 10;">
 
-        <!-- Logo — elevated to maximum upward top, tightly pasted with AscendCareer -->
-        <div style="margin-top: -45px; margin-bottom: 2px; position: relative; z-index: 10; pointer-events: none;">
-            <img src="{logo_data_uri}"
-                 alt="AscendCareer Logo"
-                 style="height:175px; width:auto; pointer-events: auto;
-                        filter: drop-shadow(0 14px 34px rgba(79,70,229,0.36))
-                                drop-shadow(0 3px 16px rgba(212,175,55,0.32));" />
-        </div>
-
-        <!-- Brand name — stylish Cinzel dual-tone (Ascend in Peach, Career in Lime) -->
-        <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 6px; pointer-events: auto;"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
+        <!-- Brand name — stylish Cinzel dual-tone (Ascend in Peach, Career in Lime) pasted directly with logo above -->
+        <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 6px;"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
 
         <!-- Tagline 1: Ascend with Preparation -->
         <div style="
@@ -2190,13 +2180,24 @@ def render_landing() -> dict:
         st.session_state["auth_popup_open"] = False
         render_signin_required_dialog(feature_name)
 
-    # ── Top Bar: Hamburger (Left), Spacer, Sign In (Right) & Sun/Moon Theme Switcher ──
-    top_col_h, top_col_spacer, top_col_signin, top_col_theme = st.columns([6, 73, 14, 7])
+    # ── Top Bar: Hamburger (Left), Logo (Center Top), Sign In & Theme Switcher (Right) ──
+    top_col_h, top_col_logo, top_col_signin, top_col_theme = st.columns([6, 66, 20, 8])
     with top_col_h:
         if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
             st.session_state["auth_popup_open"] = False
             st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
             st.rerun()
+    with top_col_logo:
+        logo_data_uri = _get_logo_data_uri()
+        st.markdown(clean_html(f"""
+        <div style="text-align: center; margin-top: -16px; margin-bottom: 0px;">
+            <img src="{logo_data_uri}"
+                 alt="AscendCareer Logo"
+                 style="height: 175px; width: auto; display: inline-block;
+                        filter: drop-shadow(0 14px 34px rgba(79,70,229,0.36))
+                                drop-shadow(0 3px 16px rgba(212,175,55,0.32));" />
+        </div>
+        """), unsafe_allow_html=True)
     with top_col_signin:
         active_user_id = st.session_state.get("user_id")
         if active_user_id:
