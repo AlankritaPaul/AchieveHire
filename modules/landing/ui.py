@@ -167,10 +167,10 @@ THEMES = {
         "brand_ascend_glow": "rgba(29, 78, 216, 0.20)",
         "brand_career_color": "#D97706",
         "brand_career_glow": "rgba(217, 119, 6, 0.25)",
-        "welcome_achieve_color": "#1D4ED8",
-        "welcome_achieve_glow": "rgba(29, 78, 216, 0.20)",
+        "welcome_achieve_color": "#0F172A",
+        "welcome_achieve_glow": "rgba(15, 23, 42, 0.15)",
         "welcome_hire_color": "#D97706",
-        "welcome_hire_glow": "rgba(217, 119, 6, 0.25)",
+        "welcome_hire_glow": "rgba(217, 119, 6, 0.20)",
         "cursive_tagline_color": "#B45309",
         "cursive_tagline_glow": "0 1px 4px rgba(180, 83, 9, 0.15)",
     },
@@ -207,10 +207,10 @@ THEMES = {
         "brand_ascend_glow": "0 0 20px rgba(96, 165, 250, 0.55)",
         "brand_career_color": "#FBBF24",
         "brand_career_glow": "0 0 20px rgba(251, 191, 36, 0.55)",
-        "welcome_achieve_color": "#60A5FA",
-        "welcome_achieve_glow": "0 0 16px rgba(96, 165, 250, 0.50)",
-        "welcome_hire_color": "#FBBF24",
-        "welcome_hire_glow": "0 0 16px rgba(251, 191, 36, 0.55)",
+        "welcome_achieve_color": "#FFFFFF",
+        "welcome_achieve_glow": "0 0 16px rgba(255, 255, 255, 0.45)",
+        "welcome_hire_color": "#F5B731",
+        "welcome_hire_glow": "0 0 16px rgba(245, 183, 49, 0.50)",
         "cursive_tagline_color": "#FDE68A",
         "cursive_tagline_glow": "0 0 16px rgba(253, 230, 138, 0.60)",
     },
@@ -637,14 +637,13 @@ def _inject_css(t: dict):
 
     /* ── Right-Side Perpendicular Oval Length Boxes ───────────────────── */
     .ac-right-features-rail {{
-        position: fixed;
-        top: 36%;
-        right: 28px;
-        transform: translateY(-50%);
+        position: absolute;
+        top: 90px;
+        right: 24px;
         display: flex;
         flex-direction: column;
-        gap: 10px; /* Elevated spacing so footer and brainchild credit remain fully visible */
-        z-index: 90;
+        gap: 10px;
+        z-index: 20;
         pointer-events: auto;
     }}
     .ac-feature-oval-pill {{

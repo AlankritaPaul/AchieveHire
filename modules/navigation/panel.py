@@ -653,7 +653,7 @@ def render_navigation_drawer(t: dict):
         st.markdown(clean_html(f"""
         <div id="ac-drawer-brand-logo" class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px; cursor:pointer;" title="Click to go to Home Page">
             <span class="ac-drawer-brand">
-                <span style="color:{t['brand_ascend_color']};">Achieve</span><span style="color:{t['brand_career_color']};">Hire</span>
+                <span style="color:{'#FFFFFF' if is_dark else '#0F172A'};">Achieve</span><span style="color:{t['gold']};">Hire</span>
             </span>
         </div>
         """), unsafe_allow_html=True)
