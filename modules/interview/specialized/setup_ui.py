@@ -117,7 +117,35 @@ def render_specialized_setup(t: dict, on_launch_session, on_view_reports):
 
         with st.container(border=True):
             round_options = [1, 2, 3, 4]
-            current_selected_round = st.session_state.get("specialized_selected_round", progress.get("current_unlocked_round", 1))
+            current_selected_round = st.session_state.get(
+                "specialized_selected_round", progress.get("current_unlocked_round", 1)
+            )
+
+            def _execute_launch(r_to_start: int):
+                lang = (
+                    st.session_state.get("specialized_selected_language")
+                    or st.session_state.get("specialized_language")
+                    or "English"
+                )
+                gender = (
+                    st.session_state.get("specialized_interviewer_gender")
+                    or st.session_state.get("specialized_interviewer")
+                    or "male"
+                )
+                st.session_state["specialized_selected_domain"] = active_specialization
+                st.session_state["specialized_selected_language"] = lang
+                st.session_state["specialized_language"] = lang
+                st.session_state["specialized_interviewer_gender"] = gender
+                st.session_state["specialized_interviewer"] = gender
+                st.session_state["specialized_selected_round"] = r_to_start
+
+                on_launch_session(
+                    specialization=active_specialization,
+                    language=lang,
+                    interviewer_gender=gender,
+                    round_num=r_to_start,
+                )
+                st.rerun()
 
             for r_num in round_options:
                 cfg = ROUNDS_CONFIG[r_num]
@@ -129,7 +157,7 @@ def render_specialized_setup(t: dict, on_launch_session, on_view_reports):
                 border_color = t['accent'] if is_selected else (t['border'] if is_unlocked else t['border'])
 
                 st.markdown(f"""
-                <div style="border:1.5px solid {border_color}; background:{t['surface2'] if is_selected else t['surface']}; border-radius:10px; padding:12px; margin-bottom:10px;">
+                <div style="border:2px solid {border_color}; background:{t['surface2'] if is_selected else t['surface']}; border-radius:10px; padding:12px; margin-bottom:8px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div style="font-weight:700; color:{t['text_primary']};">
                             {cfg['badge_icon']} {cfg['name']} ({cfg['duration_minutes']} Mins)
@@ -145,40 +173,51 @@ def render_specialized_setup(t: dict, on_launch_session, on_view_reports):
                 """, unsafe_allow_html=True)
 
                 if is_unlocked:
-                    if st.button(f"Select Round {r_num}", key=f"btn_select_round_{r_num}", use_container_width=True):
-                        st.session_state["specialized_selected_round"] = r_num
-                        st.rerun()
+                    c_act1, c_act2 = st.columns([1, 1], gap="small")
+                    with c_act1:
+                        sel_label = f"✓ Round {r_num} Active" if is_selected else f"Select Round {r_num}"
+                        if st.button(
+                            sel_label,
+                            key=f"btn_select_round_{r_num}",
+                            use_container_width=True,
+                            disabled=is_selected,
+                        ):
+                            st.session_state["specialized_selected_round"] = r_num
+                            st.rerun()
+                    with c_act2:
+                        if st.button(
+                            f"🚀 Start R{r_num}",
+                            key=f"btn_quick_launch_r_{r_num}",
+                            type="primary" if is_selected else "secondary",
+                            use_container_width=True,
+                        ):
+                            st.session_state["specialized_selected_round"] = r_num
+                            _execute_launch(r_num)
 
             selected_r_num = st.session_state.get("specialized_selected_round", 1)
             selected_cfg = ROUNDS_CONFIG[selected_r_num]
 
             st.markdown("<hr style='margin:14px 0;'/>", unsafe_allow_html=True)
 
-            # Mandatory Confirmation Checkbox
-            confirm_session = st.checkbox(
-                f"I confirm that I am ready for Round {selected_r_num} ({selected_cfg['duration_minutes']} min continuous session). I understand leaving midway will cancel the round.",
-                key="chk_confirm_specialized_session",
-            )
+            st.markdown(f"""
+            <div style="background:{t['surface2']}; border-left:4px solid #10B981; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:0.86rem; color:{t['text_secondary']};">
+                🎯 <strong>Ready for {selected_cfg['name']}:</strong> Complete session in one go. Leaving midway cancels the round without marks.
+            </div>
+            """, unsafe_allow_html=True)
 
             launch_btn = st.button(
                 f"🚀  Start {selected_cfg['name']}",
                 type="primary",
                 use_container_width=True,
-                disabled=not confirm_session,
                 key="btn_launch_live_specialized_round",
             )
 
             if launch_btn:
-                on_launch_session(
-                    specialization=active_specialization,
-                    language=st.session_state.get("specialized_selected_language", "English"),
-                    interviewer_gender=st.session_state.get("specialized_interviewer_gender", "male"),
-                    round_num=selected_r_num,
-                )
-                st.rerun()
+                _execute_launch(selected_r_num)
 
             if completed_rounds:
                 st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
                 if st.button("📊 View Past Performance Reports", use_container_width=True, key="btn_view_spec_past_reports"):
                     on_view_reports(active_specialization)
                     st.rerun()
+

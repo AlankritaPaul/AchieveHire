@@ -93,8 +93,16 @@ def render_specialized_interview():
     def on_next_round(next_round_num):
         # Read saved configuration to launch next round
         spec = st.session_state.get("specialized_selected_domain", "Python")
-        lang = st.session_state.get("specialized_selected_language", "English")
-        gender = st.session_state.get("specialized_interviewer_gender", "male")
+        lang = (
+            st.session_state.get("specialized_selected_language")
+            or st.session_state.get("specialized_language")
+            or "English"
+        )
+        gender = (
+            st.session_state.get("specialized_interviewer_gender")
+            or st.session_state.get("specialized_interviewer")
+            or "male"
+        )
         init_specialized_session(
             specialization=spec,
             language=lang,
@@ -107,10 +115,10 @@ def render_specialized_interview():
         st.session_state["spec_view_state"] = "overview"
 
     def on_view_reports(specialization=None):
-        # Save the specialization so the report view can load the correct data
         if specialization:
             st.session_state["specialized_selected_domain"] = specialization
         st.session_state["spec_view_state"] = "report"
+
 
     # Route according to current view state
     if view_state == "overview":

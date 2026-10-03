@@ -26,8 +26,11 @@ class TestAuthAndUserIdService(unittest.TestCase):
         # Create temp file for isolated user storage during tests
         self.temp_dir = tempfile.TemporaryDirectory()
         self.temp_users_file = Path(self.temp_dir.name) / "test_users.json"
+        self.temp_session_file = Path(self.temp_dir.name) / "test_session.json"
         self.patcher = patch("modules.auth.user_service.USERS_FILE", self.temp_users_file)
+        self.patcher_session = patch("modules.auth.user_service.SESSION_FILE", self.temp_session_file)
         self.patcher.start()
+        self.patcher_session.start()
 
         # Reset session state for test isolation
         for key in list(st.session_state.keys()):
@@ -35,6 +38,7 @@ class TestAuthAndUserIdService(unittest.TestCase):
         st.session_state["ac_theme"] = "light"
 
     def tearDown(self):
+        self.patcher_session.stop()
         self.patcher.stop()
         self.temp_dir.cleanup()
 
@@ -107,6 +111,28 @@ class TestAuthAndUserIdService(unittest.TestCase):
         self.assertIsNone(st.session_state["user_id"])
         self.assertFalse(st.session_state["is_signed_in"])
 
+    def test_persistent_session_survives_reload(self):
+        """Verify candidate account & ID are persisted on disk and auto-restored, only cleared on explicit sign out."""
+        from modules.auth.user_service import restore_session_from_disk, clear_active_session
+
+        user = register_user("Persistent Candidate", "Both")
+        uid = user["user_id"]
+
+        # Simulate browser reload / session reset: reset in-memory st.session_state
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        self.assertNotIn("user_id", st.session_state)
+
+        # Calling restore_session_from_disk returns the saved user
+        restored = restore_session_from_disk()
+        self.assertIsNotNone(restored)
+        self.assertEqual(restored["user_id"], uid)
+        self.assertEqual(restored["name"], "Persistent Candidate")
+
+        # Explicit sign-out clears the persistent session
+        sign_out()
+        self.assertIsNone(restore_session_from_disk())
+
     def test_signin_ui_callable(self):
         """Verify render_signin_flow runs cleanly."""
         self.assertTrue(callable(render_signin_flow))
@@ -114,3 +140,4 @@ class TestAuthAndUserIdService(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

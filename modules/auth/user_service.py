@@ -50,7 +50,7 @@ def _save_all_users(users: Dict[str, dict]) -> None:
 
 
 def save_active_session(user_id: str) -> None:
-    """Persists the active user_id to disk so the session survives browser refresh."""
+    """Persists the active user_id to disk so the user is remembered across page refreshes and app restarts."""
     try:
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         SESSION_FILE.write_text(json.dumps({"user_id": user_id}, indent=2), encoding="utf-8")
@@ -59,7 +59,7 @@ def save_active_session(user_id: str) -> None:
 
 
 def clear_active_session() -> None:
-    """Deletes the on-disk session so the user is fully signed out."""
+    """Deletes the on-disk session only when user explicitly clicks Sign Out or Delete Account."""
     try:
         if SESSION_FILE.exists():
             SESSION_FILE.unlink()
@@ -69,9 +69,9 @@ def clear_active_session() -> None:
 
 def restore_session_from_disk() -> Optional[dict]:
     """
-    Reads the persisted session file and reloads the user record from users.json.
-    Returns the user record if found, otherwise None.
-    Called once at app startup before rendering any screen.
+    Reads the persisted active session from disk and retrieves the user record from users.json.
+    Ensures that once a user creates an account or generates an ID, they are never forgotten or signed out
+    unless they explicitly request it.
     """
     try:
         if not SESSION_FILE.exists():
@@ -83,6 +83,7 @@ def restore_session_from_disk() -> Optional[dict]:
         return get_user_by_id(user_id)
     except Exception:
         return None
+
 
 
 def generate_unique_user_id(name: str) -> str:
@@ -237,7 +238,7 @@ def save_user_settings(user_id: Optional[str], settings_dict: dict) -> None:
 
 
 def set_active_user(user_record: dict) -> None:
-    """Sets the active user across the entire session state."""
+    """Sets the active user across the entire session state and saves to disk."""
     st.session_state["user_id"] = user_record["user_id"]
     st.session_state["username"] = user_record["name"]
     st.session_state["user_purpose"] = user_record.get("purpose", "Both")
@@ -253,7 +254,7 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["notif_prep_enabled"] = settings.get("notif_prep_enabled", True)
     st.session_state["notif_milestones_enabled"] = settings.get("notif_milestones_enabled", True)
 
-    # Persist the user_id to disk so the session survives browser refresh / app restart
+    # Persist the user_id to disk so the user is remembered across page refreshes / app restart
     save_active_session(user_record["user_id"])
 
 
@@ -266,8 +267,8 @@ def get_current_user() -> Optional[dict]:
 
 
 def sign_out() -> None:
-    """Clears the active user session (memory + disk). Only called when user explicitly signs out."""
-    clear_active_session()   # Remove persisted session from disk
+    """Clears the active user session in memory and deletes active session from disk."""
+    clear_active_session()
     st.session_state["user_id"] = None
     st.session_state["username"] = "Candidate"
     st.session_state["user_purpose"] = None
@@ -285,4 +286,3 @@ def delete_user_account(user_id: str) -> bool:
         _save_all_users(users)
     sign_out()
     return True
-
