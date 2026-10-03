@@ -19,6 +19,13 @@ def main():
     from modules.admin.analytics_ui import track_platform_visit
     track_platform_visit()
 
+    # ── Auto-restore session from disk (so the user stays logged in) ──────────
+    if not st.session_state.get("is_signed_in") or not st.session_state.get("user_id"):
+        from modules.auth.user_service import restore_session_from_disk, set_active_user
+        restored_user = restore_session_from_disk()
+        if restored_user:
+            set_active_user(restored_user)
+
     # ── Session state defaults ────────────────────────────────────────────────
     if "ac_screen" not in st.session_state:
         st.session_state["ac_screen"] = "landing"   # Start on landing screen

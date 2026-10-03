@@ -12,6 +12,51 @@ from modules.landing.ui import THEMES, clean_html
 from modules.navigation.panel import render_top_nav_bar, render_navigation_drawer
 
 
+@st.dialog("Sign Out Confirmation")
+def _show_signout_dialog(t):
+    st.markdown(clean_html(f"""
+    <div style="font-weight:800; font-size:1.15rem; color:{t['text_primary']}; margin-bottom:10px;">
+        Are you sure you want to sign out?
+    </div>
+    <div style="font-size:0.92rem; color:{t['text_secondary']}; line-height:1.6; margin-bottom:20px;">
+        If you will sign out, then you can come back later and you can click Already User and you will write your ID, then your all the data will be restored.
+    </div>
+    """), unsafe_allow_html=True)
+    c1, c2 = st.columns([1, 1], gap="small")
+    with c1:
+        if st.button("Yes, Sign Out", type="primary", use_container_width=True, key="dlg_confirm_signout_action"):
+            sign_out()
+            st.session_state["nav_open"] = False
+            st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True, key="dlg_cancel_signout_action"):
+            st.rerun()
+
+
+@st.dialog("Delete Account Confirmation")
+def _show_delete_account_dialog(t, user_id):
+    st.markdown(clean_html(f"""
+    <div style="font-weight:800; font-size:1.15rem; color:#DC2626; margin-bottom:10px;">
+        Are you sure you want to delete the account?
+    </div>
+    <div style="font-size:0.92rem; color:{t['text_secondary']}; line-height:1.6; margin-bottom:20px;">
+        Once you delete the account, you will not be allowed to restore or your data will be permanently deleted.
+    </div>
+    """), unsafe_allow_html=True)
+    c1, c2 = st.columns([1, 1], gap="small")
+    with c1:
+        if st.button("Yes, Delete Account", type="primary", use_container_width=True, key="dlg_confirm_delete_action"):
+            if user_id:
+                delete_user_account(user_id)
+            st.session_state.clear()
+            st.session_state["ac_screen"] = "landing"
+            st.session_state["nav_open"] = False
+            st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True, key="dlg_cancel_delete_action"):
+            st.rerun()
+
+
 def render_settings_page():
     """Renders the comprehensive, modern AchieveHire platform settings page."""
     theme_key = st.session_state.get("ac_theme", "light")
@@ -154,7 +199,6 @@ def render_settings_page():
                 use_container_width=True,
                 type="primary"
             )
-
     st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
     # ── 3. Sign Out of Account (with Logo) ──
@@ -178,11 +222,8 @@ def render_settings_page():
             """), unsafe_allow_html=True)
         with col_s2:
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
-            if st.button("Yes", use_container_width=True, key="btn_execute_signout"):
-                sign_out()
-                st.session_state["nav_open"] = False
-                st.success("You have signed out successfully.")
-                st.rerun()
+            if st.button("Sign Out", use_container_width=True, key="btn_execute_signout"):
+                _show_signout_dialog(t)
 
     st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
@@ -207,16 +248,11 @@ def render_settings_page():
             """), unsafe_allow_html=True)
         with col_del2:
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
-            if st.button("Yes", key="btn_delete_account_yes", type="primary", use_container_width=True):
-                if user_id:
-                    delete_user_account(user_id)
-                st.session_state.clear()
-                st.session_state["ac_screen"] = "landing"
-                st.session_state["nav_open"] = False
-                st.success("Your account and all associated data have been permanently deleted.")
-                st.rerun()
+            if st.button("Delete Account", key="btn_delete_account_yes", type="primary", use_container_width=True):
+                _show_delete_account_dialog(t, user_id)
 
     st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+
 
     # ── 5. Clear Session Cache (with Logo) ──
     with st.container(border=True):

@@ -16,6 +16,7 @@ import streamlit as st
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 USERS_FILE = DATA_DIR / "users.json"
+SESSION_FILE = DATA_DIR / "active_session.json"
 
 PURPOSE_OPTIONS = [
     "Resume Preparation",
@@ -46,6 +47,43 @@ def _save_all_users(users: Dict[str, dict]) -> None:
     temp_file = USERS_FILE.with_suffix(".tmp")
     temp_file.write_text(json.dumps(users, indent=2, ensure_ascii=False), encoding="utf-8")
     temp_file.replace(USERS_FILE)
+
+
+def save_active_session(user_id: str) -> None:
+    """Persists the active user_id to disk so the user is remembered across page refreshes and app restarts."""
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        SESSION_FILE.write_text(json.dumps({"user_id": user_id}, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def clear_active_session() -> None:
+    """Deletes the on-disk session only when user explicitly clicks Sign Out or Delete Account."""
+    try:
+        if SESSION_FILE.exists():
+            SESSION_FILE.unlink()
+    except Exception:
+        pass
+
+
+def restore_session_from_disk() -> Optional[dict]:
+    """
+    Reads the persisted active session from disk and retrieves the user record from users.json.
+    Ensures that once a user creates an account or generates an ID, they are never forgotten or signed out
+    unless they explicitly request it.
+    """
+    try:
+        if not SESSION_FILE.exists():
+            return None
+        data = json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+        user_id = data.get("user_id")
+        if not user_id:
+            return None
+        return get_user_by_id(user_id)
+    except Exception:
+        return None
+
 
 
 def generate_unique_user_id(name: str) -> str:
@@ -200,7 +238,7 @@ def save_user_settings(user_id: Optional[str], settings_dict: dict) -> None:
 
 
 def set_active_user(user_record: dict) -> None:
-    """Sets the active user across the entire session state."""
+    """Sets the active user across the entire session state and saves to disk."""
     st.session_state["user_id"] = user_record["user_id"]
     st.session_state["username"] = user_record["name"]
     st.session_state["user_purpose"] = user_record.get("purpose", "Both")
@@ -216,6 +254,8 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["notif_prep_enabled"] = settings.get("notif_prep_enabled", True)
     st.session_state["notif_milestones_enabled"] = settings.get("notif_milestones_enabled", True)
 
+    # Persist the user_id to disk so the user is remembered across page refreshes / app restart
+    save_active_session(user_record["user_id"])
 
 
 def get_current_user() -> Optional[dict]:
@@ -227,7 +267,8 @@ def get_current_user() -> Optional[dict]:
 
 
 def sign_out() -> None:
-    """Clears the active user session."""
+    """Clears the active user session in memory and deletes active session from disk."""
+    clear_active_session()
     st.session_state["user_id"] = None
     st.session_state["username"] = "Candidate"
     st.session_state["user_purpose"] = None
