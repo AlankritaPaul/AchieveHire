@@ -16,6 +16,7 @@ import streamlit as st
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 USERS_FILE = DATA_DIR / "users.json"
+SESSION_FILE = DATA_DIR / "active_session.json"
 
 PURPOSE_OPTIONS = [
     "Resume Preparation",
@@ -46,6 +47,42 @@ def _save_all_users(users: Dict[str, dict]) -> None:
     temp_file = USERS_FILE.with_suffix(".tmp")
     temp_file.write_text(json.dumps(users, indent=2, ensure_ascii=False), encoding="utf-8")
     temp_file.replace(USERS_FILE)
+
+
+def save_active_session(user_id: str) -> None:
+    """Persists the active user_id to disk so the session survives browser refresh."""
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        SESSION_FILE.write_text(json.dumps({"user_id": user_id}, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def clear_active_session() -> None:
+    """Deletes the on-disk session so the user is fully signed out."""
+    try:
+        if SESSION_FILE.exists():
+            SESSION_FILE.unlink()
+    except Exception:
+        pass
+
+
+def restore_session_from_disk() -> Optional[dict]:
+    """
+    Reads the persisted session file and reloads the user record from users.json.
+    Returns the user record if found, otherwise None.
+    Called once at app startup before rendering any screen.
+    """
+    try:
+        if not SESSION_FILE.exists():
+            return None
+        data = json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+        user_id = data.get("user_id")
+        if not user_id:
+            return None
+        return get_user_by_id(user_id)
+    except Exception:
+        return None
 
 
 def generate_unique_user_id(name: str) -> str:
@@ -216,6 +253,8 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["notif_prep_enabled"] = settings.get("notif_prep_enabled", True)
     st.session_state["notif_milestones_enabled"] = settings.get("notif_milestones_enabled", True)
 
+    # Persist the user_id to disk so the session survives browser refresh / app restart
+    save_active_session(user_record["user_id"])
 
 
 def get_current_user() -> Optional[dict]:
@@ -227,7 +266,8 @@ def get_current_user() -> Optional[dict]:
 
 
 def sign_out() -> None:
-    """Clears the active user session."""
+    """Clears the active user session (memory + disk). Only called when user explicitly signs out."""
+    clear_active_session()   # Remove persisted session from disk
     st.session_state["user_id"] = None
     st.session_state["username"] = "Candidate"
     st.session_state["user_purpose"] = None
@@ -245,3 +285,4 @@ def delete_user_account(user_id: str) -> bool:
         _save_all_users(users)
     sign_out()
     return True
+
