@@ -388,6 +388,9 @@ def render_navigation_drawer(t: dict):
 
     resume_open = st.session_state["nav_resume_open"]
     interview_open = st.session_state["nav_interview_open"]
+    is_dark = (t.get("bg") == "#0D0F1A") or (st.session_state.get("ac_theme") == "dark")
+    neon_green = "#4ADE80" if is_dark else t["text_muted"]
+    chip_border = "rgba(74, 222, 128, 0.35)" if is_dark else t["border"]
 
     st.markdown(clean_html(f"""
     <div id="ac-nav-backdrop-el" class="ac-nav-backdrop"></div>
@@ -456,14 +459,17 @@ def render_navigation_drawer(t: dict):
         align-items: center;
         gap: 8px;
         background: {t["surface2"]};
-        border: 1px solid {t["border"]};
+        border: 1px solid {chip_border};
         border-radius: 9999px;
         padding: 4px 14px;
         margin-bottom: 20px;
         font-size: 0.88rem;
         font-weight: 600;
-        color: {t["text_muted"]};
+        color: {neon_green} !important;
         letter-spacing: 0.02em;
+    }}
+    .ac-brand-status-chip span {{
+        color: {neon_green} !important;
     }}
     .ac-status-jewel {{
         width: 9px;
@@ -484,7 +490,7 @@ def render_navigation_drawer(t: dict):
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: {t["text_muted"]};
+        color: {neon_green} !important;
         margin: 18px 0 8px 6px;
     }}
 
