@@ -896,8 +896,8 @@ def _inject_css(t: dict):
     }}
     .ac-footer-readiness {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.95rem;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
         color: {metal_secondary} !important;
         line-height: 1.45;
         letter-spacing: -0.01em;
@@ -905,19 +905,19 @@ def _inject_css(t: dict):
     .ac-footer-copyright-group {{
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
     }}
     .ac-footer-copy {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.88rem;
+        font-size: 0.96rem;
         font-weight: 600;
         color: {metal_secondary} !important;
         line-height: 1.4;
     }}
     .ac-footer-rights {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.80rem;
+        font-size: 0.88rem;
         font-weight: 400;
         color: {metal_muted} !important;
         line-height: 1.35;
@@ -928,11 +928,11 @@ def _inject_css(t: dict):
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
     }}
     .ac-footer-brand {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 1.30rem;
+        font-size: 1.45rem;
         font-weight: 800;
         color: {metal_primary} !important;
         letter-spacing: 0.02em;
@@ -940,7 +940,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-tagline {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.86rem;
+        font-size: 0.95rem;
         font-weight: 400;
         color: {metal_muted} !important;
         line-height: 1.45;
@@ -955,7 +955,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-creator {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
-        font-size: 0.92rem;
+        font-size: 1.02rem;
         font-weight: 500;
         color: {metal_secondary} !important;
         line-height: 1.45;
@@ -963,6 +963,7 @@ def _inject_css(t: dict):
     }}
     .ac-footer-creator-name {{
         font-family: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace !important;
+        font-size: 1.05rem;
         font-weight: 800;
         color: {metal_primary} !important;
         letter-spacing: 0.02em;

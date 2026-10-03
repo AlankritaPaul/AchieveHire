@@ -39,7 +39,7 @@
 
 The platform follows a continuous **Audit → Optimize → Train → Re-practice → Verification → Placement Readiness** cycle to ensure candidates achieve measurable career growth.
 
-> 📌 **Important Clarification:** AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
+> ### 📌 **Important Clarification: AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.**
 
 ---
 
