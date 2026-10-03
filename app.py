@@ -19,12 +19,22 @@ def main():
     from modules.admin.analytics_ui import track_platform_visit
     track_platform_visit()
 
-    # ── Auto-restore session from disk (so the user stays logged in) ──────────
+    # ── Auto-restore session from URL query param or disk (so the user stays logged in) ──
     if not st.session_state.get("is_signed_in") or not st.session_state.get("user_id"):
-        from modules.auth.user_service import restore_session_from_disk, set_active_user
-        restored_user = restore_session_from_disk()
-        if restored_user:
-            set_active_user(restored_user)
+        from modules.auth.user_service import get_user_by_id, restore_session_from_disk, set_active_user
+        
+        # Priority 1: Check browser URL parameter (?uid=...)
+        url_uid = st.query_params.get("uid") if hasattr(st, "query_params") else None
+        if url_uid:
+            user_from_url = get_user_by_id(url_uid.strip().upper())
+            if user_from_url:
+                set_active_user(user_from_url)
+
+        # Priority 2: Check persistent session file on disk
+        if not st.session_state.get("user_id"):
+            restored_user = restore_session_from_disk()
+            if restored_user:
+                set_active_user(restored_user)
 
     # ── Session state defaults ────────────────────────────────────────────────
     if "ac_screen" not in st.session_state:
@@ -46,8 +56,10 @@ def main():
     PROTECTED_SCREENS = {
         "resume_create": "Resume Create & Builder",
         "resume_analysis": "Resume Analysis & Audit",
+        "resume_saved": "My Saved Resumes",
         "interview_specialized": "Specialized Voice Interview",
         "interview_job": "Job Related Voice Interview",
+        "interview_last_minute": "Last-Minute Preparation Interview",
     }
     if screen in PROTECTED_SCREENS and not st.session_state.get("user_id"):
         st.session_state["auth_popup_open"] = True
@@ -88,6 +100,11 @@ def main():
         render_top_nav_bar(t, title="Resume › Resume Analysis")
         render_resume_analysis_flow()
 
+    # ── Multiple Saved Resumes Flow ──────────────────────────────────────────
+    elif screen == "resume_saved":
+        from modules.resume_guide.ui_saved import render_saved_resumes_screen
+        render_saved_resumes_screen()
+
     # ── Specialized Interview Flow ────────────────────────────────────────────
     elif screen == "interview_specialized":
         from modules.interview.specialized_ui import render_specialized_interview
@@ -97,6 +114,11 @@ def main():
     elif screen == "interview_job":
         from modules.interview.job_related_ui import render_job_related_interview
         render_job_related_interview()
+
+    # ── Last-Minute Preparation Interview Flow ───────────────────────────────
+    elif screen == "interview_last_minute":
+        from modules.interview.last_minute_ui import render_last_minute_interview
+        render_last_minute_interview()
 
     # ── Complete User Profile Page ────────────────────────────────────────────
     elif screen == "profile":
@@ -157,7 +179,7 @@ def _render_main_app():
                 "📄 Resume Guide",
                 "🎙️ Voice Interview (Stage 1-6)",
                 "📈 Preparation Analytics",
-                "🏅 Certified Profile"
+                "🌐 Public Career Profile"
             ],
             index=0,
             label_visibility="collapsed"
@@ -184,8 +206,8 @@ def _render_main_app():
         st.info("🎙️ **Voice Interview Simulator**: Real-time microphone-driven conversational engine across progressive Levels 1-6 will be activated in the upcoming milestone.")
     elif app_mode == "📈 Preparation Analytics":
         st.info("📈 **Preparation Analytics**: Historical progress, weakness tracking, and readiness metrics dashboard.")
-    elif app_mode == "🏅 Certified Profile":
-        st.info("🏅 **Certified Profile**: Verifiable completion certificates and public career profiles.")
+    elif app_mode == "🌐 Public Career Profile":
+        st.info("🌐 **Public Career Profile**: Shareable showcase profiles featuring verified readiness credentials and analytics.")
 
 
 if __name__ == "__main__":

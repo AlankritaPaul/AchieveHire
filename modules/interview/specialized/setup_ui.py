@@ -221,3 +221,12 @@ def render_specialized_setup(t: dict, on_launch_session, on_view_reports):
                     on_view_reports(active_specialization)
                     st.rerun()
 
+            st.markdown("<hr style='margin:18px 0 14px;'/>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown("**⚡ Last-Minute Prep for Specialized**")
+                st.caption("Need an intensive 30-minute rehearsal simulation with a panel right before your interview?")
+                if st.button("⚡ Open Last-Minute Prep for Specialized", use_container_width=True, key="btn_jump_to_lm_spec"):
+                    st.session_state["lm_active_mode"] = "Last-Minute Prep for Specialized"
+                    st.session_state["ac_screen"] = "interview_last_minute"
+                    st.rerun()
+

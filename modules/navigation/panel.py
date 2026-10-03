@@ -545,8 +545,10 @@ def render_navigation_drawer(t: dict):
     /* Indented Sub-option Buttons */
     .st-key-nav_sub_resume_create button,
     .st-key-nav_sub_resume_analysis button,
+    .st-key-nav_sub_resume_saved button,
     .st-key-nav_sub_interview_spec button,
-    .st-key-nav_sub_interview_job button {{
+    .st-key-nav_sub_interview_job button,
+    .st-key-nav_sub_interview_last_minute button {{
         background: transparent !important;
         border: 1px solid transparent !important;
         color: {t["text_secondary"]} !important;
@@ -562,8 +564,10 @@ def render_navigation_drawer(t: dict):
     }}
     .st-key-nav_sub_resume_create button:hover,
     .st-key-nav_sub_resume_analysis button:hover,
+    .st-key-nav_sub_resume_saved button:hover,
     .st-key-nav_sub_interview_spec button:hover,
-    .st-key-nav_sub_interview_job button:hover {{
+    .st-key-nav_sub_interview_job button:hover,
+    .st-key-nav_sub_interview_last_minute button:hover {{
         background: {t["surface2"]} !important;
         border-color: {t["border"]} !important;
         color: {t["text_primary"]} !important;
@@ -680,6 +684,8 @@ def render_navigation_drawer(t: dict):
                 _guard_nav_access("Resume Create & Builder", "resume_create")
             if st.button("🔍  Resume Analysis", key="nav_sub_resume_analysis", use_container_width=True):
                 _guard_nav_access("Resume Analysis & Audit", "resume_analysis")
+            if st.button("📂  My Saved Resumes", key="nav_sub_resume_saved", use_container_width=True):
+                _guard_nav_access("My Saved Resumes", "resume_saved")
 
         # ── 2. Interview Category (Collapsible) ──
         interview_icon = "▾" if interview_open else "▸"
@@ -692,6 +698,8 @@ def render_navigation_drawer(t: dict):
                 _guard_nav_access("Specialized Voice Interview", "interview_specialized")
             if st.button("💼  Job Related Interview", key="nav_sub_interview_job", use_container_width=True):
                 _guard_nav_access("Job Related Voice Interview", "interview_job")
+            if st.button("⚡  Last-Minute Preparation", key="nav_sub_interview_last_minute", use_container_width=True):
+                _guard_nav_access("Last-Minute Preparation Interview", "interview_last_minute")
 
         user_id = st.session_state.get("user_id")
         user_purpose = st.session_state.get("user_purpose")

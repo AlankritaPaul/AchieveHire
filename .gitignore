@@ -60,3 +60,6 @@ temp/
 *.swo
 *.sublime-project
 *.sublime-workspace
+
+# Local Session State
+data/active_session.json
