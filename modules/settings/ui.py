@@ -1,5 +1,5 @@
 """
-AscendCareer — Application Settings Page
+AchieveHire — Application Settings Page
 Provides candidate settings:
 1. On/Off Notifications (with notification logo)
 2. Add this to Desktop (with desktop app logo)
@@ -13,7 +13,7 @@ from modules.navigation.panel import render_top_nav_bar, render_navigation_drawe
 
 
 def render_settings_page():
-    """Renders the comprehensive, modern AscendCareer platform settings page."""
+    """Renders the comprehensive, modern AchieveHire platform settings page."""
     theme_key = st.session_state.get("ac_theme", "light")
     t = THEMES[theme_key]
 
@@ -136,10 +136,10 @@ def render_settings_page():
                 </div>
                 <div>
                     <h3 style="font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin:0 0 4px;">
-                        Add AscendCareer to Desktop
+                        Add AchieveHire to Desktop
                     </h3>
                     <div style="font-size:0.84rem; color:{t['text_secondary']}; line-height:1.5;">
-                        Create a desktop shortcut launcher to quickly open AscendCareer directly in your browser.
+                        Create a desktop shortcut launcher to quickly open AchieveHire directly in your browser.
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@ def render_settings_page():
             st.download_button(
                 label="🖥️  Add to Desktop",
                 data=shortcut_data,
-                file_name="AscendCareer.url",
+                file_name="AchieveHire.url",
                 mime="application/x-mswinurl",
                 use_container_width=True,
                 type="primary"

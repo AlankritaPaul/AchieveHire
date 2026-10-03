@@ -1,5 +1,5 @@
 """
-Constants, taxonomy, and suggested datasets for AscendCareer Resume Guide.
+Constants, taxonomy, and suggested datasets for AchieveHire Resume Guide.
 """
 
 SUGGESTED_JOB_ROLES = [

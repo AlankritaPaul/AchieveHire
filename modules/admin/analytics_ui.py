@@ -1,5 +1,5 @@
 """
-AscendCareer — Founder Analytics Dashboard
+AchieveHire — Founder Analytics Dashboard
 Provides high-level aggregated usage statistics exclusively for the founder.
 100% honest metrics derived directly from real database records.
 """

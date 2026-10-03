@@ -1,1 +1,1 @@
-"""Resume Guide module for AscendCareer."""
+"""Resume Guide module for AchieveHire."""

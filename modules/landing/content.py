@@ -1,24 +1,24 @@
 """
-AscendCareer Landing Screen — Static Content
-Core Principle and Privacy & Trust information as finalized for AscendCareer.
+AchieveHire Landing Screen — Static Content
+Core Principle and Privacy & Trust information as finalized for AchieveHire.
 """
 
 # ─────────────────────────────────────────────
-# AscendCareer Core Principle (single statement)
+# AchieveHire Core Principle (single statement)
 # ─────────────────────────────────────────────
 
 CORE_PRINCIPLE = (
-    "AscendCareer aims to bridge the gap between preparation and real-world professional "
+    "AchieveHire aims to bridge the gap between preparation and real-world professional "
     "opportunities. Behind every resume is a person with a different journey, background, "
     "skill set, strengths, goals, and challenges. Career preparation should recognise that "
-    "individuality rather than treating every candidate the same. AscendCareer provides "
+    "individuality rather than treating every candidate the same. AchieveHire provides "
     "realistic practice, personalised guidance, honest feedback, and continuous improvement "
     "to help users understand their strengths, identify areas for growth, and present their "
     "genuine abilities with clarity. The platform is built around preparation rather than "
     "promises\u2014it does not guarantee a job or selection, but helps users become better "
-    "prepared for the opportunities they pursue. At the same time, AscendCareer respects "
+    "prepared for the opportunities they pursue. At the same time, AchieveHire respects "
     "user independence and privacy, keeping users in control of their information, "
-    "professional profile, choices, and career journey. AscendCareer is built to prepare, "
+    "professional profile, choices, and career journey. AchieveHire is built to prepare, "
     "not promise; to guide, not control; and to improve, not replace the person behind "
     "the profile."
 )
@@ -29,7 +29,7 @@ CORE_PRINCIPLE = (
 # ─────────────────────────────────────────────
 
 PRIVACY_STATEMENT = (
-    "AscendCareer should help the user create a professional, job-oriented resume "
+    "AchieveHire should help the user create a professional, job-oriented resume "
     "without taking away the user\u2019s control over their information or privacy."
 )
 
@@ -39,7 +39,7 @@ PRIVACY_SECTIONS = [
         "title": "Privacy Policy",
         "qa": [
             {
-                "q": "Why does AscendCareer collect my information?",
+                "q": "Why does AchieveHire collect my information?",
                 "a": (
                     "Information is collected to provide and improve the services selected by the user, "
                     "such as resume preparation, resume analysis, interview preparation, interview "
@@ -47,7 +47,7 @@ PRIVACY_SECTIONS = [
                 ),
             },
             {
-                "q": "How does AscendCareer use my information?",
+                "q": "How does AchieveHire use my information?",
                 "a": (
                     "User information is used only for purposes connected with the services the user "
                     "chooses to use. For example, resume information may be used for resume analysis "
@@ -60,7 +60,7 @@ PRIVACY_SECTIONS = [
                 "a": (
                     "The resume information provided by the user is treated as private user information. "
                     "It may be processed to analyse, create, improve, or customise a resume according "
-                    "to the user\u2019s selected requirements. AscendCareer should not modify or invent "
+                    "to the user\u2019s selected requirements. AchieveHire should not modify or invent "
                     "personal information without the user\u2019s knowledge or permission."
                 ),
             },
@@ -75,7 +75,7 @@ PRIVACY_SECTIONS = [
                 ),
             },
             {
-                "q": "Can AscendCareer use my information for another purpose?",
+                "q": "Can AchieveHire use my information for another purpose?",
                 "a": (
                     "Information should not be used for a materially different purpose without an "
                     "appropriate legal basis or, where required, the user\u2019s consent. The purpose "
@@ -100,7 +100,7 @@ PRIVACY_SECTIONS = [
                 "q": "What are the Terms of Service?",
                 "a": (
                     "The Terms of Service explain the rules and conditions that apply when a person uses "
-                    "AscendCareer. By using the platform, the user agrees to follow these terms."
+                    "AchieveHire. By using the platform, the user agrees to follow these terms."
                 ),
             },
             {
@@ -116,19 +116,19 @@ PRIVACY_SECTIONS = [
                 "a": (
                     "Users must not misuse the platform, attempt unauthorised access, interfere with its "
                     "operation, upload unlawful content, impersonate another person, misuse another "
-                    "user\u2019s information, or use AscendCareer for activities prohibited by applicable law."
+                    "user\u2019s information, or use AchieveHire for activities prohibited by applicable law."
                 ),
             },
             {
-                "q": "Does AscendCareer guarantee a job or interview selection?",
+                "q": "Does AchieveHire guarantee a job or interview selection?",
                 "a": (
-                    "No. AscendCareer is a preparation and career-readiness platform. Its resume feedback, "
+                    "No. AchieveHire is a preparation and career-readiness platform. Its resume feedback, "
                     "interview evaluation, scores, reports, or recommendations do not guarantee employment, "
                     "an interview invitation, selection, promotion, or any particular career outcome."
                 ),
             },
             {
-                "q": "Can AscendCareer suspend or terminate an account?",
+                "q": "Can AchieveHire suspend or terminate an account?",
                 "a": (
                     "An account may be restricted, suspended, or terminated where permitted by the Terms "
                     "of Service, such as in cases of serious misuse, unauthorised access, violation of "
@@ -142,7 +142,7 @@ PRIVACY_SECTIONS = [
         "title": "Account Deletion",
         "qa": [
             {
-                "q": "How can I delete my AscendCareer account?",
+                "q": "How can I delete my AchieveHire account?",
                 "a": (
                     "Users should be able to request account deletion through the account settings or "
                     "another clearly provided account-management method."
@@ -152,7 +152,7 @@ PRIVACY_SECTIONS = [
                 "q": "What happens when I delete my account?",
                 "a": (
                     "When a user confirms account deletion, the account and the personal information "
-                    "associated with it will be permanently deleted according to AscendCareer\u2019s "
+                    "associated with it will be permanently deleted according to AchieveHire\u2019s "
                     "deletion process."
                 ),
             },
@@ -161,13 +161,13 @@ PRIVACY_SECTIONS = [
                 "a": (
                     "No. Once the account deletion process is completed, the account and its associated "
                     "personal information cannot be recovered. The user would need to create a new account "
-                    "if they wish to use AscendCareer again."
+                    "if they wish to use AchieveHire again."
                 ),
             },
             {
                 "q": "Will my information be retained after I delete my account?",
                 "a": (
-                    "No. AscendCareer will not retain the user\u2019s personal account information after "
+                    "No. AchieveHire will not retain the user\u2019s personal account information after "
                     "permanent account deletion, subject to any information that must legally be retained "
                     "under applicable law."
                 ),
@@ -179,16 +179,16 @@ PRIVACY_SECTIONS = [
         "title": "Secure Authentication",
         "qa": [
             {
-                "q": "How does AscendCareer protect my account?",
+                "q": "How does AchieveHire protect my account?",
                 "a": (
-                    "AscendCareer should use appropriate authentication and session-security measures to "
+                    "AchieveHire should use appropriate authentication and session-security measures to "
                     "prevent unauthorised access to user accounts."
                 ),
             },
             {
                 "q": "What happens if someone tries to access my account without permission?",
                 "a": (
-                    "AscendCareer should use appropriate security controls to detect and prevent "
+                    "AchieveHire should use appropriate security controls to detect and prevent "
                     "unauthorised access attempts where technically possible. Suspicious activity may "
                     "result in additional verification, temporary restrictions, or other security measures."
                 ),
@@ -224,7 +224,7 @@ PRIVACY_SECTIONS = [
             {
                 "q": "Is my information encrypted while being transferred?",
                 "a": (
-                    "AscendCareer should use secure encrypted connections when transmitting sensitive "
+                    "AchieveHire should use secure encrypted connections when transmitting sensitive "
                     "information between the user\u2019s device and its servers or other authorised services."
                 ),
             },
@@ -245,7 +245,7 @@ PRIVACY_SECTIONS = [
             {
                 "q": "Will my information be used to create a public profile?",
                 "a": (
-                    "Private user information should not automatically become public. If AscendCareer "
+                    "Private user information should not automatically become public. If AchieveHire "
                     "provides a public professional profile or shareable profile link, the user should "
                     "choose what information they want to make publicly visible."
                 ),

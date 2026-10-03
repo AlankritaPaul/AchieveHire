@@ -1,5 +1,5 @@
 """
-Comprehensive test suite for AscendCareer Resume Guide module.
+Comprehensive test suite for AchieveHire Resume Guide module.
 Validates the updated Resume Analysis & Resume Improvement principles:
 - Accurate independent evaluation
 - Clear distinction between "Already Correct", "Needs Improvement", and "Missing Information"

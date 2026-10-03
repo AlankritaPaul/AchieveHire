@@ -1,5 +1,5 @@
 """
-AscendCareer - Comprehensive Voice-Based Interview Preparation & Career-Readiness Platform
+AchieveHire - Comprehensive Voice-Based Interview Preparation & Career-Readiness Platform
 Main Streamlit Application Entrypoint
 """
 
@@ -8,7 +8,7 @@ from modules.landing.ui import render_landing
 
 # Page Configuration
 st.set_page_config(
-    page_title="AscendCareer | AI Career & Interview Readiness",
+    page_title="AchieveHire | AI Career & Interview Readiness",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -128,14 +128,14 @@ def main():
 
 def _render_main_app():
     """
-    Renders the main AscendCareer application after authentication.
+    Renders the main AchieveHire application after authentication.
     Sign-in / profile setup steps will be inserted before this in the next milestone.
     """
     # Sidebar Branding & Navigation
     with st.sidebar:
         st.markdown("""
             <div style="text-align: center; padding: 1rem 0;">
-                <h1 style="font-size: 1.8rem; margin: 0; color: #1A365D;">AscendCareer</h1>
+                <h1 style="font-size: 1.8rem; margin: 0; color: #1A365D;">AchieveHire</h1>
                 <p style="font-size: 0.85rem; color: #718096; margin-top: 4px;">Realistic AI Interview Preparation & Career Readiness</p>
             </div>
         """, unsafe_allow_html=True)

@@ -669,11 +669,11 @@ def render_resume_analysis_flow():
 
             col_d1, col_d2, col_d3 = st.columns(3)
             with col_d1:
-                st.download_button("📥 Download PDF Resume", data=pdf_bytes, file_name="AscendCareer_Updated_Resume.pdf", mime="application/pdf", use_container_width=True)
+                st.download_button("📥 Download PDF Resume", data=pdf_bytes, file_name="AchieveHire_Updated_Resume.pdf", mime="application/pdf", use_container_width=True)
             with col_d2:
-                st.download_button("📥 Download Word (.docx)", data=docx_bytes, file_name="AscendCareer_Updated_Resume.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.download_button("📥 Download Word (.docx)", data=docx_bytes, file_name="AchieveHire_Updated_Resume.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
             with col_d3:
-                st.download_button("📥 Download Plain Text (.txt)", data=st.session_state.final_resume_text, file_name="AscendCareer_Updated_Resume.txt", mime="text/plain", use_container_width=True)
+                st.download_button("📥 Download Plain Text (.txt)", data=st.session_state.final_resume_text, file_name="AchieveHire_Updated_Resume.txt", mime="text/plain", use_container_width=True)
 
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])

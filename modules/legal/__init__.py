@@ -1,5 +1,5 @@
 """
-AscendCareer — Legal, Compliance & FAQ Modules
+AchieveHire — Legal, Compliance & FAQ Modules
 """
 from modules.legal.faq_ui import render_faq_page, FAQ_ITEMS
 from modules.legal.privacy_ui import render_privacy_page

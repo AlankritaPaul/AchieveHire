@@ -1,5 +1,5 @@
 """
-AscendCareer — Authentication & User Identity Modules
+AchieveHire — Authentication & User Identity Modules
 """
 from modules.auth.user_service import (
     PURPOSE_OPTIONS,

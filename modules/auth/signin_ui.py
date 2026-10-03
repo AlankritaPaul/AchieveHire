@@ -1,5 +1,5 @@
 """
-AscendCareer — Candidate Sign In & User ID Generation UI
+AchieveHire — Candidate Sign In & User ID Generation UI
 Flow: Sign In → Enter Name → Select Resume Preparation / Interview Preparation / Both → Generate Unique User ID.
 """
 
@@ -35,7 +35,7 @@ def render_signin_flow():
             Candidate Authentication &amp; Identity
         </div>
         <h1 style="font-size: 1.65rem; font-weight: 800; color:{t['text_primary']}; margin:0 0 6px;">
-            AscendCareer Sign In
+            AchieveHire Sign In
         </h1>
         <p style="font-size: 0.92rem; color:{t['text_secondary']}; line-height:1.5; max-width:460px; margin:0 auto 10px;">
             Generate your personal User ID or sign in with an existing User ID to keep your workspace private.
@@ -74,7 +74,7 @@ def render_signin_flow():
 
             st.markdown(f"""
             <div style="font-size:1.08rem; font-weight:700; color:{t['text_primary']}; margin-bottom:4px;">
-                2. What would you like to use AscendCareer for?
+                2. What would you like to use AchieveHire for?
             </div>
             <div style="font-size:0.90rem; font-weight:500; color:{t['text_muted']}; margin-bottom:10px;">
                 Select your primary preparation focus.
@@ -208,13 +208,13 @@ def _render_user_id_success_card(user: dict, t: dict):
                 Welcome, {name}! {' (Founder Access)' if is_founder_user else ''}
             </h2>
             <div style="font-size:0.90rem; color:{t['text_secondary']}; margin-bottom:16px;">
-                Your unique AscendCareer user ID has been generated &amp; verified.
+                Your unique AchieveHire user ID has been generated &amp; verified.
             </div>
 
             <!-- Unique User ID Display Card -->
             <div style="background:{t['surface2']}; border:1.5px dashed #10B981; border-radius:12px; padding:14px 20px; margin:0 auto 16px; display:inline-block;">
                 <div style="font-size:0.72rem; font-weight:800; color:{t['text_muted']}; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px;">
-                    Your Unique AscendCareer User ID
+                    Your Unique AchieveHire User ID
                 </div>
                 <div style="font-family:'Consolas', 'Courier New', monospace; font-size:1.65rem; font-weight:800; color:{t['accent']}; letter-spacing:0.06em;">
                     {user_id}

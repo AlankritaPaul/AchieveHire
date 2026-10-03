@@ -1,5 +1,5 @@
 """
-Main Resume Guide router for AscendCareer.
+Main Resume Guide router for AchieveHire.
 Presents a dedicated landing page where the user chooses between:
 1. Resume Analysis
 2. Create Resume

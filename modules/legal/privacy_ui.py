@@ -1,5 +1,5 @@
 """
-AscendCareer — Dedicated Privacy Section
+AchieveHire — Dedicated Privacy Section
 Provides transparent, detailed explanation of personal information protection,
 resume handling, uploaded document storage, zero unauthorized sharing, and account deletion.
 """
@@ -37,7 +37,7 @@ def render_privacy_page():
                 Our Privacy Pledge
             </div>
             <div style="font-size:0.94rem; color:{t['text_secondary']}; line-height:1.7;">
-                AscendCareer does not sell, monetize, or disclose candidate resumes, personal profiles, or interview recordings to third parties or recruiters without explicit candidate authorization. Your data belongs exclusively to you.
+                AchieveHire does not sell, monetize, or disclose candidate resumes, personal profiles, or interview recordings to third parties or recruiters without explicit candidate authorization. Your data belongs exclusively to you.
             </div>
         </div>
     </div>

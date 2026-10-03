@@ -1,5 +1,5 @@
 """
-Page-wise UI flow for 'Create Resume' in AscendCareer Resume Guide.
+Page-wise UI flow for 'Create Resume' in AchieveHire Resume Guide.
 Each selection has its own dedicated page.
 Bottom navigation consistently provides:
 - Left side below: Back clickable option

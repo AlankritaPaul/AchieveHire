@@ -1,5 +1,5 @@
 """
-Unit tests for AscendCareer Main Navigation, Interview, Profile, and Legal structures.
+Unit tests for AchieveHire Main Navigation, Interview, Profile, and Legal structures.
 """
 
 import unittest
@@ -69,13 +69,13 @@ class TestNavigationStructure(unittest.TestCase):
 
         # 1. Check all 8 FAQ items are present
         self.assertEqual(len(FAQ_ITEMS), 8)
-        self.assertEqual(FAQ_ITEMS[0]["q"], "How does AscendCareer work?")
+        self.assertEqual(FAQ_ITEMS[0]["q"], "How does AchieveHire work?")
         self.assertEqual(FAQ_ITEMS[1]["q"], "How do I create a resume?")
         self.assertEqual(FAQ_ITEMS[2]["q"], "Can I edit my resume after creating it?")
         self.assertEqual(FAQ_ITEMS[3]["q"], "How does Resume Analysis work?")
         self.assertEqual(FAQ_ITEMS[4]["q"], "Can I delete my account?")
         self.assertEqual(FAQ_ITEMS[5]["q"], "What happens to my resume and profile after account deletion?")
-        self.assertEqual(FAQ_ITEMS[6]["q"], "Is AscendCareer free?")
+        self.assertEqual(FAQ_ITEMS[6]["q"], "Is AchieveHire free?")
         self.assertEqual(FAQ_ITEMS[7]["q"], "How does Interview Practice work?")
 
         # 2. Terms & Conditions does NOT contain Account Deletion
@@ -118,11 +118,11 @@ class TestNavigationStructure(unittest.TestCase):
         self.assertIn("AI-Powered Career Readiness Audit, Optimise, Train", src)
 
         # 2. Copyright & Rights
-        self.assertIn("© 2026 AscendCareer", src)
+        self.assertIn("© 2026 AchieveHire", src)
         self.assertIn("All rights reserved", src)
 
         # 3. Brand Statement
-        self.assertIn("AscendCareer", src)
+        self.assertIn("AchieveHire", src)
         self.assertIn("Built for candidates serious about their next step.", src)
 
         # 4. Creator Credit
@@ -141,7 +141,7 @@ class TestNavigationStructure(unittest.TestCase):
         src = inspect.getsource(render_settings_page)
         self.assertIn("Notification Preferences", src)
         self.assertIn("🔔", src)
-        self.assertIn("Add AscendCareer to Desktop", src)
+        self.assertIn("Add AchieveHire to Desktop", src)
         self.assertIn("🖥️", src)
         self.assertIn("Delete Account", src)
         self.assertIn("🗑️", src)

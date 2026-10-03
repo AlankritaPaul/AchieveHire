@@ -1,7 +1,7 @@
 """
-AscendCareer — Dedicated Terms & Conditions Section
+AchieveHire — Dedicated Terms & Conditions Section
 Covers user rights, obligations, platform acceptable use, account suspension rules,
-and clear disclosure that AscendCareer is a preparation platform without job guarantees.
+and clear disclosure that AchieveHire is a preparation platform without job guarantees.
 """
 
 import streamlit as st
@@ -28,7 +28,7 @@ def render_terms_page():
                 Terms & Conditions of Service
             </h1>
             <p style="font-size: 1.05rem; color:{t['text_secondary']}; max-width:800px; line-height:1.75; margin:0;">
-                By accessing or using AscendCareer, you agree to comply with and be bound by the following terms,
+                By accessing or using AchieveHire, you agree to comply with and be bound by the following terms,
                 governing candidate responsibilities, platform integrity, and preparation boundaries.
             </p>
         </div>
@@ -38,7 +38,7 @@ def render_terms_page():
                 Important Notice on Preparation Scope
             </div>
             <div style="font-size:0.94rem; color:{t['text_secondary']}; line-height:1.7;">
-                AscendCareer is an educational and skill-refinement readiness platform. Scores, metrics, feedback, and evaluations are advisory tools to assist candidates in self-improvement and do not constitute an offer, warranty, or guarantee of employment or interview selection.
+                AchieveHire is an educational and skill-refinement readiness platform. Scores, metrics, feedback, and evaluations are advisory tools to assist candidates in self-improvement and do not constitute an offer, warranty, or guarantee of employment or interview selection.
             </div>
         </div>
     </div>

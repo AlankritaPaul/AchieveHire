@@ -1,5 +1,5 @@
 """
-AscendCareer — Candidate Profile Page
+AchieveHire — Candidate Profile Page
 Clean, organized layout displaying candidate account, unique User ID,
 profile details, profile picture management with default avatar fallback, and account settings.
 """
@@ -32,14 +32,14 @@ def render_user_profile():
     if not current_user:
         username = st.session_state.get("username", "Candidate")
         user_purpose = st.session_state.get("user_purpose", "Both")
-        user_email = st.session_state.get("user_email", "candidate@ascendcareer.ai")
+        user_email = st.session_state.get("user_email", "candidate@achievehire.ai")
         user_headline = st.session_state.get("user_headline", "Candidate · Career Readiness")
         user_location = st.session_state.get("user_location", "India")
         user_bio = st.session_state.get("user_bio", "Focused on rigorous interview preparation, resume refinement, and career readiness.")
     else:
         username = current_user.get("name", "Candidate")
         user_purpose = current_user.get("purpose", "Both")
-        user_email = current_user.get("email", "candidate@ascendcareer.ai")
+        user_email = current_user.get("email", "candidate@achievehire.ai")
         user_headline = current_user.get("headline", "Candidate · Career Readiness")
         user_location = current_user.get("location", "India")
         user_bio = current_user.get("bio", "")
@@ -170,7 +170,7 @@ def render_user_profile():
             else:
                 st.markdown(f"""
                 <div style="font-size:0.88rem; color:{t['text_secondary']}; line-height:1.6; margin-bottom:12px;">
-                    You are currently using AscendCareer in guest mode without a unique User ID.
+                    You are currently using AchieveHire in guest mode without a unique User ID.
                 </div>
                 """, unsafe_allow_html=True)
                 if st.button("✨  Generate Unique User ID Now", type="primary", use_container_width=True, key="prof_btn_gen_id"):

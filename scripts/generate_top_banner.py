@@ -31,7 +31,7 @@ def create_banner():
     logo_pos_x = int(45 * SCALE)
     logo_pos_y = int(30 * SCALE)
 
-    # 3. Static Title 'AscendCareer' in stylish dual-tone luxury serif
+    # 3. Static Title 'AchieveHire' in stylish dual-tone luxury serif
     asc_w = font_title.getlength('Ascend')
 
     # Soft dark drop shadow for luxury depth and clean separation
@@ -213,21 +213,21 @@ def create_banner():
         banner_frames.append(frame_final.convert('RGB'))
 
     # Save animated GIF banner
-    print("Saving assets/ascendcareer_banner.gif...")
+    print("Saving assets/achievehire_banner.gif...")
     banner_frames[0].save(
-        'assets/ascendcareer_banner.gif',
+        'assets/achievehire_banner.gif',
         save_all=True,
         append_images=banner_frames[1:],
         duration=70,
         loop=0,
         optimize=True
     )
-    print("Banner GIF saved! Size:", os.path.getsize('assets/ascendcareer_banner.gif'))
+    print("Banner GIF saved! Size:", os.path.getsize('assets/achievehire_banner.gif'))
 
     # Save static PNG banner
-    print("Saving assets/ascendcareer_banner.png...")
-    banner_frames[6].save('assets/ascendcareer_banner.png', optimize=True)
-    print("Banner PNG saved! Size:", os.path.getsize('assets/ascendcareer_banner.png'))
+    print("Saving assets/achievehire_banner.png...")
+    banner_frames[6].save('assets/achievehire_banner.png', optimize=True)
+    print("Banner PNG saved! Size:", os.path.getsize('assets/achievehire_banner.png'))
 
     # Save sample frame for inspection
     banner_frames[6].save('assets/sample_clean_banner.png')

@@ -1,5 +1,5 @@
 """
-Core analysis engine for AscendCareer Resume Guide.
+Core analysis engine for AchieveHire Resume Guide.
 Evaluates resume suitability against target job role, target company, and optional job description.
 """
 

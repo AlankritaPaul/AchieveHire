@@ -1,5 +1,5 @@
 """
-AscendCareer — Job Related Interview Flow
+AchieveHire — Job Related Interview Flow
 Target job role and target company-aligned conversational interview preparation.
 Covers behavioral questions, situational judgment (STAR methodology), culture alignment,
 and role-specific operational scenarios.

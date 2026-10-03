@@ -1,5 +1,5 @@
 """
-End-to-end simulation of the complete user journey in AscendCareer Resume Guide.
+End-to-end simulation of the complete user journey in AchieveHire Resume Guide.
 """
 
 import os

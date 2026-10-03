@@ -1,1 +1,1 @@
-# Landing module — AscendCareer opening/landing screen
+# Landing module — AchieveHire opening/landing screen

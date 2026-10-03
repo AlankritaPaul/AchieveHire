@@ -1,1 +1,1 @@
-"""AscendCareer modules package."""
+"""AchieveHire modules package."""

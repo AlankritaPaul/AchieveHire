@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="assets/ascendcareer_banner.gif" alt="AscendCareer — AI-Powered Interview & Career Readiness Platform" width="100%" />
+  <img src="assets/achievehire_banner.gif" alt="AchieveHire — AI-Powered Interview & Career Readiness Platform" width="100%" />
 
   <br/><br/>
 
@@ -28,9 +28,9 @@
 
 ## 🌟 Overview
 
-<img src="assets/logo.png" align="right" width="150" alt="AscendCareer Logo" />
+<img src="assets/logo.png" align="right" width="150" alt="AchieveHire Logo" />
 
-**AscendCareer** is an intelligent, end-to-end career acceleration platform designed to empower job seekers at every stage of the hiring pipeline. It bridges the gap between raw candidate qualifications and competitive industry hiring standards through an integrated preparation ecosystem:
+**AchieveHire** is an intelligent, end-to-end career acceleration platform designed to empower job seekers at every stage of the hiring pipeline. It bridges the gap between raw candidate qualifications and competitive industry hiring standards through an integrated preparation ecosystem:
 
 - 📄 **Intelligent Resume Suite**: Comprehensive AI-driven resume analysis, ATS optimization, and an accuracy-first resume builder equipped with a curated collection of industry-tailored, ATS-friendly templates.
 - 🎙️ **Realistic Voice-to-Voice Interview Simulation**: Multi-persona interview panels, adaptive difficulty ladders, and deep role/company tailoring replicating the real-world pressure of live hiring rounds.

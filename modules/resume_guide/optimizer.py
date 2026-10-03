@@ -1,5 +1,5 @@
 """
-Resume improvement optimizer for AscendCareer Resume Guide.
+Resume improvement optimizer for AchieveHire Resume Guide.
 Strictly adheres to the Accuracy Rule:
 - NEVER invents experience, skills, projects, achievements, qualifications, or credentials.
 - Rewrites wording, sharpens action verbs, structures bullet points, aligns framing with target role & company.

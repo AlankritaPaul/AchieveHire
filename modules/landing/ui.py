@@ -1,5 +1,5 @@
 """
-AscendCareer — Landing Screen
+AchieveHire — Landing Screen
 Polished opening screen with animated background, theme switching,
 branding, Core Principle, Privacy & Trust section, and Sign In entry point.
 
@@ -1580,7 +1580,7 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
             ctx.stroke();
         }
 
-        // 3. Ascend Career Supportive Hand (ONLY enters when person reaches the top!)
+        // 3. Achieve Hire Supportive Hand (ONLY enters when person reaches the top!)
         // Appears at progress 0.36, fully in place by 0.46, stays through 0.72, retreats by 0.82
         let handSlide = 0; // 0 = fully hidden to right of scene, 1 = in place
         if (progress >= 0.36 && progress < 0.46) {
@@ -1989,7 +1989,7 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
     # since components.html runs inside an iframe that shares origin with Streamlit.
     components.html(
         f"""
-        <!-- AscendCareer Canvas Animation Engine v2 -->
+        <!-- AchieveHire Canvas Animation Engine v2 -->
         <script>
         (function run() {{
             const canvas = window.parent.document.getElementById('ac-anim-canvas');
@@ -2008,22 +2008,32 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_hero(t: dict):
+    logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -24px; position: relative; z-index: 10;">
+    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -12px; position: relative; z-index: 10;">
 
-        <!-- Brand name — stylish Cinzel dual-tone (Ascend in Peach, Career in Lime) pasted directly with logo above -->
-        <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 6px;"><span class="ac-brand-ascend">Ascend</span><span class="ac-brand-career">Career</span></div>
+        <!-- Logo — centered above brand name without overlap -->
+        <div style="text-align: center; margin-bottom: 12px;">
+            <img src="{logo_data_uri}"
+                 alt="AchieveHire Logo"
+                 style="height: 140px; width: auto; display: inline-block;
+                        filter: drop-shadow(0 12px 28px rgba(79,70,229,0.25))
+                                drop-shadow(0 2px 12px rgba(212,175,55,0.22));" />
+        </div>
 
-        <!-- Tagline 1: Ascend with Preparation -->
+        <!-- Brand name — stylish Cinzel dual-tone (Achieve in Peach, Hire in Lime) -->
+        <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 8px;"><span class="ac-brand-ascend">Achieve</span><span class="ac-brand-career">Hire</span></div>
+
+        <!-- Tagline 1: Achieve with Preparation -->
         <div style="
             font-family: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
             font-size: clamp(0.95rem, 2.0vw, 1.25rem);
             font-weight: 600;
             letter-spacing: 0.16em;
             color: {t['text_primary']};
-            margin-top: 14px;
+            margin-top: 12px;
             text-transform: uppercase;
-        ">Ascend with Preparation</div>
+        ">Achieve with Preparation</div>
 
         <!-- Tagline 2: Where Preparation Meets Opportunity -->
         <div style="margin-top:12px;">
@@ -2095,7 +2105,7 @@ def _render_core_principle(t: dict):
         <div style="text-align:center; margin-bottom:20px;">
             <div class="ac-principle-title">💡 Core Principle</div>
             <p class="ac-principle-sub">
-                The philosophy behind everything AscendCareer does.
+                The philosophy behind everything AchieveHire does.
             </p>
         </div>
         <div class="ac-principle-block">
@@ -2117,14 +2127,14 @@ def _render_footer(t: dict):
             <div class="ac-footer-col ac-footer-left">
                 <div class="ac-footer-readiness">AI-Powered Career Readiness Audit, Optimise, Train</div>
                 <div class="ac-footer-copyright-group">
-                    <div class="ac-footer-copy">© 2026 AscendCareer</div>
+                    <div class="ac-footer-copy">© 2026 AchieveHire</div>
                     <div class="ac-footer-rights">All rights reserved</div>
                 </div>
             </div>
 
             <!-- 3. Center Group: Brand Statement -->
             <div class="ac-footer-col ac-footer-center">
-                <div class="ac-footer-brand">AscendCareer</div>
+                <div class="ac-footer-brand">AchieveHire</div>
                 <div class="ac-footer-tagline">Built for candidates serious about their next step.</div>
             </div>
 
@@ -2143,7 +2153,7 @@ def _render_footer(t: dict):
 
 def render_landing() -> dict:
     """
-    Render the AscendCareer landing screen.
+    Render the AchieveHire landing screen.
 
     Returns:
         dict with keys:
@@ -2180,24 +2190,13 @@ def render_landing() -> dict:
         st.session_state["auth_popup_open"] = False
         render_signin_required_dialog(feature_name)
 
-    # ── Top Bar: Hamburger (Left), Logo (Center Top), Sign In & Theme Switcher (Right) ──
-    top_col_h, top_col_logo, top_col_signin, top_col_theme = st.columns([6, 66, 20, 8])
+    # ── Top Bar: Hamburger (Left), Spacer, Sign In (Right) & Sun/Moon Theme Switcher ──
+    top_col_h, top_col_spacer, top_col_signin, top_col_theme = st.columns([6, 64, 21, 9])
     with top_col_h:
         if st.button(" ", key="ac_hamburger_btn", help="Open Main Navigation"):
             st.session_state["auth_popup_open"] = False
             st.session_state["nav_open"] = not st.session_state.get("nav_open", False)
             st.rerun()
-    with top_col_logo:
-        logo_data_uri = _get_logo_data_uri()
-        st.markdown(clean_html(f"""
-        <div style="text-align: center; margin-top: -16px; margin-bottom: 0px;">
-            <img src="{logo_data_uri}"
-                 alt="AscendCareer Logo"
-                 style="height: 175px; width: auto; display: inline-block;
-                        filter: drop-shadow(0 14px 34px rgba(79,70,229,0.36))
-                                drop-shadow(0 3px 16px rgba(212,175,55,0.32));" />
-        </div>
-        """), unsafe_allow_html=True)
     with top_col_signin:
         active_user_id = st.session_state.get("user_id")
         if active_user_id:

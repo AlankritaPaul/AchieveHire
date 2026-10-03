@@ -1,5 +1,5 @@
 """
-AscendCareer — Main Navigation Drawer & Top Navigation Bar
+AchieveHire — Main Navigation Drawer & Top Navigation Bar
 Clean, modern, professional, minimal navigation structure.
 """
 
@@ -311,7 +311,7 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
                     st.markdown(f"""
                     <div style="display:flex; align-items:center; height:100%; padding-top:4px;">
                         <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
-                            <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                            <strong style="color:{t['text_primary']};">AchieveHire</strong> &nbsp;›&nbsp; {title}
                         </span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -349,7 +349,7 @@ def render_top_nav_bar(t: dict, title: str = "", show_signin: bool = False, show
                     st.markdown(f"""
                     <div style="display:flex; align-items:center; height:100%; padding-top:4px;">
                         <span style="font-size:0.95rem; font-weight:700; color:{t['text_muted']};">
-                            <strong style="color:{t['text_primary']};">AscendCareer</strong> &nbsp;›&nbsp; {title}
+                            <strong style="color:{t['text_primary']};">AchieveHire</strong> &nbsp;›&nbsp; {title}
                         </span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -399,7 +399,7 @@ def render_navigation_drawer(t: dict):
         background: rgba(13, 15, 26, 0.55);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
-        z-index: 9998;
+        z-index: 100000;
         cursor: pointer;
     }}
 
@@ -415,7 +415,7 @@ def render_navigation_drawer(t: dict):
         background: {t["surface"]} !important;
         border-right: 1px solid {t["border"]} !important;
         box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25) !important;
-        z-index: 9999 !important;
+        z-index: 100001 !important;
         overflow-y: auto !important;
         padding: 24px 20px 32px !important;
         display: flex !important;
@@ -643,7 +643,7 @@ def render_navigation_drawer(t: dict):
         st.markdown(clean_html(f"""
         <div id="ac-drawer-brand-logo" class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px; cursor:pointer;" title="Click to go to Home Page">
             <span class="ac-drawer-brand">
-                <span style="color:{t['brand_ascend_color']};">Ascend</span><span style="color:{t['brand_career_color']};">Career</span>
+                <span style="color:{t['brand_ascend_color']};">Achieve</span><span style="color:{t['brand_career_color']};">Hire</span>
             </span>
         </div>
         """), unsafe_allow_html=True)
@@ -652,7 +652,7 @@ def render_navigation_drawer(t: dict):
         st.markdown(clean_html(f"""
         <div class="ac-brand-status-chip">
             <span class="ac-status-jewel"></span>
-            <span>AscendPlatform · Ready</span>
+            <span>AchievePlatform · Ready</span>
         </div>
         """), unsafe_allow_html=True)
 

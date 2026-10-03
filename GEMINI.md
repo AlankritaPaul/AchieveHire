@@ -1,4 +1,4 @@
-# AscendCareer — Agent Rules
+# AchieveHire — Agent Rules
 
 ## Streamlit JavaScript Execution
 

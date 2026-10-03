@@ -1,5 +1,5 @@
 """
-AscendCareer — Application Settings Module
+AchieveHire — Application Settings Module
 """
 from modules.settings.ui import render_settings_page
 

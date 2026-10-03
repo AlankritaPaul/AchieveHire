@@ -1,5 +1,5 @@
 """
-AscendCareer — Unique User Identity & Multi-User Isolation Service
+AchieveHire — Unique User Identity & Multi-User Isolation Service
 Ensures unique User ID generation based on candidate name + unique number,
 and strictly separates user resume information, interview attempts, progress, and reports.
 """
@@ -91,9 +91,9 @@ def register_user(name: str, purpose: str) -> dict:
         "purpose": purpose if purpose in PURPOSE_OPTIONS else "Both",
         "created_at": now_iso,
         "headline": "Candidate · " + (purpose if purpose in PURPOSE_OPTIONS else "Career Readiness"),
-        "email": f"{clean_name_lower}@ascendcareer.ai",
+        "email": f"{clean_name_lower}@achievehire.ai",
         "location": "India",
-        "bio": f"Registered for {purpose} on AscendCareer.",
+        "bio": f"Registered for {purpose} on AchieveHire.",
         "profile_pic": None,
         "stats": {
             "resumes_created": 0,
@@ -134,9 +134,9 @@ def ensure_founder_user_record(purpose: str = "Both") -> dict:
             "purpose": purpose if purpose in PURPOSE_OPTIONS else "Both",
             "created_at": now_iso,
             "headline": "Platform Founder & Leader · Career Readiness",
-            "email": "alankrita.pal@ascendcareer.ai",
+            "email": "alankrita.pal@achievehire.ai",
             "location": "India",
-            "bio": "Founder of AscendCareer. Dedicated to helping candidates achieve career excellence.",
+            "bio": "Founder of AchieveHire. Dedicated to helping candidates achieve career excellence.",
             "profile_pic": None,
             "stats": {
                 "resumes_created": 0,
@@ -206,7 +206,7 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["user_purpose"] = user_record.get("purpose", "Both")
     st.session_state["user_data"] = user_record
     st.session_state["is_signed_in"] = True
-    st.session_state["user_email"] = user_record.get("email", "candidate@ascendcareer.ai")
+    st.session_state["user_email"] = user_record.get("email", "candidate@achievehire.ai")
     st.session_state["user_headline"] = user_record.get("headline", "Candidate")
     st.session_state["user_location"] = user_record.get("location", "India")
     st.session_state["user_bio"] = user_record.get("bio", "")

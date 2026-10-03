@@ -1,5 +1,5 @@
 """
-AscendCareer — Frequently Asked Questions (FAQ) Section
+AchieveHire — Frequently Asked Questions (FAQ) Section
 Provides clear, authoritative answers regarding platform workflow,
 resume creation, analysis accuracy, account controls, pricing, and interview practice.
 """
@@ -12,8 +12,8 @@ from modules.navigation.panel import render_top_nav_bar, render_navigation_drawe
 FAQ_ITEMS = [
     {
         "number": "1",
-        "q": "How does AscendCareer work?",
-        "a": "AscendCareer is a career-preparation platform designed to help candidates prepare for opportunities through resume creation, resume analysis, and interview practice. Users can create and manage their professional profile, prepare a job-oriented resume, review and improve their resume, and practise interviews based on their selected career goals.",
+        "q": "How does AchieveHire work?",
+        "a": "AchieveHire is a career-preparation platform designed to help candidates prepare for opportunities through resume creation, resume analysis, and interview practice. Users can create and manage their professional profile, prepare a job-oriented resume, review and improve their resume, and practise interviews based on their selected career goals.",
     },
     {
         "number": "2",
@@ -28,7 +28,7 @@ FAQ_ITEMS = [
     {
         "number": "4",
         "q": "How does Resume Analysis work?",
-        "a": "Resume Analysis reviews the information actually provided in your resume. It identifies areas that are well-presented and areas that may need improvement. AscendCareer does not assume or invent missing projects, skills, education, experience, achievements, or other information. If important information is missing, you may be asked to provide that information before an improvement can be suggested.",
+        "a": "Resume Analysis reviews the information actually provided in your resume. It identifies areas that are well-presented and areas that may need improvement. AchieveHire does not assume or invent missing projects, skills, education, experience, achievements, or other information. If important information is missing, you may be asked to provide that information before an improvement can be suggested.",
     },
     {
         "number": "5",
@@ -38,12 +38,12 @@ FAQ_ITEMS = [
     {
         "number": "6",
         "q": "What happens to my resume and profile after account deletion?",
-        "a": "When an account is deleted, your associated profile and resume data will be handled according to AscendCareer's Privacy Policy and applicable data-retention requirements. Information that is no longer required should be deleted according to the platform's stated deletion process. Any information that must be retained for legitimate legal or security purposes will be handled according to the Privacy Policy.",
+        "a": "When an account is deleted, your associated profile and resume data will be handled according to AchieveHire's Privacy Policy and applicable data-retention requirements. Information that is no longer required should be deleted according to the platform's stated deletion process. Any information that must be retained for legitimate legal or security purposes will be handled according to the Privacy Policy.",
     },
     {
         "number": "7",
-        "q": "Is AscendCareer free?",
-        "a": "Yes. AscendCareer is designed as a free career-preparation platform. Any feature that may require payment in the future must be clearly identified before a user is asked to pay.",
+        "q": "Is AchieveHire free?",
+        "a": "Yes. AchieveHire is designed as a free career-preparation platform. Any feature that may require payment in the future must be clearly identified before a user is asked to pay.",
     },
     {
         "number": "8",
@@ -71,7 +71,7 @@ def render_faq_page():
                 Frequently Asked Questions (FAQ)
             </h1>
             <p style="font-size: 1.05rem; color:{t['text_secondary']}; max-width:800px; line-height:1.75; margin:0;">
-                Clear, transparent answers on how AscendCareer works, how your data is protected, and how to maximize your preparation.
+                Clear, transparent answers on how AchieveHire works, how your data is protected, and how to maximize your preparation.
             </p>
         </div>
     </div>

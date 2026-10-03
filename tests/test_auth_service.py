@@ -1,5 +1,5 @@
 """
-Unit tests for AscendCareer User Authentication & Unique User ID Isolation System.
+Unit tests for AchieveHire User Authentication & Unique User ID Isolation System.
 """
 
 import os
