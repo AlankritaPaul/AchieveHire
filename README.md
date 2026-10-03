@@ -1,18 +1,20 @@
-# 🚀 AchieveHire
+# AchieveHire
 
 <div align="center">
 
-  <img src="assets/logo.png" alt="AchieveHire Logo" width="140" />
+  <img src="assets/achievehire_banner.gif" alt="AchieveHire — AI-Powered Interview & Career Readiness Platform" width="100%" />
 
-  <h2>AI-Powered Interview & Career Readiness Platform</h2>
-  <p><strong><em>Better Preparation. Stronger Presentation. Every dream deserves preparation.</em></strong></p>
+  <br/><br/>
 
   <p align="center">
+    <img src="assets/tagline.png" alt="Better Preparation. Stronger Presentation." height="80" />
+    <br/>
+    <img src="assets/subtagline.png" alt="Prepare for the opportunity you've been waiting for" height="58" />
+    <br/><br/>
     <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>
 
   <p align="center">
-    <a href="#-overview">Overview</a> •
     <a href="#-key-features">Key Features</a> •
     <a href="#1-resume-analysis--optimization">Resume Analysis</a> •
     <a href="#2-resume-builder--generation">Resume Builder</a> •
