@@ -221,7 +221,7 @@ def _inject_css(t: dict):
     st.markdown(
         '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
+        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
         unsafe_allow_html=True,
     )
     st.markdown(clean_html(f"""
@@ -2011,6 +2011,32 @@ def _render_hero(t: dict):
     logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
     <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -12px; position: relative; z-index: 10;">
+
+        <!-- Stylish Welcome Header above Logo -->
+        <div style="text-align: center; margin-bottom: 22px;">
+            <div style="
+                font-family: 'Cinzel Decorative', 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+                font-size: clamp(1.3rem, 2.9vw, 2.1rem);
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: {t['text_primary']};
+                margin-bottom: 8px;
+                line-height: 1.35;
+            ">
+                Welcome 😊 to <span class="ac-brand-ascend" style="font-weight: 900; letter-spacing: 0em;">Achieve</span><span class="ac-brand-career" style="font-weight: 900; letter-spacing: 0em;">Hire</span>
+            </div>
+            <div style="
+                font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+                font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+                font-style: italic;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                color: {t['text_secondary']};
+                line-height: 1.4;
+            ">
+                Every dream deserves preparation
+            </div>
+        </div>
 
         <!-- Logo — centered above brand name without overlap -->
         <div style="text-align: center; margin-bottom: 12px;">
