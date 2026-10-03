@@ -154,6 +154,11 @@ def main():
     elif screen == "app":
         _render_main_app()
 
+    # ── Render Monospace Footer Across All App Screens ───────────────────────
+    if screen != "landing":
+        from modules.landing.ui import _render_footer
+        _render_footer(t)
+
 
 def _render_main_app():
     """
