@@ -6,11 +6,12 @@ Builds detailed post-round diagnostic reports, final 4-round overall reports
 
 import io
 import datetime
+from pathlib import Path
 from typing import Dict, List, Any, Optional
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable, Image as RLImage
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -312,6 +313,17 @@ def generate_round_report_pdf(report_data: Dict[str, Any]) -> bytes:
     story.append(Spacer(1, 16))
 
     # 5. Official AchieveHire Branding Stamp (Non-certificate notice)
+    stamp_img_path = Path(__file__).resolve().parent.parent.parent.parent / "assets" / "achievehire_official_stamp.png"
+    if stamp_img_path.exists():
+        stamp_right = RLImage(str(stamp_img_path), width=72, height=72)
+    else:
+        stamp_right = Paragraph(
+            "<font color='#4F46E5'><b>ACHIEVEHIRE</b></font><br/>"
+            "<font size='7' color='#D97706'>★ OFFICIAL AUDIT ★</font><br/>"
+            f"<font size='7' color='#64748B'>{date_str}</font>",
+            ParagraphStyle('Stamp', parent=body_style, alignment=1, fontName='Helvetica-Bold')
+        )
+
     stamp_data = [
         [
             Paragraph(
@@ -320,20 +332,14 @@ def generate_round_report_pdf(report_data: Dict[str, Any]) -> bytes:
                 "It serves as a professional improvement record and does not represent an external qualification.</font>",
                 body_style
             ),
-            Paragraph(
-                "<font color='#4F46E5'><b>ACHIEVEHIRE</b></font><br/>"
-                "<font size='7' color='#D97706'>★ OFFICIAL AUDIT ★</font><br/>"
-                f"<font size='7' color='#64748B'>{date_str}</font>",
-                ParagraphStyle('Stamp', parent=body_style, alignment=1, fontName='Helvetica-Bold')
-            ),
+            stamp_right,
         ]
     ]
-    t_stamp = Table(stamp_data, colWidths=[410, 120])
+    t_stamp = Table(stamp_data, colWidths=[420, 110])
     t_stamp.setStyle(TableStyle([
-        ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#F1F5F9')),
-        ('BOX', (1, 0), (1, 0), 1.5, colors.HexColor('#D97706')),
-        ('PADDING', (0, 0), (-1, -1), 6),
+        ('PADDING', (0, 0), (-1, -1), 4),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),
     ]))
     story.append(t_stamp)
 
@@ -529,6 +535,17 @@ def generate_overall_report_pdf(overall_data: Dict[str, Any]) -> bytes:
     story.append(Spacer(1, 18))
 
     # 6. Official Stamp & Disclaimer
+    stamp_img_path = Path(__file__).resolve().parent.parent.parent.parent / "assets" / "achievehire_official_stamp.png"
+    if stamp_img_path.exists():
+        stamp_right = RLImage(str(stamp_img_path), width=72, height=72)
+    else:
+        stamp_right = Paragraph(
+            "<font color='#4F46E5'><b>ACHIEVEHIRE</b></font><br/>"
+            "<font size='7' color='#D97706'>★ COMPREHENSIVE ★</font><br/>"
+            f"<font size='7' color='#64748B'>{date_str}</font>",
+            ParagraphStyle('Stamp2', parent=body_style, alignment=1, fontName='Helvetica-Bold')
+        )
+
     stamp_data = [
         [
             Paragraph(
@@ -537,20 +554,14 @@ def generate_overall_report_pdf(overall_data: Dict[str, Any]) -> bytes:
                 "AchieveHire provides this diagnostic evaluation to accelerate placement readiness.</font>",
                 body_style
             ),
-            Paragraph(
-                "<font color='#4F46E5'><b>ACHIEVEHIRE</b></font><br/>"
-                "<font size='7' color='#D97706'>★ COMPREHENSIVE ★</font><br/>"
-                f"<font size='7' color='#64748B'>{date_str}</font>",
-                ParagraphStyle('Stamp2', parent=body_style, alignment=1, fontName='Helvetica-Bold')
-            ),
+            stamp_right,
         ]
     ]
-    t_stamp = Table(stamp_data, colWidths=[410, 120])
+    t_stamp = Table(stamp_data, colWidths=[420, 110])
     t_stamp.setStyle(TableStyle([
-        ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#F1F5F9')),
-        ('BOX', (1, 0), (1, 0), 1.5, colors.HexColor('#D97706')),
-        ('PADDING', (0, 0), (-1, -1), 6),
+        ('PADDING', (0, 0), (-1, -1), 4),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),
     ]))
     story.append(t_stamp)
 

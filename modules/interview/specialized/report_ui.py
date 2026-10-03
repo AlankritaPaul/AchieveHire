@@ -3,6 +3,8 @@ AchieveHire — Specialized Interview Report UI
 Renders interactive in-app diagnostic reports and provides PDF report downloads.
 """
 
+import base64
+from pathlib import Path
 import streamlit as st
 from modules.landing.ui import clean_html
 from modules.interview.specialized.models import (
@@ -13,6 +15,17 @@ from modules.interview.specialized.report_generator import (
     generate_round_report_pdf,
     generate_overall_report_pdf,
 )
+
+
+def _get_stamp_base64() -> str:
+    """Returns base64 encoded string of the official AchieveHire transparent circular stamp."""
+    stamp_path = Path(__file__).resolve().parent.parent.parent.parent / "assets" / "achievehire_official_stamp.png"
+    if stamp_path.exists():
+        try:
+            return base64.b64encode(stamp_path.read_bytes()).decode("utf-8")
+        except Exception:
+            return ""
+    return ""
 
 
 def render_specialized_report_screen(
@@ -166,6 +179,27 @@ def render_specialized_report_screen(
             with col_v:
                 st.markdown(f"<div style='text-align:right; font-weight:800; font-size:1.15rem; color:{t['accent']}; padding-top:4px;'>{val}%</div>", unsafe_allow_html=True)
             st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+
+        # Official AchieveHire Stamp at the bottom of the Performance Chart
+        stamp_b64 = _get_stamp_base64()
+        if stamp_b64:
+            st.markdown(clean_html(f"""
+            <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin: 24px auto 8px; padding: 12px 20px; background:{t['surface2']}; border: 1.5px solid {t['border']}; border-radius: 12px; max-width: 520px;">
+                <img src="data:image/png;base64,{stamp_b64}" style="width:72px; height:72px; object-fit:contain;" alt="AchieveHire Official Stamp" />
+                <div style="text-align:left;">
+                    <div style="font-weight:800; font-size:0.95rem; color:{t['text_primary']};">
+                        Official Performance &amp; Improvement Evaluation
+                    </div>
+                    <div style="font-size:0.82rem; color:{t['text_secondary']}; margin-top:2px;">
+                        Turning Preparation Into Confidence
+                    </div>
+                    <div style="font-size:0.75rem; color:{t['accent']}; margin-top:3px; font-weight:700; letter-spacing:0.04em;">
+                        ACHIEVEHIRE VERIFIED AUDIT
+                    </div>
+                </div>
+            </div>
+            """), unsafe_allow_html=True)
+
 
     # ── TAB 3: Improvement Roadmap ──────────────────────────────────────────
     with tabs[2]:
