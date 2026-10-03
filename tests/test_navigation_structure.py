@@ -115,7 +115,7 @@ class TestNavigationStructure(unittest.TestCase):
         src = inspect.getsource(_render_footer)
 
         # 1. Career Readiness Line
-        self.assertIn("AI-Powered Career Readiness Audit, Optimise, Train", src)
+        self.assertIn("Smarter preparation. Stronger confidence. Better opportunities.", src)
 
         # 2. Copyright & Rights
         self.assertIn("© 2026 AchieveHire", src)

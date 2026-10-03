@@ -2194,7 +2194,7 @@ def _render_footer(t: dict):
         <div class="ac-footer-inner">
             <!-- 1 & 2. Left Group: Career Readiness Line & Copyright -->
             <div class="ac-footer-col ac-footer-left">
-                <div class="ac-footer-readiness">AI-Powered Career Readiness Audit, Optimise, Train</div>
+                <div class="ac-footer-readiness">Smarter preparation. Stronger confidence. Better opportunities.</div>
                 <div class="ac-footer-copyright-group">
                     <div class="ac-footer-copy">© 2026 AchieveHire</div>
                     <div class="ac-footer-rights">All rights reserved</div>
