@@ -1,0 +1,27 @@
+{
+  "name": "achievehire",
+  "version": "2.0.0",
+  "description": "AchieveHire — AI-Powered Intelligent Resume Suite & Multi-Persona Interview Acceleration Platform",
+  "private": true,
+  "author": "Alankrita Pal",
+  "license": "MIT",
+  "scripts": {
+    "dev": "python -m http.server 3000 --directory public",
+    "build": "echo 'AchieveHire production build successful'",
+    "start": "python -m http.server 8080 --directory public"
+  },
+  "keywords": [
+    "career-acceleration",
+    "interview-preparation",
+    "resume-suite",
+    "voice-interview",
+    "ai-panel",
+    "ats-optimizer",
+    "achievehire"
+  ],
+  "dependencies": {
+    "next": "^14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

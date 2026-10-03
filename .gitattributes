@@ -5,6 +5,10 @@
 *.html linguist-detectable=true
 *.sh linguist-detectable=true
 
+public/** linguist-detectable=true
+static/** linguist-detectable=true
+scripts/** linguist-detectable=true
+
 # Exclude vendor dependencies, virtual environments, and data fixtures from language calculation
 .venv/* linguist-vendored=true
 venv/* linguist-vendored=true

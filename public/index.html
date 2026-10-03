@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AchieveHire — AI-Powered Intelligent Resume Suite & Multi-Persona Interview Acceleration Platform</title>
+    <link rel="stylesheet" href="css/achievehire.css">
+    <link rel="icon" href="../assets/logo.png" type="image/png">
+</head>
+<body>
+
+    <!-- ── Top Navigation Bar ─────────────────────────────────────────── -->
+    <header class="ah-navbar">
+        <div class="ah-brand-group" data-nav="view-landing">
+            <span style="font-size: 1.8rem;">🎯</span>
+            <div>
+                <div class="ah-brand-title">
+                    <span class="ah-title-achieve">Achieve</span><span class="ah-title-hire">Hire</span>
+                </div>
+                <div class="ah-brand-tagline">Better Preparation. Stronger Presentation.</div>
+            </div>
+        </div>
+
+        <nav class="ah-nav-links">
+            <button class="ah-nav-btn" data-nav="view-resume">📄 Resume Guide</button>
+            <button class="ah-nav-btn" data-nav="view-specialized">🎙️ Specialized Prep</button>
+            <button class="ah-nav-btn" data-nav="view-job">💼 Job Related</button>
+            <button class="ah-nav-btn primary" data-nav="view-last-minute">⚡ Last-Minute Prep</button>
+            <button class="ah-nav-btn" id="theme-toggle-btn">🌙 Dark</button>
+            <div id="nav-user-container"></div>
+        </nav>
+    </header>
+
+    <!-- ── Main Application Views Container ──────────────────────────── -->
+    <main class="ah-container">
+
+        <!-- ── VIEW 1: LANDING SCREEN ─────────────────────────────────── -->
+        <section id="view-landing" class="ah-view active">
+            <div class="ah-welcome-banner">
+                <div class="ah-welcome-title">
+                    <span class="ah-title-achieve">Welcome to Achieve</span><span class="ah-title-hire">Hire</span>
+                </div>
+                <p class="ah-welcome-sub">
+                    Where Preparation Meets Opportunity. Practice real-world interviews with intelligent AI panels and optimize your ATS resume for high-impact roles.
+                </p>
+                <div>
+                    <button class="ah-nav-btn primary" style="padding: 12px 28px; font-size: 1.05rem;" data-nav="view-last-minute">
+                        ⚡ Start 30-Minute Rapid Rehearsal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Core Principle Block -->
+            <div class="ah-principle-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.15rem;">💡 Core Principle</h3>
+                AchieveHire aims to bridge the gap between preparation and real-world professional opportunities. Behind every resume is a person with a different journey, background, skill set, strengths, goals, and challenges. Career preparation should recognise that individuality rather than treating every candidate the same. AchieveHire provides realistic practice, personalised guidance, honest feedback, and continuous improvement to help users understand their strengths, identify areas for growth, and present their genuine abilities with clarity. The platform is built around preparation rather than promises—it does not guarantee a job or selection, but helps users become better prepared for the opportunities they pursue.
+            </div>
+
+            <!-- Important Clarification Banner -->
+            <div class="ah-clarification-banner">
+                <strong>📌 Important Clarification:</strong> AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
+            </div>
+
+            <!-- Feature Cards Grid -->
+            <div class="ah-grid-3" style="margin-top: 32px;">
+                <div class="ah-card">
+                    <div style="font-size: 2.2rem; margin-bottom: 12px;">📄</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Intelligent Resume Suite</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.55; margin-bottom: 18px;">
+                        Analyze your resume with our multi-factor ATS engine or build a brand-new resume using 6 proven ATS-tailored industry templates.
+                    </p>
+                    <button class="ah-nav-btn" data-nav="view-resume" style="width: 100%;">Open Resume Guide →</button>
+                </div>
+
+                <div class="ah-card">
+                    <div style="font-size: 2.2rem; margin-bottom: 12px;">🎙️</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Specialized Preparation</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.55; margin-bottom: 18px;">
+                        Progress through 4 difficulty levels (Easy, Moderate, Hard, Final) across Python, Java, System Design, or write your own specialization.
+                    </p>
+                    <button class="ah-nav-btn" data-nav="view-specialized" style="width: 100%;">Start 4-Level Ladder →</button>
+                </div>
+
+                <div class="ah-card">
+                    <div style="font-size: 2.2rem; margin-bottom: 12px;">💼</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Job-Related Interview</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.55; margin-bottom: 18px;">
+                        Face a 3-member executive panel across 6 progressive rounds calibrated specifically for your target job role and company.
+                    </p>
+                    <button class="ah-nav-btn" data-nav="view-job" style="width: 100%;">Start 6-Round Ladder →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── VIEW 2: RESUME GUIDE ───────────────────────────────────── -->
+        <section id="view-resume" class="ah-view">
+            <header style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">Intelligent Resume Suite</h2>
+                <p style="color: var(--text-secondary);">ATS Analysis & Multi-Template Resume Builder.</p>
+            </header>
+
+            <div class="ah-grid-2">
+                <div class="ah-card">
+                    <h3 style="margin-bottom: 12px;">🔍 Scan & Analyze Resume</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">Paste resume text below for immediate ATS alignment audit and verb strength check.</p>
+                    <textarea id="resume-input-text" rows="8" placeholder="Paste your resume text here..." style="width:100%; padding:12px; border:1px solid var(--border-color); border-radius:8px; font-family:var(--font-main); font-size:0.9rem; margin-bottom:14px;"></textarea>
+                    <button class="ah-nav-btn primary" id="btn-run-ats-audit" style="width: 100%;">Audit ATS Compatibility</button>
+                    <div id="ats-audit-results" style="margin-top: 16px;"></div>
+                </div>
+
+                <div class="ah-card">
+                    <h3 style="margin-bottom: 12px;">🛠️ Create ATS Resume</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">Select an ATS-optimized template calibrated for senior recruiters.</p>
+                    <select id="select-resume-template" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:14px; font-size:0.95rem;">
+                        <option value="classic_executive">Classic Executive (Single Column)</option>
+                        <option value="modern_minimalist">Modern Minimalist (High ATS Score)</option>
+                        <option value="tech_lead">Tech Lead / System Architect</option>
+                        <option value="compact_technical">Compact Technical</option>
+                        <option value="elegant_academic">Elegant Academic</option>
+                        <option value="creative_professional">Creative Professional</option>
+                    </select>
+                    <button class="ah-nav-btn" id="btn-render-template-preview" style="width:100%;">Preview Selected Template</button>
+                    <div id="template-preview-mount" style="margin-top: 16px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── VIEW 3: SPECIALIZED PREPARATION ────────────────────────── -->
+        <section id="view-specialized" class="ah-view">
+            <header style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">Specialized Preparation (4 Levels)</h2>
+                <p style="color: var(--text-secondary);">Progressive Technical Evaluation: Easy → Moderate → Hard → Final Simulation.</p>
+            </header>
+
+            <div class="ah-card" style="max-width: 640px; margin: 0 auto;">
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Target Specialization</label>
+                <select id="spec-select" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px;">
+                    <option value="Python">Python</option>
+                    <option value="Java">Java</option>
+                    <option value="C++">C++</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="System Design">System Design</option>
+                    <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
+                </select>
+
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Interview Language (3 Options Only)</label>
+                <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                    <label><input type="radio" name="spec-lang" value="English" checked> English</label>
+                    <label><input type="radio" name="spec-lang" value="Hindi"> Hindi</label>
+                    <label><input type="radio" name="spec-lang" value="Hinglish"> Hinglish</label>
+                </div>
+
+                <button class="ah-nav-btn primary" id="btn-start-spec-session" style="width: 100%; padding: 12px; font-size: 1rem;">
+                    🚀 Start Level 1 (Easy — Core Fundamentals)
+                </button>
+            </div>
+        </section>
+
+        <!-- ── VIEW 4: JOB-RELATED INTERVIEW ──────────────────────────── -->
+        <section id="view-job" class="ah-view">
+            <header style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">Job-Related Interview (6 Rounds)</h2>
+                <p style="color: var(--text-secondary);">Multi-Persona Interview Panel with Verified Candidate Resume Integration.</p>
+            </header>
+
+            <div class="ah-card" style="max-width: 640px; margin: 0 auto;">
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Target Job Role</label>
+                <input type="text" id="job-role-input" placeholder="e.g. Senior Backend Engineer" value="Senior Backend Engineer" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px;">
+
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Target Company</label>
+                <input type="text" id="job-company-input" placeholder="e.g. Google, Microsoft, Stripe" value="Google" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px;">
+
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Interview Spoken Language (3 Options Only)</label>
+                <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                    <label><input type="radio" name="job-lang" value="English" checked> English</label>
+                    <label><input type="radio" name="job-lang" value="Hindi"> Hindi</label>
+                    <label><input type="radio" name="job-lang" value="Hinglish"> Hinglish</label>
+                </div>
+
+                <button class="ah-nav-btn primary" id="btn-start-job-session" style="width: 100%; padding: 12px; font-size: 1rem;">
+                    🚀 Begin Round 1 (Easy — 20 Minutes)
+                </button>
+            </div>
+        </section>
+
+        <!-- ── VIEW 5: LAST-MINUTE PREPARATION ────────────────────────── -->
+        <section id="view-last-minute" class="ah-view">
+            <header style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">⚡ Last-Minute Preparation Interview</h2>
+                <p style="color: var(--text-secondary);">Rapid, intensive 30-minute panel simulation for immediate rehearsal before live hiring rounds.</p>
+            </header>
+
+            <div class="ah-grid-2">
+                <div class="ah-card">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🎯</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Last-Minute Specialized Preparation</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.90rem; margin-bottom: 16px;">Intensive 30-minute rapid technical questioning across algorithms, core fundamentals, and architecture.</p>
+                    <button class="ah-nav-btn primary" id="btn-lm-start-spec" style="width: 100%;">Prepare for Specialized (30 Min) →</button>
+                </div>
+
+                <div class="ah-card">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">💼</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Last-Minute Job Related Preparation</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.90rem; margin-bottom: 16px;">Target role and company simulation with a multi-interviewer panel and resume alignment.</p>
+                    <button class="ah-nav-btn primary" id="btn-lm-start-job" style="width: 100%;">Prepare for Job Related (30 Min) →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── VIEW 6: LIVE INTERVIEW HUD & STUDIO ────────────────────── -->
+        <section id="view-lm-live" class="ah-view">
+            <div class="ah-hud-bar">
+                <div>
+                    <span style="background: #EF4444; color: #FFF; font-size: 0.75rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">● LIVE 30-MIN SESSION</span>
+                    <span style="margin-left: 12px; font-weight: 700;" id="lm-mode-badge">Specialized Preparation</span>
+                </div>
+                <div class="ah-timer-display" id="lm-timer-digits">30:00</div>
+            </div>
+
+            <!-- Panel Gallery -->
+            <div class="ah-panel-gallery">
+                <div class="ah-panel-card active-speaker">
+                    <div style="font-size: 1.8rem;">👨‍💼</div>
+                    <div style="font-weight: 700; margin-top: 4px;" id="lm-speaker-name">Arjun Mehta</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Lead System Architect</div>
+                </div>
+                <div class="ah-panel-card">
+                    <div style="font-size: 1.8rem;">👩‍💻</div>
+                    <div style="font-weight: 700; margin-top: 4px;">Priya Sharma</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Senior Engineering Manager</div>
+                </div>
+                <div class="ah-panel-card">
+                    <div style="font-size: 1.8rem;">👨‍🔬</div>
+                    <div style="font-weight: 700; margin-top: 4px;">Rohan Gupta</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Domain Specialist</div>
+                </div>
+            </div>
+
+            <!-- Spoken Question Dialogue -->
+            <div class="ah-card" style="margin-bottom: 20px;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-primary); text-transform: uppercase; margin-bottom: 6px;">Spoken Question (Listen Carefully)</div>
+                <div id="lm-question-text" style="font-size: 1.15rem; font-weight: 600; line-height: 1.6;">
+                    Please introduce yourself, your core technical experience, and key accomplishments.
+                </div>
+            </div>
+
+            <!-- Voice Input & Visualizer Tray -->
+            <div class="ah-card" style="display: flex; align-items: center; gap: 16px;">
+                <button class="ah-nav-btn primary" id="btn-toggle-mic">🎤 Speak</button>
+                <canvas id="waveform-canvas" width="280" height="40" style="background: var(--bg-surface); border-radius: 6px;"></canvas>
+                <input type="text" id="candidate-text-reply" placeholder="Or type your response here..." style="flex:1; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <button class="ah-nav-btn primary" id="btn-submit-answer">Submit Response</button>
+            </div>
+        </section>
+
+        <!-- ── VIEW 7: PERFORMANCE SCORECARD ──────────────────────────── -->
+        <section id="view-report" class="ah-view">
+            <div class="ah-card" style="max-width: 820px; margin: 0 auto; padding: 40px; position: relative;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 24px;">
+                    <div>
+                        <h2 style="font-size: 1.8rem; font-weight: 900; margin: 0;">AchieveHire</h2>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;" id="rep-title">Official Performance & Improvement Report</div>
+                    </div>
+                    <div style="background: var(--gold-light); color: var(--gold-primary); font-size: 0.8rem; font-weight: 800; padding: 6px 14px; border-radius: 20px;">
+                        Authentic Diagnostic
+                    </div>
+                </div>
+
+                <div class="ah-grid-2" style="background: var(--bg-surface); padding: 16px; border-radius: 10px; margin-bottom: 24px;">
+                    <div><strong>Candidate:</strong> <span id="rep-candidate">Candidate</span></div>
+                    <div><strong>Date:</strong> <span id="rep-date">04 October 2026</span></div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-accent) 100%); color: #FFF; padding: 24px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 3rem; font-weight: 900;" id="rep-score">88%</div>
+                        <div>Proficiency Status: Highly Competitive (Ready for Live Rounds)</div>
+                    </div>
+                    <img src="../assets/achievehire_official_stamp.png" alt="AchieveHire Stamp" width="90" style="opacity: 0.9;" onerror="this.style.display='none'">
+                </div>
+
+                <div style="font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px; text-align: center;">
+                    🔒 <em>AchieveHire Compliance: This diagnostic report is an authentic evaluation of your live session. In accordance with platform integrity rules, this document serves as an intensive career readiness record and does not constitute an external certificate.</em>
+                </div>
+
+                <div style="margin-top: 24px; text-align: right;">
+                    <button class="ah-nav-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+                    <button class="ah-nav-btn primary" data-nav="view-landing">Back to Dashboard</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ── Monospace Footer ───────────────────────────────────────────── -->
+    <footer class="ah-footer-container">
+        <div class="ah-footer-inner">
+            <!-- Left Group: Readiness Line & Copyright -->
+            <div class="ah-footer-left">
+                <div class="ah-footer-readiness">Smarter preparation. Stronger confidence. Better opportunities.</div>
+                <div class="ah-footer-copy">© 2026 AchieveHire</div>
+                <div class="ah-footer-rights">All rights reserved</div>
+            </div>
+
+            <!-- Center Group: Brand Statement -->
+            <div class="ah-footer-center">
+                <div class="ah-footer-brand">AchieveHire</div>
+                <div class="ah-footer-tagline">Built for candidates serious about their next step.</div>
+            </div>
+
+            <!-- Right Group: Creator Credit -->
+            <div class="ah-footer-right">
+                <div class="ah-footer-creator">The brainchild of <span class="ah-footer-creator-name">ALANKRITA PAL</span> 💛</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── MODAL 1: Authentication & User ID Generation ───────────────── -->
+    <div class="ah-modal-overlay" id="modal-auth">
+        <div class="ah-modal">
+            <h3 class="ah-modal-title">🔐 Candidate Access & Registration</h3>
+            <p class="ah-modal-body" id="auth-notice-text">
+                Generate your unique permanent User ID to access the Resume Suite and Interview Panels.
+            </p>
+            <form id="form-register">
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Your Full Name</label>
+                <input type="text" id="input-candidate-name" placeholder="e.g. Alankrita Pal" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:14px;">
+
+                <label style="font-weight: 700; display: block; margin-bottom: 6px;">Preparation Purpose</label>
+                <select id="select-purpose" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:20px;">
+                    <option value="Both">Both (Resume & Interview Preparation)</option>
+                    <option value="Resume Preparation">Resume Preparation Only</option>
+                    <option value="Interview Preparation">Interview Preparation Only</option>
+                </select>
+
+                <div class="ah-modal-footer">
+                    <button type="button" class="ah-nav-btn" id="btn-quick-founder">Founder Access</button>
+                    <button type="submit" class="ah-nav-btn primary">Generate Permanent User ID</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── MODAL 2: Strategy Advisory Dialog ──────────────────────────── -->
+    <div class="ah-modal-overlay" id="modal-advisory">
+        <div class="ah-modal">
+            <h3 class="ah-modal-title">💡 Preparation Strategy Advisory</h3>
+            <p class="ah-modal-body" id="advisory-question-text" style="font-weight: 700; color: var(--text-primary);">
+                Would you like to proceed with Last-Minute Prep before completing the foundational rounds?
+            </p>
+            <div style="background: var(--blue-soft); border-left: 4px solid var(--blue-accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.90rem; color: var(--blue-primary); line-height: 1.6;">
+                Each progressive stage is specifically designed to build your confidence, depth, and composure step-by-step. Jumping directly into the rapid 30-minute panel simulation may feel intense without warming up through the foundational rounds first.
+            </div>
+            <div class="ah-modal-footer">
+                <button type="button" class="ah-nav-btn" id="btn-advisory-back">⬅️ Back & Practice</button>
+                <button type="button" class="ah-nav-btn primary" id="btn-advisory-anyway">🚀 Anyway Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MODAL 3: Confirmation Dialog (Sign Out / Delete) ───────────── -->
+    <div class="ah-modal-overlay" id="modal-confirm">
+        <div class="ah-modal">
+            <h3 class="ah-modal-title" id="modal-confirm-title">Confirm Action</h3>
+            <p class="ah-modal-body" id="modal-confirm-body">Are you sure?</p>
+            <div class="ah-modal-footer">
+                <button type="button" class="ah-nav-btn" onclick="closeModal('modal-confirm')">Cancel</button>
+                <button type="button" class="ah-nav-btn primary" id="modal-confirm-btn-yes">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Script Modules ─────────────────────────────────────────────── -->
+    <script src="js/state.js"></script>
+    <script src="js/speech_engine.js"></script>
+    <script src="js/resume_engine.js"></script>
+    <script src="js/interview_specialized.js"></script>
+    <script src="js/interview_job_related.js"></script>
+    <script src="js/interview_last_minute.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
