@@ -25,28 +25,47 @@ PURPOSE_OPTIONS = [
 ]
 
 
+BACKUP_USERS_FILE = DATA_DIR / "users_backup.json"
+
+
 def _ensure_data_store() -> Dict[str, dict]:
-    """Ensures data directory and users.json exist, returning all registered users."""
+    """Ensures data directory and users.json exist, restoring from backup if needed."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if not USERS_FILE.exists():
-        initial_data = {}
-        USERS_FILE.write_text(json.dumps(initial_data, indent=2), encoding="utf-8")
-        return initial_data
-    try:
-        content = USERS_FILE.read_text(encoding="utf-8").strip()
-        if not content:
-            return {}
-        return json.loads(content)
-    except Exception:
-        return {}
+    users = {}
+    if USERS_FILE.exists():
+        try:
+            content = USERS_FILE.read_text(encoding="utf-8").strip()
+            if content:
+                users = json.loads(content)
+        except Exception:
+            users = {}
+
+    # Restore/merge any accounts from backup so user identities are never lost
+    if BACKUP_USERS_FILE.exists():
+        try:
+            b_content = BACKUP_USERS_FILE.read_text(encoding="utf-8").strip()
+            if b_content:
+                backup_data = json.loads(b_content)
+                for k, v in backup_data.items():
+                    if k not in users:
+                        users[k] = v
+        except Exception:
+            pass
+
+    return users
 
 
 def _save_all_users(users: Dict[str, dict]) -> None:
-    """Thread-safe write of all users to JSON file."""
+    """Thread-safe write of all users to JSON file and mirror to backup."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    serialized = json.dumps(users, indent=2, ensure_ascii=False)
     temp_file = USERS_FILE.with_suffix(".tmp")
-    temp_file.write_text(json.dumps(users, indent=2, ensure_ascii=False), encoding="utf-8")
+    temp_file.write_text(serialized, encoding="utf-8")
     temp_file.replace(USERS_FILE)
+    try:
+        BACKUP_USERS_FILE.write_text(serialized, encoding="utf-8")
+    except Exception:
+        pass
 
 
 def save_active_session(user_id: str) -> None:
@@ -254,8 +273,15 @@ def set_active_user(user_record: dict) -> None:
     st.session_state["notif_prep_enabled"] = settings.get("notif_prep_enabled", True)
     st.session_state["notif_milestones_enabled"] = settings.get("notif_milestones_enabled", True)
 
-    # Persist the user_id to disk so the user is remembered across page refreshes / app restart
+    # 1. Persist the user_id to disk so the user is remembered across page refreshes / app restart
     save_active_session(user_record["user_id"])
+
+    # 2. Synchronize to browser URL query parameter (?uid=...) so the browser never forgets
+    try:
+        if hasattr(st, "query_params"):
+            st.query_params["uid"] = user_record["user_id"]
+    except Exception:
+        pass
 
 
 def get_current_user() -> Optional[dict]:
@@ -267,8 +293,13 @@ def get_current_user() -> Optional[dict]:
 
 
 def sign_out() -> None:
-    """Clears the active user session in memory and deletes active session from disk."""
+    """Clears the active user session in memory and deletes active session from disk and URL."""
     clear_active_session()
+    try:
+        if hasattr(st, "query_params"):
+            st.query_params.pop("uid", None)
+    except Exception:
+        pass
     st.session_state["user_id"] = None
     st.session_state["username"] = "Candidate"
     st.session_state["user_purpose"] = None
@@ -279,10 +310,12 @@ def sign_out() -> None:
 
 
 def delete_user_account(user_id: str) -> bool:
-    """Permanently deletes the user record from the persistent registry and resets session."""
+    """Permanently deletes the user record from the persistent registry and resets session if self."""
     users = _ensure_data_store()
     if user_id in users:
         del users[user_id]
         _save_all_users(users)
-    sign_out()
+    # Only sign out if the account being deleted is the currently active user
+    if st.session_state.get("user_id") == user_id:
+        sign_out()
     return True
