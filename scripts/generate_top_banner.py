@@ -32,28 +32,28 @@ def create_banner():
     logo_pos_y = int(30 * SCALE)
 
     # 3. Static Title 'AchieveHire' in stylish dual-tone luxury serif
-    asc_w = font_title.getlength('Ascend')
+    achieve_w = font_title.getlength('Achieve')
 
     # Soft dark drop shadow for luxury depth and clean separation
     title_shadow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     ts_draw = ImageDraw.Draw(title_shadow)
-    ts_draw.text((start_x + int(2 * SCALE), base_y + int(3 * SCALE)), 'Ascend', font=font_title, fill=(0, 0, 0, 130))
-    ts_draw.text((start_x + asc_w + int(2 * SCALE), base_y + int(3 * SCALE)), 'Career', font=font_title, fill=(0, 0, 0, 130))
+    ts_draw.text((start_x + int(2 * SCALE), base_y + int(3 * SCALE)), 'Achieve', font=font_title, fill=(0, 0, 0, 130))
+    ts_draw.text((start_x + achieve_w + int(2 * SCALE), base_y + int(3 * SCALE)), 'Hire', font=font_title, fill=(0, 0, 0, 130))
     title_shadow = title_shadow.filter(ImageFilter.GaussianBlur(int(2.5 * SCALE)))
 
-    # Soft warm ambient bloom behind Career
+    # Soft warm ambient bloom behind Hire
     title_glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     tgldraw = ImageDraw.Draw(title_glow)
-    tgldraw.text((start_x + asc_w, base_y), 'Career', font=font_title, fill=(245, 158, 11, 75))
+    tgldraw.text((start_x + achieve_w, base_y), 'Hire', font=font_title, fill=(245, 158, 11, 75))
     title_glow = title_glow.filter(ImageFilter.GaussianBlur(int(6 * SCALE)))
 
     # Pure crisp dual-tone title
     title_layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     tdraw = ImageDraw.Draw(title_layer)
-    # Ascend in pearl white
-    tdraw.text((start_x, base_y), 'Ascend', font=font_title, fill=(255, 255, 255, 255))
-    # Career in luminous champagne gold
-    tdraw.text((start_x + asc_w, base_y), 'Career', font=font_title, fill=(250, 195, 60, 255))
+    # Achieve in pearl white
+    tdraw.text((start_x, base_y), 'Achieve', font=font_title, fill=(255, 255, 255, 255))
+    # Hire in luminous champagne gold
+    tdraw.text((start_x + achieve_w, base_y), 'Hire', font=font_title, fill=(250, 195, 60, 255))
 
     # 4. Tagline: 'Where Preparation Meets Opportunity.' in understandable font with golden glowing glitter
     tagline_text = "Where Preparation Meets Opportunity."
