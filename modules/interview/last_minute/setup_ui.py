@@ -45,16 +45,15 @@ def show_incomplete_level_dialog(mode: str, level_label: str, target_screen: str
         """,
         unsafe_allow_html=True,
     )
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🚀 Continue to Last-Minute Prep", type="primary", use_container_width=True, key="btn_dlg_continue_lm"):
+    col_left, col_right = st.columns(2)
+    with col_left:
+        if st.button("⬅️ Back & Practice", use_container_width=True, key="btn_dlg_go_stage"):
+            st.session_state["ac_screen"] = target_screen
+            st.rerun()
+    with col_right:
+        if st.button("🚀 Anyway Continue", type="primary", use_container_width=True, key="btn_dlg_continue_lm"):
             st.session_state["lm_level_warning_confirmed"] = True
             st.session_state["lm_view_mode"] = "live"
-            st.rerun()
-    with col2:
-        dest_title = "Stage Practice (4 Levels)" if "Specialized" in mode else "Round Practice (6 Rounds)"
-        if st.button(f"🎯 Practice Stages First (Recommended)", use_container_width=True, key="btn_dlg_go_stage"):
-            st.session_state["ac_screen"] = target_screen
             st.rerun()
 
 

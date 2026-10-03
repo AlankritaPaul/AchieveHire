@@ -179,7 +179,7 @@ def _render_main_app():
                 "📄 Resume Guide",
                 "🎙️ Voice Interview (Stage 1-6)",
                 "📈 Preparation Analytics",
-                "🏅 Certified Profile"
+                "🌐 Public Career Profile"
             ],
             index=0,
             label_visibility="collapsed"
@@ -206,8 +206,8 @@ def _render_main_app():
         st.info("🎙️ **Voice Interview Simulator**: Real-time microphone-driven conversational engine across progressive Levels 1-6 will be activated in the upcoming milestone.")
     elif app_mode == "📈 Preparation Analytics":
         st.info("📈 **Preparation Analytics**: Historical progress, weakness tracking, and readiness metrics dashboard.")
-    elif app_mode == "🏅 Certified Profile":
-        st.info("🏅 **Certified Profile**: Verifiable completion certificates and public career profiles.")
+    elif app_mode == "🌐 Public Career Profile":
+        st.info("🌐 **Public Career Profile**: Shareable showcase profiles featuring verified readiness credentials and analytics.")
 
 
 if __name__ == "__main__":
