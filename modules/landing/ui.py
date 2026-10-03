@@ -2180,6 +2180,9 @@ def _render_core_principle(t: dict):
         <div class="ac-principle-block">
             {CORE_PRINCIPLE}
         </div>
+        <div style="margin-top:20px; padding:14px 20px; border-radius:10px; background:rgba(59, 130, 246, 0.08); border-left:4px solid #3B82F6; text-align:center; font-size:0.92rem; color:{t['text_secondary']}; line-height:1.5;">
+            <strong>📌 Important Clarification:</strong> AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
+        </div>
     </div>
     """), unsafe_allow_html=True)
 
