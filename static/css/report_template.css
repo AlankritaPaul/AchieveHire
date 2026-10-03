@@ -1,0 +1,159 @@
+/**
+ * AchieveHire - Official Performance & Improvement Report Printable Stylesheet
+ * Renders the formal certificate header, watermark, competency tables, and gold seal.
+ */
+
+.report-document-container {
+    max-width: 860px;
+    margin: 20px auto;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 12px;
+    padding: 48px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    color: #1E293B;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Watermark */
+.report-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 5rem;
+    font-weight: 900;
+    color: rgba(30, 58, 138, 0.03);
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* Report Header */
+.report-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 24px;
+    margin-bottom: 30px;
+}
+
+.report-brand-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1E3A8A;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.report-brand-subtag {
+    font-size: 0.85rem;
+    color: #64748B;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.report-badge-official {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1E40AF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+/* Candidate Meta Grid */
+.candidate-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+}
+
+.meta-field-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #64748B;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.meta-field-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0F172A;
+}
+
+/* Score Hero Banner */
+.score-hero-container {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    border-radius: 12px;
+    color: #FFFFFF;
+    padding: 24px 32px;
+    margin-bottom: 32px;
+    justify-content: space-between;
+}
+
+.score-hero-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.score-hero-grade {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+/* Competency Evaluation Table */
+.competency-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+}
+
+.competency-table th {
+    background: #F1F5F9;
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #475569;
+    font-weight: 700;
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.competency-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 0.9rem;
+}
+
+/* Print Optimization */
+@media print {
+    body {
+        background: #FFFFFF !important;
+    }
+    .report-document-container {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    .no-print {
+        display: none !important;
+    }
+}

@@ -29,15 +29,17 @@ from modules.interview.job_related.models import (
 from modules.interview.job_related.setup_ui import get_candidate_stored_resume
 
 
-@st.dialog("⚠️ Incomplete Level Progression Notice")
+@st.dialog("💡 Preparation Strategy Advisory")
 def show_incomplete_level_dialog(mode: str, level_label: str, target_screen: str):
-    st.markdown(f"### Do you want to continue with Last-Minute Prep without completing the {level_label}?")
+    display_stage = "4 levels" if "Specialized" in mode else "6 rounds"
+    st.markdown(f"### Would you like to proceed with Last-Minute Prep before completing the {display_stage}?")
     st.markdown(
         f"""
-        <div style="background:#FEF2F2; border-left:4px solid #EF4444; border-radius:8px; padding:12px 16px; margin: 12px 0;">
-            <div style="font-weight:700; color:#991B1B; font-size:0.95rem;">Reason:</div>
-            <div style="color:#7F1D1D; font-size:0.90rem; line-height:1.5; margin-top:4px;">
-                Without solving each stage, if the user directly jumps to the last minute, then the user will not understand anything.
+        <div style="background:#EEF2FF; border-left:4px solid #4F46E5; border-radius:8px; padding:14px 18px; margin: 14px 0;">
+            <div style="font-weight:700; color:#312E81; font-size:0.95rem; margin-bottom:4px;">Recommended Strategy:</div>
+            <div style="color:#3730A3; font-size:0.90rem; line-height:1.6;">
+                Each progressive stage is specifically designed to build your confidence, depth, and composure step-by-step.
+                Jumping directly into the rapid 30-minute panel simulation may feel intense without warming up through the foundational rounds first.
             </div>
         </div>
         """,
@@ -45,13 +47,13 @@ def show_incomplete_level_dialog(mode: str, level_label: str, target_screen: str
     )
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Continue to Last-Minute Prep", type="primary", use_container_width=True, key="btn_dlg_continue_lm"):
+        if st.button("🚀 Continue to Last-Minute Prep", type="primary", use_container_width=True, key="btn_dlg_continue_lm"):
             st.session_state["lm_level_warning_confirmed"] = True
             st.session_state["lm_view_mode"] = "live"
             st.rerun()
     with col2:
         dest_title = "Stage Practice (4 Levels)" if "Specialized" in mode else "Round Practice (6 Rounds)"
-        if st.button(f"🎯 Go to {dest_title}", use_container_width=True, key="btn_dlg_go_stage"):
+        if st.button(f"🎯 Practice Stages First (Recommended)", use_container_width=True, key="btn_dlg_go_stage"):
             st.session_state["ac_screen"] = target_screen
             st.rerun()
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AchieveHire - Interactive Interview Console</title>
+    <link rel="stylesheet" href="../css/achievehire_base.css">
+    <link rel="stylesheet" href="../css/interview_console.css">
+</head>
+<body class="achievehire-app">
+    <div class="interview-console-layout">
+        <!-- HUD Header Bar -->
+        <header class="interview-hud-bar">
+            <div class="hud-panel-title">
+                <span class="hud-live-tag">● LIVE</span>
+                <span>AchieveHire Panel Interview Simulation</span>
+            </div>
+            <div id="timer-mount-point"></div>
+        </header>
+
+        <!-- Panel Gallery -->
+        <section class="panel-gallery-container">
+            <div class="interviewer-avatar-card active-speaker" id="interviewer-1">
+                <div class="avatar-image-ring">👨‍💼</div>
+                <div class="interviewer-name">Arjun Mehta</div>
+                <div class="interviewer-role">Technical Lead & System Architect</div>
+            </div>
+            <div class="interviewer-avatar-card" id="interviewer-2">
+                <div class="avatar-image-ring">👩‍💻</div>
+                <div class="interviewer-name">Priya Sharma</div>
+                <div class="interviewer-role">Senior Engineering Manager</div>
+            </div>
+            <div class="interviewer-avatar-card" id="interviewer-3">
+                <div class="avatar-image-ring">👨‍🔬</div>
+                <div class="interviewer-name">Rohan Gupta</div>
+                <div class="interviewer-role">Domain & Core Fundamentals Specialist</div>
+            </div>
+        </section>
+
+        <!-- Live Dialogue Transcript -->
+        <main class="dialogue-timeline" id="dialogue-timeline">
+            <div class="dialogue-bubble system-interviewer">
+                <div class="bubble-content">
+                    <div class="bubble-speaker-tag">Arjun Mehta (Lead Interviewer)</div>
+                    <p>Welcome to your session! Please introduce yourself, your core technical experience, and the key highlights of your journey.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Candidate Audio Visualizer & Input Tray -->
+        <footer class="interview-input-tray">
+            <button class="audio-record-button" id="record-btn" title="Toggle Voice Response">
+                🎤
+            </button>
+            <canvas id="waveform-canvas" width="300" height="40" style="background: #F1F5F9; border-radius: 6px;"></canvas>
+            <div style="flex:1;">
+                <input type="text" id="candidate-text-input" placeholder="Type your response or speak using the microphone..." style="width: 100%; padding: 10px 14px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.95rem;">
+            </div>
+            <button class="ah-btn ah-btn-primary" id="send-response-btn">Submit</button>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/interview_timer.js"></script>
+    <script src="../js/audio_visualizer.js"></script>
+    <script src="../js/speech_synthesis.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const timer = new InterviewTimer({
+                durationSeconds: 1800,
+                onTick: () => timer.renderToDOM('timer-mount-point')
+            });
+            timer.start();
+        });
+    </script>
+</body>
+</html>

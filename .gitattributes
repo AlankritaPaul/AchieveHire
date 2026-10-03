@@ -1,0 +1,16 @@
+# GitHub Linguist Language Configuration for AchieveHire
+# Force GitHub Linguist to detect and count frontend and scripting languages in repository stats
+*.js linguist-detectable=true
+*.css linguist-detectable=true
+*.html linguist-detectable=true
+*.sh linguist-detectable=true
+
+# Exclude vendor dependencies, virtual environments, and data fixtures from language calculation
+.venv/* linguist-vendored=true
+venv/* linguist-vendored=true
+node_modules/* linguist-vendored=true
+dist/* linguist-vendored=true
+build/* linguist-vendored=true
+data/* linguist-vendored=true
+tests/* linguist-vendored=true
+assets/* linguist-vendored=true

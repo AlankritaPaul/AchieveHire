@@ -1,0 +1,105 @@
+/**
+ * AchieveHire — Core Design System & Theme CSS Variables
+ * Colors, typography tokens, glassmorphism surfaces, and layout primitives.
+ */
+
+:root {
+  /* Brand Palette */
+  --ah-brand-primary: #0f172a;
+  --ah-brand-secondary: #1e293b;
+  --ah-accent: #4f46e5;
+  --ah-accent-hover: #4338ca;
+  --ah-accent-soft: #eef2ff;
+  --ah-accent-border: #c7d2fe;
+
+  /* Semantic State Colors */
+  --ah-success: #10b981;
+  --ah-success-soft: #ecfdf5;
+  --ah-warning: #f59e0b;
+  --ah-warning-soft: #fffbeb;
+  --ah-danger: #ef4444;
+  --ah-danger-soft: #fef2f2;
+  --ah-info: #0284c7;
+  --ah-info-soft: #f0f9ff;
+
+  /* Surfaces & Backgrounds */
+  --ah-bg-base: #f8fafc;
+  --ah-surface-card: #ffffff;
+  --ah-surface-secondary: #f1f5f9;
+  --ah-surface-tertiary: #e2e8f0;
+
+  /* Text & Typography */
+  --ah-text-primary: #0f172a;
+  --ah-text-secondary: #475569;
+  --ah-text-muted: #94a3b8;
+  --ah-text-inverse: #ffffff;
+
+  /* Borders & Shadows */
+  --ah-border-subtle: #e2e8f0;
+  --ah-border-medium: #cbd5e1;
+  --ah-border-focus: #4f46e5;
+  --ah-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ah-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --ah-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --ah-shadow-glow: 0 0 20px -3px rgba(79, 70, 229, 0.25);
+
+  /* Transitions */
+  --ah-transition-fast: 0.15s ease;
+  --ah-transition-normal: 0.25s ease;
+}
+
+/* Base Card Primitives */
+.ah-card {
+  background: var(--ah-surface-card);
+  border: 1px solid var(--ah-border-subtle);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: var(--ah-shadow-sm);
+  transition: all var(--ah-transition-normal);
+}
+
+.ah-card:hover {
+  box-shadow: var(--ah-shadow-md);
+  border-color: var(--ah-accent-border);
+}
+
+/* Glassmorphism Surface */
+.ah-glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: var(--ah-shadow-lg);
+}
+
+/* Badges & Metrics */
+.ah-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ah-badge-primary {
+  background: var(--ah-accent-soft);
+  color: var(--ah-accent);
+  border: 1px solid var(--ah-accent-border);
+}
+
+.ah-badge-success {
+  background: var(--ah-success-soft);
+  color: var(--ah-success);
+  border: 1px solid #a7f3d0;
+}
+
+.ah-badge-warning {
+  background: var(--ah-warning-soft);
+  color: var(--ah-warning);
+  border: 1px solid #fde68a;
+}
