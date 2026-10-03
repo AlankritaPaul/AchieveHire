@@ -176,3 +176,110 @@ def render_user_profile():
                 if st.button("✨  Generate Unique User ID Now", type="primary", use_container_width=True, key="prof_btn_gen_id"):
                     st.session_state["ac_screen"] = "signin"
                     st.rerun()
+
+    # Specialized Interview History & Reports Section
+    _render_profile_interview_history(t, user_id or "guest")
+
+
+def _render_profile_interview_history(t: dict, user_id: str):
+    """Renders candidate's completed specialized interview rounds and downloadable PDF reports."""
+    from modules.interview.specialized.storage import load_all_user_interviews
+    from modules.interview.specialized.report_generator import generate_round_report_pdf, generate_overall_report_pdf
+
+    st.markdown("<hr style='margin:32px 0 24px;'/>", unsafe_allow_html=True)
+    st.markdown(clean_html(f"""
+    <div style="max-width:980px; margin: 0 auto 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:6px;">
+            <h3 style="font-size:1.3rem; font-weight:800; color:{t['text_primary']}; margin:0;">
+                🎙️ Specialized Interview History &amp; Diagnostic Reports
+            </h3>
+            <span style="font-size:0.84rem; color:{t['text_muted']}; font-style:italic;">
+                Better Preparation. Stronger Presentation.
+            </span>
+        </div>
+        <p style="font-size:0.92rem; color:{t['text_secondary']}; margin:0 0 16px;">
+            Access and download your official performance &amp; improvement reports for completed specialized rounds.
+        </p>
+    </div>
+    """), unsafe_allow_html=True)
+
+    interviews = load_all_user_interviews(user_id)
+    if not interviews:
+        st.markdown(clean_html(f"""
+        <div style="background:{t['surface2']}; border:1px dashed {t['border']}; border-radius:12px; padding:24px; text-align:center; max-width:980px; margin:0 auto 24px;">
+            <div style="font-size:1.8rem; margin-bottom:8px;">🎯</div>
+            <div style="font-weight:700; font-size:1.02rem; color:{t['text_primary']}; margin-bottom:4px;">No Interview Rounds Completed Yet</div>
+            <div style="font-size:0.88rem; color:{t['text_muted']}; margin-bottom:16px;">Complete your first Specialized Interview to unlock detailed performance diagnostic reports.</div>
+        </div>
+        """), unsafe_allow_html=True)
+        c_go1, c_go2, c_go3 = st.columns([30, 40, 30])
+        with c_go2:
+            if st.button("🚀 Start Specialized Interview", type="primary", use_container_width=True, key="prof_btn_start_spec"):
+                st.session_state["ac_screen"] = "interview_specialized"
+                st.session_state["spec_view_state"] = "overview"
+                st.rerun()
+        return
+
+    for rec in interviews:
+        spec = rec.get("specialization", "Technical")
+        completed = rec.get("rounds_completed", [])
+        overall_score = rec.get("overall_score", 0.0)
+        overall_report = rec.get("overall_report")
+        round_reports = rec.get("round_reports", {})
+
+        with st.container(border=True):
+            st.markdown(f"""
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <div>
+                    <span style="font-size:1.15rem; font-weight:800; color:{t['text_primary']};">Specialization: <code>{spec}</code></span>
+                    <span style="margin-left:12px; font-size:0.84rem; background:{t['accent_soft']}; color:{t['accent']}; font-weight:700; padding:3px 10px; border-radius:12px;">
+                        {len(completed)} / 4 Rounds Finished
+                    </span>
+                </div>
+                <div style="font-size:0.95rem; font-weight:700; color:#10B981;">
+                    Aggregate Score: {overall_score:.1f}%
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            c_cols = st.columns(4, gap="small")
+            for idx, r_num in enumerate([1, 2, 3, 4]):
+                with c_cols[idx]:
+                    r_rep = round_reports.get(str(r_num)) or round_reports.get(r_num)
+                    if r_rep:
+                        r_score = r_rep.get("overall_score", 0.0)
+                        st.markdown(f"""
+                        <div style="background:{t['surface2']}; border:1px solid #10B981; border-radius:8px; padding:10px; text-align:center;">
+                            <div style="font-weight:700; font-size:0.86rem; color:#10B981;">Round {r_num} ✅</div>
+                            <div style="font-size:0.80rem; color:{t['text_primary']}; font-weight:600; margin:2px 0;">{r_score:.0f}% Score</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        pdf_data = generate_round_report_pdf(r_rep)
+                        st.download_button(
+                            label=f"📄 R{r_num} PDF",
+                            data=pdf_data,
+                            file_name=f"AchieveHire_{spec}_Round_{r_num}_Report.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            key=f"prof_dl_r_{spec}_{r_num}",
+                        )
+                    else:
+                        st.markdown(f"""
+                        <div style="background:{t['surface2']}; border:1px dashed {t['border']}; border-radius:8px; padding:10px; text-align:center; opacity:0.6;">
+                            <div style="font-weight:600; font-size:0.84rem; color:{t['text_muted']};">Round {r_num}</div>
+                            <div style="font-size:0.78rem; color:{t['text_muted']};">Pending</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+            if overall_report or len(completed) == 4:
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+                overall_pdf_bytes = generate_overall_report_pdf(overall_report if overall_report else {})
+                st.download_button(
+                    label=f"🌟 Download Official 4-Round Master Improvement Report ({spec})",
+                    data=overall_pdf_bytes,
+                    file_name=f"AchieveHire_{spec}_4Round_Master_Report.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                    key=f"prof_dl_overall_{spec}",
+                )
+
