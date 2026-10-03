@@ -14,17 +14,46 @@ from modules.interview.last_minute.models import (
     MODE_SPECIALIZED,
     MODE_JOB_RELATED,
     POPULAR_SPECIALIZATIONS,
+    INTERVIEW_LANGUAGES,
 )
 from modules.interview.last_minute.storage import (
     load_user_attempts,
     get_attempt_comparison_data,
+    get_attempt_short_detail,
 )
+from modules.interview.last_minute.engine import check_level_completion
 from modules.interview.job_related.models import (
     SUGGESTED_JOB_ROLES,
     SUGGESTED_COMPANIES,
-    INTERVIEW_LANGUAGES,
 )
 from modules.interview.job_related.setup_ui import get_candidate_stored_resume
+
+
+@st.dialog("⚠️ Incomplete Level Progression Notice")
+def show_incomplete_level_dialog(mode: str, level_label: str, target_screen: str):
+    st.markdown(f"### Do you want to continue with Last-Minute Prep without completing the {level_label}?")
+    st.markdown(
+        f"""
+        <div style="background:#FEF2F2; border-left:4px solid #EF4444; border-radius:8px; padding:12px 16px; margin: 12px 0;">
+            <div style="font-weight:700; color:#991B1B; font-size:0.95rem;">Reason:</div>
+            <div style="color:#7F1D1D; font-size:0.90rem; line-height:1.5; margin-top:4px;">
+                Without solving each stage, if the user directly jumps to the last minute, then the user will not understand anything.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Continue to Last-Minute Prep", type="primary", use_container_width=True, key="btn_dlg_continue_lm"):
+            st.session_state["lm_level_warning_confirmed"] = True
+            st.session_state["lm_view_mode"] = "live"
+            st.rerun()
+    with col2:
+        dest_title = "Stage Practice (4 Levels)" if "Specialized" in mode else "Round Practice (6 Rounds)"
+        if st.button(f"🎯 Go to {dest_title}", use_container_width=True, key="btn_dlg_go_stage"):
+            st.session_state["ac_screen"] = target_screen
+            st.rerun()
 
 
 def render_last_minute_setup():
@@ -68,10 +97,15 @@ def render_last_minute_setup():
             </div>
         """), unsafe_allow_html=True)
 
+        # Check if pre-selected from test sections
+        default_idx = 0
+        if st.session_state.get("lm_active_mode") == MODE_JOB_RELATED:
+            default_idx = 1
+
         mode_choice = st.radio(
             "Preparation Mode",
             options=[MODE_SPECIALIZED, MODE_JOB_RELATED],
-            index=0,
+            index=default_idx,
             horizontal=True,
             key="lm_mode_radio",
             label_visibility="collapsed",
@@ -187,8 +221,15 @@ def render_last_minute_setup():
                 st.session_state["lm_active_company"] = effective_company
                 st.session_state["lm_active_language"] = chosen_lang
                 st.session_state["lm_resume_snapshot"] = stored_resume
-                st.session_state["lm_view_mode"] = "live"
-                st.rerun()
+
+                # Check level completion before starting
+                is_completed, req_cnt, level_label = check_level_completion(user_id, mode_choice)
+                if not is_completed and not st.session_state.get("lm_level_warning_confirmed"):
+                    target_scr = "interview_specialized" if "Specialized" in mode_choice else "interview_job"
+                    show_incomplete_level_dialog(mode_choice, level_label, target_scr)
+                else:
+                    st.session_state["lm_view_mode"] = "live"
+                    st.rerun()
 
     # ─────────────────────────────────────────────────────────────────────────
     # TAB 2: Attempt History & Past Scorecards
@@ -212,8 +253,9 @@ def render_last_minute_setup():
                 with st.container(border=True):
                     col_inf, col_btn = st.columns([75, 25])
                     with col_inf:
-                        st.markdown(f"#### Attempt #{att.get('attempt_number', 1)}: {att.get('topic_title', 'Preparation')}")
-                        st.markdown(f"**Score:** `{att.get('overall_score', 0)}/100` &nbsp;·&nbsp; **Mode:** {att.get('mode', '')} &nbsp;·&nbsp; **Date:** {att.get('completion_date', '')}")
+                        short_detail = get_attempt_short_detail(att)
+                        st.markdown(f"#### ⚡ {short_detail}")
+                        st.markdown(f"**Mode:** {att.get('mode', '')} &nbsp;·&nbsp; **Saved at:** {att.get('completion_date', '')}")
                         st.markdown(f"<span style='font-size:0.75rem; color:{t['text_muted']}; font-family:monospace;'>ID: {att.get('attempt_id', '')}</span>", unsafe_allow_html=True)
                     with col_btn:
                         st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)

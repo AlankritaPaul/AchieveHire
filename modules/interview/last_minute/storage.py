@@ -49,12 +49,15 @@ def save_new_attempt(user_id: str, attempt_data: Dict[str, Any]) -> str:
 
     attempts = load_user_attempts(user_id)
 
-    # Assign sequential attempt number
-    attempt_num = len(attempts) + 1
-    attempt_id = f"LM-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{attempt_num}"
+    # Build concise short detail (topic · score% · duration · date)
+    topic = attempt_data.get("topic_title", "Preparation")
+    score = attempt_data.get("overall_score", 0)
+    dur_min = max(1, attempt_data.get("actual_time_taken_sec", 1800) // 60)
+    date_str = datetime.now().strftime("%d %b, %Y")
+    attempt_data["short_detail"] = f"{topic} · {score}% · {dur_min}m · {date_str}"
 
+    attempt_id = f"LM-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{len(attempts) + 1}"
     attempt_data["attempt_id"] = attempt_id
-    attempt_data["attempt_number"] = attempt_num
     attempt_data["saved_at"] = datetime.now().isoformat()
     if "completion_date" not in attempt_data or not attempt_data["completion_date"]:
         attempt_data["completion_date"] = datetime.now().strftime("%B %d, %Y at %I:%M %p")
@@ -87,11 +90,23 @@ def get_attempt_comparison_data(user_id: str, mode: Optional[str] = None) -> Lis
 
     return [
         {
-            "attempt_number": a.get("attempt_number", idx + 1),
+            "short_detail": a.get("short_detail") or f"{a.get('topic_title', 'Preparation')} · {a.get('overall_score', 0)}%",
             "date": a.get("completion_date", ""),
             "topic": a.get("topic_title", "Preparation"),
             "score": a.get("overall_score", 0),
             "attempt_id": a.get("attempt_id", ""),
         }
-        for idx, a in enumerate(attempts)
+        for a in attempts
     ]
+
+
+def get_attempt_short_detail(attempt: Dict[str, Any]) -> str:
+    """Returns concise summary (Topic · Score% · Duration · Date). Never generic 'Attempt X'."""
+    if attempt.get("short_detail"):
+        return attempt["short_detail"]
+    topic = attempt.get("topic_title", "Preparation")
+    score = attempt.get("overall_score", 0)
+    dur_min = max(1, attempt.get("actual_time_taken_sec", 1800) // 60)
+    date_str = attempt.get("completion_date", "").split(" at ")[0] or datetime.now().strftime("%d %b, %Y")
+    return f"{topic} · {score}% · {dur_min}m · {date_str}"
+

@@ -12,8 +12,11 @@ Specification:
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 
-MODE_SPECIALIZED = "Last-Minute Specialized Preparation"
-MODE_JOB_RELATED = "Last-Minute Job Related Preparation"
+MODE_SPECIALIZED = "Last-Minute Prep for Specialized"
+MODE_JOB_RELATED = "Last-Minute Prep for Job Related"
+
+# Exactly 3 languages permitted for both modes
+INTERVIEW_LANGUAGES = ["English", "Hindi", "Hinglish"]
 
 LAST_MINUTE_DURATION_MINUTES = 30
 LAST_MINUTE_DURATION_SECONDS = 30 * 60
@@ -104,3 +107,4 @@ class LastMinuteAttemptRecord:
     how_to_improve: List[str]
     what_to_practise_next: List[str]
     executive_summary: str
+    short_detail: str = ""

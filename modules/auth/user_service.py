@@ -240,6 +240,31 @@ def update_user_record(user_id: str, updates: dict) -> Optional[dict]:
     return users[user_id]
 
 
+def save_user_resume(user_id: str, resume_data: dict) -> str:
+    """Saves a new resume under user profile, supporting multiple resumes per candidate."""
+    users = _ensure_data_store()
+    if user_id not in users:
+        return ""
+    if "resumes" not in users[user_id] or not isinstance(users[user_id]["resumes"], list):
+        users[user_id]["resumes"] = []
+
+    res_id = resume_data.get("id") or f"RES-{datetime.now().strftime('%Y%m%d%H%M%S')}-{len(users[user_id]['resumes']) + 1}"
+    resume_data["id"] = res_id
+    resume_data["saved_at"] = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+    users[user_id]["resumes"].append(resume_data)
+    users[user_id]["stats"]["resumes_created"] = len(users[user_id]["resumes"])
+    _save_all_users(users)
+    return res_id
+
+
+def get_user_resumes(user_id: str) -> List[dict]:
+    """Retrieves all saved resumes for the candidate."""
+    users = _ensure_data_store()
+    if user_id in users:
+        return users[user_id].get("resumes", [])
+    return []
+
+
 def save_user_settings(user_id: Optional[str], settings_dict: dict) -> None:
     """Saves user notification & platform preferences to persistent storage and session state."""
     st.session_state["notif_prep_enabled"] = settings_dict.get("notif_prep_enabled", True)

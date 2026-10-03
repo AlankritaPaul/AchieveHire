@@ -63,7 +63,7 @@ def generate_last_minute_pdf(attempt_data: Dict[str, Any]) -> bytes:
     # 2. Metadata Table
     meta_rows = [
         [
-            Paragraph(f"<b>Assessment:</b> {mode_title} (Attempt #{attempt_num})", bold_body),
+            Paragraph(f"<b>Assessment:</b> {mode_title}", bold_body),
             Paragraph(f"<b>Overall Score:</b> <font color='#4F46E5'><b>{score}/100</b></font>", bold_body),
         ],
         [

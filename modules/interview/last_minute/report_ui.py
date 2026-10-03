@@ -20,6 +20,7 @@ from modules.interview.last_minute.storage import (
     load_user_attempts,
     get_attempt_by_id,
     get_attempt_comparison_data,
+    get_attempt_short_detail,
 )
 from modules.interview.last_minute.report_generator import generate_last_minute_pdf
 
@@ -67,7 +68,7 @@ def render_last_minute_report(attempt_id: Optional[str] = None):
             ⚡ 30-Minute Intensive Preparation Audit
         </div>
         <h1 style="font-size:1.8rem; font-weight:800; color:{t['text_primary']}; margin:0 0 6px;">
-            {target_attempt.get('topic_title', 'Preparation')} — Attempt #{target_attempt.get('attempt_number', 1)}
+            {target_attempt.get('topic_title', 'Preparation')} · {target_attempt.get('overall_score', 0)}%
         </h1>
         <p style="font-size:0.95rem; color:{t['text_secondary']}; max-width:680px; margin: 0 auto; line-height:1.55;">
             {target_attempt.get('mode', '')} &nbsp;·&nbsp; Completed on {target_attempt.get('completion_date', '')}
@@ -304,11 +305,11 @@ def render_last_minute_report(attempt_id: Optional[str] = None):
         """), unsafe_allow_html=True)
 
         pdf_bytes = generate_last_minute_pdf(target_attempt)
-        fname = f"AchieveHire_LastMinute_{target_attempt.get('topic_title','Prep')}_Attempt_{target_attempt.get('attempt_number',1)}.pdf".replace(" ", "_")
+        fname = f"AchieveHire_LastMinute_{target_attempt.get('topic_title','Prep')}.pdf".replace(" ", "_")
 
         st.markdown("<div style='max-width:380px; margin: 0 auto 20px;'>", unsafe_allow_html=True)
         st.download_button(
-            label=f"📥 Download Attempt #{target_attempt.get('attempt_number',1)} PDF Report",
+            label="📥 Download Performance Report (PDF)",
             data=pdf_bytes,
             file_name=fname,
             mime="application/pdf",
@@ -328,14 +329,14 @@ def render_last_minute_report(attempt_id: Optional[str] = None):
                 Permanent Rehearsal Attempt History
             </h3>
             <p style="font-size:0.90rem; color:{t['text_secondary']}; margin-bottom:18px;">
-                Every completed rehearsal is stored under your unique User ID. Previous attempts are never overwritten.
+                Every completed rehearsal is stored under your unique User ID with date, topic, duration, and score. Previous attempts are never overwritten.
             </p>
         </div>
         """), unsafe_allow_html=True)
 
         if len(attempts) >= 2:
             st.markdown(f"<div style='font-weight:700; font-size:1rem; color:{t['text_primary']}; margin-bottom:6px;'>Score Progression Across Attempts</div>", unsafe_allow_html=True)
-            labels = [f"Attempt {a.get('attempt_number', i+1)}: {a.get('topic_title', '')[:16]}" for i, a in enumerate(attempts)]
+            labels = [f"{a.get('topic_title', '')[:16]} ({a.get('overall_score', 0)}%)" for a in attempts]
             scores = [a.get("overall_score", 0) for a in attempts]
 
             fig_p = go.Figure()
@@ -358,15 +359,14 @@ def render_last_minute_report(attempt_id: Optional[str] = None):
         # List all past attempts
         for att in reversed(attempts):
             is_active = (att.get("attempt_id") == target_attempt.get("attempt_id"))
-            border_c = t['accent'] if is_active else t['border']
-            bg_c = t['accent_soft'] if is_active else t['surface']
+            detail_label = get_attempt_short_detail(att)
 
             with st.container(border=True):
                 c_inf, c_act = st.columns([75, 25])
                 with c_inf:
                     active_label = " (Viewing Current)" if is_active else ""
-                    st.markdown(f"**Attempt #{att.get('attempt_number', 1)} — {att.get('topic_title', 'Preparation')}**{active_label}")
-                    st.markdown(f"Score: **{att.get('overall_score', 0)}/100** · {att.get('mode', '')} · {att.get('completion_date', '')}")
+                    st.markdown(f"**⚡ {detail_label}**{active_label}")
+                    st.markdown(f"Mode: **{att.get('mode', '')}** · Saved: **{att.get('completion_date', '')}**")
                 with c_act:
                     if not is_active:
                         if st.button("View This Report", key=f"btn_switch_rep_{att.get('attempt_id')}", use_container_width=True):

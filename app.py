@@ -56,6 +56,7 @@ def main():
     PROTECTED_SCREENS = {
         "resume_create": "Resume Create & Builder",
         "resume_analysis": "Resume Analysis & Audit",
+        "resume_saved": "My Saved Resumes",
         "interview_specialized": "Specialized Voice Interview",
         "interview_job": "Job Related Voice Interview",
         "interview_last_minute": "Last-Minute Preparation Interview",
@@ -98,6 +99,11 @@ def main():
         render_navigation_drawer(t)
         render_top_nav_bar(t, title="Resume › Resume Analysis")
         render_resume_analysis_flow()
+
+    # ── Multiple Saved Resumes Flow ──────────────────────────────────────────
+    elif screen == "resume_saved":
+        from modules.resume_guide.ui_saved import render_saved_resumes_screen
+        render_saved_resumes_screen()
 
     # ── Specialized Interview Flow ────────────────────────────────────────────
     elif screen == "interview_specialized":

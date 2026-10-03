@@ -203,3 +203,35 @@ def generate_last_minute_questions(
 def generate_last_minute_clarification(question_text: str, interviewer_name: str) -> str:
     """Generates natural restatement or clarification for candidate questions."""
     return f"{interviewer_name}: Certainly, let me clarify. In essence, we want to understand your approach to: {question_text}. Take your time to break it down."
+
+
+def check_level_completion(user_id: str, mode: str) -> Tuple[bool, int, str]:
+    """
+    Checks whether candidate has completed all required progressive levels:
+    - Last-Minute Prep for Specialized: requires 4 levels completed.
+    - Last-Minute Prep for Job Related: requires 6 levels completed.
+    Returns (is_completed, required_level_count, level_label).
+    """
+    from pathlib import Path
+    import json
+
+    clean_u = "".join(c for c in (user_id or "guest").strip().lower() if c.isalnum() or c in "_-")
+
+    if "Specialized" in mode:
+        data_dir = Path("data/interviews")
+        if data_dir.exists():
+            for f in data_dir.glob(f"specialized_{clean_u}_*.json"):
+                try:
+                    data = json.loads(f.read_text(encoding="utf-8"))
+                    if len(data.get("rounds_completed", [])) >= 4:
+                        return True, 4, "four level"
+                except Exception:
+                    pass
+        return False, 4, "four level"
+    else:
+        from modules.interview.job_related.storage import load_job_interview_session
+        session = load_job_interview_session(user_id)
+        if session and len(session.get("completed_rounds", [])) >= 6:
+            return True, 6, "six level"
+        return False, 6, "six level"
+

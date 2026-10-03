@@ -355,3 +355,12 @@ def render_job_interview_setup(on_start_round_callback=None):
                 if st.button("📈  View Final Overall Performance & Improvement Report", type="primary", use_container_width=True, key="btn_view_overall_final_rep"):
                     st.session_state["job_view_mode"] = "overall_report"
                     st.rerun()
+
+        st.markdown("<hr style='margin:20px 0 16px;'/>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("**⚡ Last-Minute Prep for Job Related**")
+            st.caption("Need an intensive 30-minute rehearsal simulation with a company panel right before your interview?")
+            if st.button("⚡ Open Last-Minute Prep for Job Related", use_container_width=True, key="btn_jump_to_lm_job"):
+                st.session_state["lm_active_mode"] = "Last-Minute Prep for Job Related"
+                st.session_state["ac_screen"] = "interview_last_minute"
+                st.rerun()

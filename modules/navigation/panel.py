@@ -545,6 +545,7 @@ def render_navigation_drawer(t: dict):
     /* Indented Sub-option Buttons */
     .st-key-nav_sub_resume_create button,
     .st-key-nav_sub_resume_analysis button,
+    .st-key-nav_sub_resume_saved button,
     .st-key-nav_sub_interview_spec button,
     .st-key-nav_sub_interview_job button,
     .st-key-nav_sub_interview_last_minute button {{
@@ -563,6 +564,7 @@ def render_navigation_drawer(t: dict):
     }}
     .st-key-nav_sub_resume_create button:hover,
     .st-key-nav_sub_resume_analysis button:hover,
+    .st-key-nav_sub_resume_saved button:hover,
     .st-key-nav_sub_interview_spec button:hover,
     .st-key-nav_sub_interview_job button:hover,
     .st-key-nav_sub_interview_last_minute button:hover {{
@@ -682,6 +684,8 @@ def render_navigation_drawer(t: dict):
                 _guard_nav_access("Resume Create & Builder", "resume_create")
             if st.button("🔍  Resume Analysis", key="nav_sub_resume_analysis", use_container_width=True):
                 _guard_nav_access("Resume Analysis & Audit", "resume_analysis")
+            if st.button("📂  My Saved Resumes", key="nav_sub_resume_saved", use_container_width=True):
+                _guard_nav_access("My Saved Resumes", "resume_saved")
 
         # ── 2. Interview Category (Collapsible) ──
         interview_icon = "▾" if interview_open else "▸"

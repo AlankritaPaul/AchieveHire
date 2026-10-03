@@ -17,12 +17,13 @@ from modules.interview.last_minute.models import (
     LAST_MINUTE_DURATION_SECONDS,
     MODE_SPECIALIZED,
     MODE_JOB_RELATED,
+    INTERVIEW_LANGUAGES,
     EVALUATION_CRITERIA,
     POPULAR_SPECIALIZATIONS,
     LastMinuteQuestionRecord,
 )
 from modules.interview.last_minute.panel_generator import generate_last_minute_panel
-from modules.interview.last_minute.engine import generate_last_minute_questions
+from modules.interview.last_minute.engine import generate_last_minute_questions, check_level_completion
 from modules.interview.last_minute.evaluator import (
     evaluate_last_minute_answer,
     synthesize_attempt_evaluation,
@@ -32,6 +33,7 @@ from modules.interview.last_minute.storage import (
     load_user_attempts,
     get_attempt_by_id,
     get_attempt_comparison_data,
+    get_attempt_short_detail,
     _get_user_file,
 )
 from modules.interview.last_minute.report_generator import generate_last_minute_pdf
@@ -56,19 +58,35 @@ class TestLastMinutePreparationInterview(unittest.TestCase):
         self.assertEqual(LAST_MINUTE_DURATION_MINUTES, 30)
         self.assertEqual(LAST_MINUTE_DURATION_SECONDS, 1800)
 
-        # 2. Modes
-        self.assertEqual(MODE_SPECIALIZED, "Last-Minute Specialized Preparation")
-        self.assertEqual(MODE_JOB_RELATED, "Last-Minute Job Related Preparation")
+        # 2. Modes (no Mode A, Mode B)
+        self.assertEqual(MODE_SPECIALIZED, "Last-Minute Prep for Specialized")
+        self.assertEqual(MODE_JOB_RELATED, "Last-Minute Prep for Job Related")
 
-        # 3. 9 evaluation criteria
+        # 3. Languages: Exactly 3 types for both modes
+        self.assertEqual(len(INTERVIEW_LANGUAGES), 3)
+        self.assertEqual(INTERVIEW_LANGUAGES, ["English", "Hindi", "Hinglish"])
+
+        # 4. 9 evaluation criteria
         self.assertEqual(len(EVALUATION_CRITERIA), 9)
         self.assertIn("Technical/Professional Knowledge", EVALUATION_CRITERIA)
         self.assertIn("Interview Behaviour", EVALUATION_CRITERIA)
 
-        # 4. Specializations list
+        # 5. Specializations list
         self.assertIn("Python", POPULAR_SPECIALIZATIONS)
         self.assertIn("Java", POPULAR_SPECIALIZATIONS)
         self.assertIn("C++", POPULAR_SPECIALIZATIONS)
+
+    def test_check_level_completion_logic(self):
+        # Fresh test user has not completed 4 levels of specialized or 6 levels of job related
+        is_spec_done, req_spec, lbl_spec = check_level_completion("new_candidate_x", MODE_SPECIALIZED)
+        self.assertFalse(is_spec_done)
+        self.assertEqual(req_spec, 4)
+        self.assertEqual(lbl_spec, "four level")
+
+        is_job_done, req_job, lbl_job = check_level_completion("new_candidate_x", MODE_JOB_RELATED)
+        self.assertFalse(is_job_done)
+        self.assertEqual(req_job, 6)
+        self.assertEqual(lbl_job, "six level")
 
     def test_panel_generation(self):
         # Specialized panel has 3 members with distinct specialties
@@ -213,6 +231,11 @@ class TestLastMinutePreparationInterview(unittest.TestCase):
         # Verify get_attempt_comparison_data
         comp = get_attempt_comparison_data(self.test_user_id)
         self.assertEqual(len(comp), 3)
+
+        # Verify short detail is saved with specifics (topic, score, time) and not generic "Attempt #"
+        short_det = get_attempt_short_detail(history[1])
+        self.assertIn("C++", short_det)
+        self.assertNotIn("Attempt #", short_det)
 
     def test_pdf_generation_with_stamp_and_no_certificates(self):
         q_list, _ = generate_last_minute_questions(MODE_SPECIALIZED, "Python")
