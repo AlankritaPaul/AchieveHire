@@ -167,6 +167,10 @@ THEMES = {
         "brand_ascend_glow": "rgba(255, 112, 67, 0.25)",
         "brand_career_color": "#58A700",
         "brand_career_glow": "rgba(88, 167, 0, 0.25)",
+        "welcome_achieve_color": "#4F46E5",
+        "welcome_achieve_glow": "rgba(79, 70, 229, 0.25)",
+        "welcome_hire_color": "#D97706",
+        "welcome_hire_glow": "rgba(217, 119, 6, 0.25)",
     },
     "dark": {
         "label": "Toggle Theme",
@@ -201,6 +205,10 @@ THEMES = {
         "brand_ascend_glow": "0 0 16px rgba(255, 138, 101, 0.45)",
         "brand_career_color": "#A3E635",
         "brand_career_glow": "0 0 16px rgba(163, 230, 53, 0.45)",
+        "welcome_achieve_color": "#38BDF8",
+        "welcome_achieve_glow": "0 0 16px rgba(56, 189, 248, 0.55)",
+        "welcome_hire_color": "#FCD34D",
+        "welcome_hire_glow": "0 0 16px rgba(252, 211, 77, 0.55)",
     },
 }
 
@@ -524,6 +532,20 @@ def _inject_css(t: dict):
         margin: 0 0 6px 0 !important;
         line-height: 1.35 !important;
         text-align: center !important;
+    }}
+    .ac-welcome-achieve {{
+        color: {t["welcome_achieve_color"]} !important;
+        text-shadow: 0 2px 16px {t["welcome_achieve_glow"]} !important;
+        letter-spacing: 0em !important;
+        font-weight: 900 !important;
+        display: inline !important;
+    }}
+    .ac-welcome-hire {{
+        color: {t["welcome_hire_color"]} !important;
+        text-shadow: 0 2px 16px {t["welcome_hire_glow"]} !important;
+        letter-spacing: 0em !important;
+        font-weight: 900 !important;
+        display: inline !important;
     }}
     .ac-welcome-subtitle {{
         font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif !important;
@@ -2052,7 +2074,7 @@ def _render_hero(t: dict):
         <!-- Stylish Welcome Header above Logo -->
         <div class="ac-welcome-banner">
             <div class="ac-welcome-title">
-                Welcome 😊 to <span class="ac-brand-ascend">Achieve</span><span class="ac-brand-career">Hire</span>
+                Welcome 😊 to <span class="ac-welcome-achieve">Achieve</span><span class="ac-welcome-hire">Hire</span>
             </div>
             <div class="ac-welcome-subtitle">
                 Every dream deserves preparation
