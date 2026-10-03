@@ -39,6 +39,8 @@
 
 The platform follows a continuous **Audit → Optimize → Train → Re-practice → Verification → Placement Readiness** cycle to ensure candidates achieve measurable career growth.
 
+> 📌 **Important Clarification:** AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
+
 ---
 
 ## 🚀 Key Features
@@ -108,7 +110,6 @@ A structured, professional resume creation suite calibrated for high-impact pres
 - 📼 **Detailed Replays**: Session transcripts with time-stamped moments of strength and weakness.
 
 ### 7. Career Artifacts & Verification
-- 🎓 **Verifiable Certificate of Completion**: Issued upon completing the 6-level ladder with a unique verification ID.
 - 📑 **Readiness Reports**: Downloadable PDF reports detailing progress, mistakes, and recommendations.
 - 🌐 **Public Career Profile**: Shareable showcase link for LinkedIn and GitHub featuring verified readiness credentials and privacy controls.
 

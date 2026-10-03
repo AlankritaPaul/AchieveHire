@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AchieveHire Official Audit Stamp</title>
+  <style>
+    .stamp-container {
+      display: inline-block;
+      width: 140px;
+      height: 140px;
+      position: relative;
+    }
+    .stamp-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 2px 4px rgba(79, 70, 229, 0.2));
+    }
+  </style>
+</head>
+<body>
+  <div class="stamp-container">
+    <svg class="stamp-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer Decorative Ring -->
+      <circle cx="100" cy="100" r="92" fill="none" stroke="#4F46E5" stroke-width="3" stroke-dasharray="6 3" />
+      <circle cx="100" cy="100" r="84" fill="none" stroke="#4338CA" stroke-width="1.5" />
+      
+      <!-- Circular Text Path -->
+      <path id="stamp-text-arc" fill="none" d="M 24, 100 A 76 76 0 1 1 176, 100 A 76 76 0 1 1 24, 100" />
+      
+      <text fill="#312E81" font-size="10.5" font-weight="700" letter-spacing="2.5" font-family="'Cinzel Decorative', Georgia, serif">
+        <textPath href="#stamp-text-arc" startOffset="50%" text-anchor="middle">
+          ACHIEVEHIRE · VERIFIED READINESS · OFFICIAL
+        </textPath>
+      </text>
+      
+      <!-- Inner Emblem -->
+      <circle cx="100" cy="100" r="54" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.5" />
+      <path d="M 82 100 L 94 112 L 122 84" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      <text x="100" y="132" fill="#4338CA" font-size="8" font-weight="800" font-family="sans-serif" text-anchor="middle" letter-spacing="1">
+        AUTHENTICATED
+      </text>
+    </svg>
+  </div>
+</body>
+</html>

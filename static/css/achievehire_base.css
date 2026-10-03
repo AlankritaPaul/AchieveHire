@@ -1,0 +1,166 @@
+/**
+ * AchieveHire Design System & Base Framework
+ * Modern UI tokens, responsive grids, typography, badges, and components.
+ */
+
+:root {
+    --ah-primary: #1E3A8A;
+    --ah-primary-light: #3B82F6;
+    --ah-primary-dark: #1E293B;
+    --ah-secondary: #0D9488;
+    --ah-accent: #F59E0B;
+    --ah-danger: #EF4444;
+    --ah-success: #10B981;
+    --ah-bg-main: #F8FAFC;
+    --ah-bg-card: #FFFFFF;
+    --ah-text-main: #0F172A;
+    --ah-text-muted: #64748B;
+    --ah-border-light: #E2E8F0;
+    --ah-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --ah-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ah-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --ah-radius-sm: 6px;
+    --ah-radius-md: 10px;
+    --ah-radius-lg: 16px;
+    --ah-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+[data-theme="dark"] {
+    --ah-bg-main: #0F172A;
+    --ah-bg-card: #1E293B;
+    --ah-text-main: #F8FAFC;
+    --ah-text-muted: #94A3B8;
+    --ah-border-light: #334155;
+    --ah-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --ah-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --ah-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Base Body Styles */
+.achievehire-app {
+    font-family: var(--ah-font-family);
+    background-color: var(--ah-bg-main);
+    color: var(--ah-text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Card Container */
+.ah-card {
+    background-color: var(--ah-bg-card);
+    border: 1px solid var(--ah-border-light);
+    border-radius: var(--ah-radius-md);
+    box-shadow: var(--ah-shadow-sm);
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ah-card:hover {
+    box-shadow: var(--ah-shadow-md);
+}
+
+/* Header & Typography */
+.ah-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ah-text-main);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+}
+
+.ah-subtitle {
+    font-size: 1rem;
+    color: var(--ah-text-muted);
+    margin: 0 0 16px 0;
+}
+
+/* Pill Badges */
+.ah-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ah-badge-primary {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.ah-badge-success {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.ah-badge-warning {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.ah-badge-danger {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Button UI Components */
+.ah-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--ah-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.ah-btn-primary {
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    color: #FFFFFF;
+}
+
+.ah-btn-primary:hover {
+    background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.ah-btn-outline {
+    background: transparent;
+    border: 1px solid var(--ah-border-light);
+    color: var(--ah-text-main);
+}
+
+.ah-btn-outline:hover {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: var(--ah-primary-light);
+}
+
+/* Grid Layouts */
+.ah-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.ah-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .ah-grid-2, .ah-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}

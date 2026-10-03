@@ -1,0 +1,195 @@
+/**
+ * AchieveHire - Live Interview Console, HUD & Panel Interaction Styling
+ */
+
+.interview-console-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Header HUD Bar */
+.interview-hud-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0F172A;
+    color: #FFFFFF;
+    padding: 14px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+}
+
+.hud-panel-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hud-live-tag {
+    background: #EF4444;
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    animation: pulseGlow 1.5s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Interviewer Gallery */
+.panel-gallery-container {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 4px;
+}
+
+.interviewer-avatar-card {
+    flex: 1;
+    min-width: 200px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.interviewer-avatar-card.active-speaker {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.avatar-image-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    background: #F1F5F9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: 2px solid #E2E8F0;
+}
+
+.interviewer-avatar-card.active-speaker .avatar-image-ring {
+    border-color: #3B82F6;
+    background: #EFF6FF;
+}
+
+.interviewer-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 2px;
+}
+
+.interviewer-role {
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+/* Dialogue Timeline */
+.dialogue-timeline {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 24px;
+    min-height: 380px;
+    max-height: 520px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dialogue-bubble {
+    display: flex;
+    gap: 14px;
+    max-width: 85%;
+}
+
+.dialogue-bubble.system-interviewer {
+    align-self: flex-start;
+}
+
+.dialogue-bubble.candidate-response {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.bubble-content {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #1E293B;
+}
+
+.candidate-response .bubble-content {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #1E3A8A;
+}
+
+.bubble-speaker-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #475569;
+}
+
+/* Response Input Tray */
+.interview-input-tray {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.audio-record-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #EF4444;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.audio-record-button:hover {
+    transform: scale(1.05);
+}
+
+.audio-record-button.recording {
+    animation: pulseRecording 1.2s infinite;
+}
+
+@keyframes pulseRecording {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.1); }
+}
