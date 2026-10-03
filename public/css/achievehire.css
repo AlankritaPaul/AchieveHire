@@ -15,6 +15,8 @@
     --gold-primary: #D97706;
     --gold-luminous: #F59E0B;
     --gold-light: #FEF3C7;
+    --brand-achieve: #1D4ED8;
+    --brand-hire: #D97706;
     --blue-primary: #1E3A8A;
     --blue-accent: #3B82F6;
     --blue-soft: #EFF6FF;
@@ -26,6 +28,7 @@
     --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'Consolas', 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-cursive: 'Great Vibes', 'Alex Brush', 'Dancing Script', cursive;
 }
 
 [data-theme="dark"] {
@@ -39,6 +42,8 @@
     --gold-primary: #F5B731;
     --gold-luminous: #FCD34D;
     --gold-light: #2D2614;
+    --brand-achieve: #60A5FA;
+    --brand-hire: #FBBF24;
     --blue-primary: #3B82F6;
     --blue-accent: #60A5FA;
     --blue-soft: #1E293B;
@@ -93,12 +98,22 @@ body {
 }
 
 .ah-title-achieve {
-    color: var(--text-primary);
+    color: var(--brand-achieve);
 }
 
 .ah-title-hire {
-    color: var(--gold-luminous);
-    text-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+    color: var(--brand-hire);
+    text-shadow: 0 0 16px rgba(245, 158, 11, 0.40);
+}
+
+.ah-tagline-cursive {
+    font-family: var(--font-cursive);
+    font-size: clamp(2rem, 4vw, 2.85rem);
+    font-weight: 400;
+    color: var(--brand-hire);
+    margin: 8px 0 14px;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
 }
 
 .ah-brand-tagline {
@@ -238,17 +253,21 @@ body {
 
 /* ── Important Clarification Banner ─────────────────────────────────── */
 .ah-clarification-banner {
-    background: rgba(59, 130, 246, 0.08);
-    border-left: 4px solid var(--blue-accent);
-    border-radius: 10px;
-    padding: 16px 22px;
-    margin: 28px 0;
-    font-size: 1rem;
+    background: rgba(59, 130, 246, 0.12);
+    border-left: 5px solid var(--blue-accent);
+    border-radius: 12px;
+    padding: 20px 28px;
+    margin: 32px 0;
+    font-size: 1.18rem;
+    font-weight: 600;
     line-height: 1.6;
     color: var(--text-primary);
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.10);
 }
 
 .ah-clarification-banner strong {
+    font-size: 1.24rem;
+    font-weight: 800;
     color: var(--blue-accent);
 }
 

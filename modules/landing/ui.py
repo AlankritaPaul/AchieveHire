@@ -163,14 +163,16 @@ THEMES = {
         "principle_sub_color": "#475569",
         "principle_text_color": "#5B21B6",
         "principle_text_glow": "none",
-        "brand_ascend_color": "#0F172A",
-        "brand_ascend_glow": "rgba(15, 23, 42, 0.15)",
+        "brand_ascend_color": "#1D4ED8",
+        "brand_ascend_glow": "rgba(29, 78, 216, 0.20)",
         "brand_career_color": "#D97706",
-        "brand_career_glow": "rgba(217, 119, 6, 0.20)",
-        "welcome_achieve_color": "#0F172A",
-        "welcome_achieve_glow": "rgba(15, 23, 42, 0.15)",
+        "brand_career_glow": "rgba(217, 119, 6, 0.25)",
+        "welcome_achieve_color": "#1D4ED8",
+        "welcome_achieve_glow": "rgba(29, 78, 216, 0.20)",
         "welcome_hire_color": "#D97706",
-        "welcome_hire_glow": "rgba(217, 119, 6, 0.20)",
+        "welcome_hire_glow": "rgba(217, 119, 6, 0.25)",
+        "cursive_tagline_color": "#B45309",
+        "cursive_tagline_glow": "0 1px 4px rgba(180, 83, 9, 0.15)",
     },
     "dark": {
         "label": "Toggle Theme",
@@ -201,14 +203,16 @@ THEMES = {
         "principle_sub_color": "#FDE68A",
         "principle_text_color": "#38BDF8",
         "principle_text_glow": "0 0 12px rgba(56, 189, 248, 0.28)",
-        "brand_ascend_color": "#FFFFFF",
-        "brand_ascend_glow": "0 0 20px rgba(255, 255, 255, 0.40)",
-        "brand_career_color": "#F5B731",
-        "brand_career_glow": "0 0 20px rgba(245, 183, 49, 0.50)",
-        "welcome_achieve_color": "#FFFFFF",
-        "welcome_achieve_glow": "0 0 16px rgba(255, 255, 255, 0.45)",
-        "welcome_hire_color": "#F5B731",
-        "welcome_hire_glow": "0 0 16px rgba(245, 183, 49, 0.50)",
+        "brand_ascend_color": "#60A5FA",
+        "brand_ascend_glow": "0 0 20px rgba(96, 165, 250, 0.55)",
+        "brand_career_color": "#FBBF24",
+        "brand_career_glow": "0 0 20px rgba(251, 191, 36, 0.55)",
+        "welcome_achieve_color": "#60A5FA",
+        "welcome_achieve_glow": "0 0 16px rgba(96, 165, 250, 0.50)",
+        "welcome_hire_color": "#FBBF24",
+        "welcome_hire_glow": "0 0 16px rgba(251, 191, 36, 0.55)",
+        "cursive_tagline_color": "#FDE68A",
+        "cursive_tagline_glow": "0 0 16px rgba(253, 230, 138, 0.60)",
     },
 }
 
@@ -229,7 +233,7 @@ def _inject_css(t: dict):
     st.markdown(
         '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-        '<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
+        '<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@500;600;700&family=Great+Vibes&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
         unsafe_allow_html=True,
     )
     st.markdown(clean_html(f"""
@@ -634,12 +638,12 @@ def _inject_css(t: dict):
     /* ── Right-Side Perpendicular Oval Length Boxes ───────────────────── */
     .ac-right-features-rail {{
         position: fixed;
-        top: 56%;
+        top: 36%;
         right: 28px;
-        transform: translateY(-38%);
+        transform: translateY(-50%);
         display: flex;
         flex-direction: column;
-        gap: 14px; /* Comfortable spacing between perpendicular boxes */
+        gap: 10px; /* Elevated spacing so footer and brainchild credit remain fully visible */
         z-index: 90;
         pointer-events: auto;
     }}
@@ -2094,15 +2098,17 @@ def _render_hero(t: dict):
         <!-- Brand name — stylish Cinzel dual-tone (Achieve in Peach, Hire in Lime) -->
         <div class="ac-brand-title" style="margin-top: 0px; margin-bottom: 8px;"><span class="ac-brand-ascend">Achieve</span><span class="ac-brand-career">Hire</span></div>
 
-        <!-- Tagline 1: Achieve with Preparation -->
-        <div style="
-            font-family: 'Cinzel Decorative', 'Palatino Linotype', Georgia, serif;
-            font-size: clamp(0.95rem, 2.0vw, 1.25rem);
-            font-weight: 600;
-            letter-spacing: 0.16em;
-            color: {t['text_primary']};
-            margin-top: 12px;
-            text-transform: uppercase;
+        <!-- Tagline 1: Achieve with Preparation in elegant cursive handwriting matching Image 4 -->
+        <div class="ac-tagline-cursive" style="
+            font-family: 'Great Vibes', 'Alex Brush', 'Dancing Script', cursive;
+            font-size: clamp(2.2rem, 4.4vw, 3.1rem);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: {t['cursive_tagline_color']};
+            text-shadow: {t['cursive_tagline_glow']};
+            margin-top: 6px;
+            margin-bottom: 4px;
+            line-height: 1.3;
         ">Achieve with Preparation</div>
 
         <!-- Tagline 2: Where Preparation Meets Opportunity -->
@@ -2181,8 +2187,8 @@ def _render_core_principle(t: dict):
         <div class="ac-principle-block">
             {CORE_PRINCIPLE}
         </div>
-        <div style="margin-top:20px; padding:14px 20px; border-radius:10px; background:rgba(59, 130, 246, 0.08); border-left:4px solid #3B82F6; text-align:center; font-size:0.92rem; color:{t['text_secondary']}; line-height:1.5;">
-            <strong>📌 Important Clarification:</strong> AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
+        <div style="margin-top:28px; padding:20px 28px; border-radius:12px; background:rgba(59, 130, 246, 0.12); border-left:5px solid #2563EB; text-align:center; font-size:1.18rem; font-weight:600; color:{t['text_primary']}; line-height:1.6; box-shadow:0 4px 20px rgba(37, 99, 235, 0.12);">
+            <span style="font-size:1.40rem; margin-right:6px; vertical-align:middle;">📌</span> <strong style="font-size:1.24rem; font-weight:800; color:{t['text_primary']};">Important Clarification:</strong> AchieveHire prepares you for opportunities; it does not guarantee job or interview selection.
         </div>
     </div>
     """), unsafe_allow_html=True)
