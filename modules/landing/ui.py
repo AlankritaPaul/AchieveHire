@@ -163,10 +163,10 @@ THEMES = {
         "principle_sub_color": "#475569",
         "principle_text_color": "#5B21B6",
         "principle_text_glow": "none",
-        "brand_ascend_color": "#FF6B4A",
-        "brand_ascend_glow": "rgba(255, 107, 74, 0.20)",
-        "brand_career_color": "#5A9E19",
-        "brand_career_glow": "rgba(90, 158, 25, 0.20)",
+        "brand_ascend_color": "#FF7043",
+        "brand_ascend_glow": "rgba(255, 112, 67, 0.25)",
+        "brand_career_color": "#58A700",
+        "brand_career_glow": "rgba(88, 167, 0, 0.25)",
     },
     "dark": {
         "label": "Toggle Theme",
@@ -504,26 +504,63 @@ def _inject_css(t: dict):
         opacity: 0 !important;
     }}
 
+    /* ── Welcome Banner Above Logo ────────────────────────────────────── */
+    .ac-welcome-banner {{
+        text-align: center !important;
+        margin: 0 auto 18px !important;
+        padding: 0 12px !important;
+        display: block !important;
+        position: relative !important;
+        z-index: 20 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }}
+    .ac-welcome-title {{
+        font-family: 'Cinzel Decorative', 'Playfair Display', 'Cormorant Garamond', Georgia, serif !important;
+        font-size: clamp(1.4rem, 3.0vw, 2.25rem) !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        color: {t["text_primary"]} !important;
+        margin: 0 0 6px 0 !important;
+        line-height: 1.35 !important;
+        text-align: center !important;
+    }}
+    .ac-welcome-subtitle {{
+        font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif !important;
+        font-size: clamp(1.1rem, 2.2vw, 1.5rem) !important;
+        font-style: italic !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em !important;
+        color: {t["text_secondary"]} !important;
+        margin: 0 !important;
+        line-height: 1.4 !important;
+        text-align: center !important;
+    }}
+
     /* ── Typography ───────────────────────────────────────────────────── */
     .ac-brand-title {{
-        font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-        font-size: clamp(2.6rem, 5.8vw, 4.4rem);
-        font-weight: 800;
+        font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Georgia, serif !important;
+        font-size: clamp(2.6rem, 5.8vw, 4.4rem) !important;
+        font-weight: 800 !important;
         letter-spacing: 0em !important;
-        line-height: 1.1;
-        margin: 0 auto 8px;
-        text-align: center;
-        display: inline-block;
+        line-height: 1.1 !important;
+        margin: 0 auto 8px !important;
+        text-align: center !important;
+        display: inline-block !important;
     }}
     .ac-brand-ascend {{
-        color: {t["brand_ascend_color"]};
-        text-shadow: 0 2px 16px {t["brand_ascend_glow"]};
+        color: {t["brand_ascend_color"]} !important;
+        text-shadow: 0 2px 16px {t["brand_ascend_glow"]} !important;
         letter-spacing: 0em !important;
+        font-weight: 800 !important;
+        display: inline !important;
     }}
     .ac-brand-career {{
-        color: {t["brand_career_color"]};
-        text-shadow: 0 2px 16px {t["brand_career_glow"]};
+        color: {t["brand_career_color"]} !important;
+        text-shadow: 0 2px 16px {t["brand_career_glow"]} !important;
         letter-spacing: 0em !important;
+        font-weight: 800 !important;
+        display: inline !important;
     }}
     .ac-tagline-main {{
         font-size: clamp(1rem, 2.2vw, 1.35rem);
@@ -2010,30 +2047,14 @@ def _animated_background(theme_key: str, theme_icon_uri: str = ""):
 def _render_hero(t: dict):
     logo_data_uri = _get_logo_data_uri()
     st.markdown(clean_html(f"""
-    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -12px; position: relative; z-index: 10;">
+    <div class="ac-content" style="text-align:center; padding: 0 24px 32px; margin-top: -6px; position: relative; z-index: 10;">
 
         <!-- Stylish Welcome Header above Logo -->
-        <div style="text-align: center; margin-bottom: 22px;">
-            <div style="
-                font-family: 'Cinzel Decorative', 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-                font-size: clamp(1.3rem, 2.9vw, 2.1rem);
-                font-weight: 700;
-                letter-spacing: 0.04em;
-                color: {t['text_primary']};
-                margin-bottom: 8px;
-                line-height: 1.35;
-            ">
-                Welcome 😊 to <span class="ac-brand-ascend" style="font-weight: 900; letter-spacing: 0em;">Achieve</span><span class="ac-brand-career" style="font-weight: 900; letter-spacing: 0em;">Hire</span>
+        <div class="ac-welcome-banner">
+            <div class="ac-welcome-title">
+                Welcome 😊 to <span class="ac-brand-ascend">Achieve</span><span class="ac-brand-career">Hire</span>
             </div>
-            <div style="
-                font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-                font-size: clamp(1.05rem, 2.2vw, 1.45rem);
-                font-style: italic;
-                font-weight: 600;
-                letter-spacing: 0.06em;
-                color: {t['text_secondary']};
-                line-height: 1.4;
-            ">
+            <div class="ac-welcome-subtitle">
                 Every dream deserves preparation
             </div>
         </div>
