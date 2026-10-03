@@ -111,7 +111,6 @@ A structured, professional resume creation suite calibrated for high-impact pres
 
 ### 7. Career Artifacts & Verification
 - 📑 **Readiness Reports**: Downloadable PDF reports detailing progress, mistakes, and recommendations.
-- 🌐 **Public Career Profile**: Shareable showcase link for LinkedIn and GitHub featuring verified readiness credentials and privacy controls.
 
 ---
 
