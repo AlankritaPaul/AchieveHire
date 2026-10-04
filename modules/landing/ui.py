@@ -1029,9 +1029,9 @@ def _inject_css(t: dict):
     }}
 
     /* ── Streamlit Generic & Secondary Button Overrides (High Visibility in Dark & Light) ── */
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]),
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"],
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"] {{
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]),
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"],
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[kind="secondary"] {{
         background: {"#1C2035" if is_dark else "#FFFFFF"} !important;
         background-color: {"#1C2035" if is_dark else "#FFFFFF"} !important;
         color: {"#FFFFFF" if is_dark else "#000000"} !important;
@@ -1040,21 +1040,21 @@ def _inject_css(t: dict):
         font-weight: 600 !important;
         transition: all 0.18s ease !important;
     }}
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"]:hover,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"]:hover {{
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"]:hover,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[kind="secondary"]:hover {{
         background: {"#252B48" if is_dark else "#F0F4FF"} !important;
         background-color: {"#252B48" if is_dark else "#F0F4FF"} !important;
         border-color: {"#818CF8" if is_dark else "#4F46E5"} !important;
         color: {"#FFFFFF" if is_dark else "#4F46E5"} !important;
         box-shadow: 0 4px 14px {"rgba(129, 140, 248, 0.25)" if is_dark else "rgba(79, 70, 229, 0.15)"} !important;
     }}
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) p,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) span,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) div,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] p,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] span,
-    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] div {{
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]) p,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]) span,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]) div,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"] p,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"] span,
+    div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"] div {{
         color: {"#FFFFFF" if is_dark else "#000000"} !important;
         -webkit-text-fill-color: {"#FFFFFF" if is_dark else "#000000"} !important;
         font-weight: 600 !important;
@@ -1308,27 +1308,27 @@ def _inject_css(t: dict):
 
         styleEl.textContent = `
             /* Force Generic / Secondary Buttons Contrast */
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]),
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"],
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"] {{
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]),
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"],
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[kind="secondary"] {{
                 background-color: {btn_sec_bg} !important;
                 background: {btn_sec_bg} !important;
                 color: {btn_sec_text} !important;
                 border: 1.5px solid {btn_sec_border} !important;
                 border-radius: 8px !important;
             }}
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"]:hover,
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[kind="secondary"]:hover {{
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]):hover,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"]:hover,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[kind="secondary"]:hover {{
                 background-color: {btn_sec_hover_bg} !important;
                 background: {btn_sec_hover_bg} !important;
                 border-color: {btn_sec_hover_border} !important;
                 color: {btn_sec_text} !important;
             }}
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) p,
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) div[data-testid="stButton"] > button:not([kind="primary"]) span,
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] p,
-            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not(.st-key-nav_close_btn) button[data-testid="baseButton-secondary"] span {{
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]) p,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) div[data-testid="stButton"] > button:not([kind="primary"]) span,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"] p,
+            div[data-testid="stElementContainer"]:not(.st-key-ac_top_signin_btn):not(.st-key-ac_theme_toggle_btn):not(.st-key-ac_hamburger_btn):not(.st-key-ac_top_verified_user_btn):not([class*="st-key-nav_"]) button[data-testid="baseButton-secondary"] span {{
                 color: {btn_sec_text} !important;
                 -webkit-text-fill-color: {btn_sec_text} !important;
             }}

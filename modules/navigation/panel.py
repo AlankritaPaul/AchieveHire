@@ -524,6 +524,15 @@ def render_navigation_drawer(t: dict):
         color: {t["accent"]} !important;
     }}
 
+    /* Prevent Streamlit default focus/active layout shifts for all nav buttons */
+    .st-key-nav_cat_resume button:focus, .st-key-nav_cat_resume button:active,
+    .st-key-nav_cat_interview button:focus, .st-key-nav_cat_interview button:active,
+    div[class*="st-key-nav_sub_"] button:focus, div[class*="st-key-nav_sub_"] button:active,
+    div[class*="st-key-nav_btn_"] button:focus, div[class*="st-key-nav_btn_"] button:active {{
+        box-shadow: none !important;
+        outline: none !important;
+        border-width: 1px !important;
+    }}
     /* Category Accordion Header Buttons */
     .st-key-nav_cat_resume button,
     .st-key-nav_cat_interview button {{
@@ -577,7 +586,7 @@ def render_navigation_drawer(t: dict):
         background: {t["surface2"]} !important;
         border-color: {t["border"]} !important;
         color: {t["text_primary"]} !important;
-        padding-left: 30px !important;
+        transform: translateX(4px) !important;
     }}
 
     /* Profile, FAQ, Privacy, Terms, Home, Settings, Founder Analytics items */
@@ -653,7 +662,7 @@ def render_navigation_drawer(t: dict):
         st.markdown(clean_html(f"""
         <div id="ac-drawer-brand-logo" class="ac-drawer-header" style="margin-top:-6px; margin-bottom:12px; cursor:pointer;" title="Click to go to Home Page">
             <span class="ac-drawer-brand">
-                <span style="color:{'#FFFFFF' if is_dark else '#0F172A'};">Achieve</span><span style="color:{t['gold']};">Hire</span>
+                <span style="color:{t['brand_ascend_color']};">Achieve</span><span style="color:{t['brand_career_color']};">Hire</span>
             </span>
         </div>
         """), unsafe_allow_html=True)
