@@ -15,7 +15,7 @@
     --gold-primary: #D97706;
     --gold-luminous: #F59E0B;
     --gold-light: #FEF3C7;
-    --brand-achieve: #7C3AED;
+    --brand-achieve: #1D4ED8;
     --brand-hire: #D97706;
     --blue-primary: #1E3A8A;
     --blue-accent: #3B82F6;
@@ -42,8 +42,8 @@
     --gold-primary: #F5B731;
     --gold-luminous: #FCD34D;
     --gold-light: #2D2614;
-    --brand-achieve: #A78BFA;
-    --brand-hire: #FCD34D;
+    --brand-achieve: #60A5FA;
+    --brand-hire: #FBBF24;
     --blue-primary: #3B82F6;
     --blue-accent: #60A5FA;
     --blue-soft: #1E293B;
@@ -106,14 +106,23 @@ body {
     text-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
 }
 
-/* ── Hero-only AchieveHire brand: blue + amber-gold dual-tone (Image 2) ── */
+/* ── Hero-only AchieveHire brand below logo: deep violet-purple + golden-yellow ── */
 .ah-welcome-title .ah-title-achieve {
-    color: var(--brand-achieve);
+    color: #7C3AED;
 }
 
 .ah-welcome-title .ah-title-hire {
-    color: var(--brand-hire);
+    color: #D97706;
     text-shadow: 0 0 16px rgba(217, 119, 6, 0.40);
+}
+
+[data-theme="dark"] .ah-welcome-title .ah-title-achieve {
+    color: #A78BFA;
+}
+
+[data-theme="dark"] .ah-welcome-title .ah-title-hire {
+    color: #FCD34D;
+    text-shadow: 0 0 16px rgba(252, 211, 77, 0.40);
 }
 
 .ah-tagline-cursive {
