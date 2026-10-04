@@ -6,9 +6,9 @@
   "author": "Alankrita Pal",
   "license": "MIT",
   "scripts": {
-    "dev": "python -m http.server 3000 --directory public",
+    "dev": "node server.js",
     "build": "echo 'AchieveHire production build successful'",
-    "start": "python -m http.server 8080 --directory public"
+    "start": "node server.js"
   },
   "keywords": [
     "career-acceleration",

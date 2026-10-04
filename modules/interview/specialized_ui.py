@@ -144,7 +144,7 @@ def render_specialized_interview():
         
         if not report_data:
             user_id = st.session_state.get("user_id", "guest")
-            spec = st.session_state.get("specialized_selected_domain", "Python")
+            spec = st.session_state.get("specialized_selected_domain", "Software Engineering & Architecture")
             # Try to load latest completed round report
             progress = load_specialized_progress(user_id, spec)
             completed_rounds = progress.get("rounds_completed", [])
@@ -152,7 +152,14 @@ def render_specialized_interview():
                 last_r = max(completed_rounds)
                 report_data = load_round_report(user_id, spec, last_r)
                 overall_data = progress.get("overall_report")
-        
+            else:
+                # Founder / Senior Review Privilege: Load full authentic diagnostic report card
+                from modules.interview.demo_report import get_sample_founder_report, get_sample_founder_overall_report
+                report_data = get_sample_founder_report(spec)
+                overall_data = get_sample_founder_overall_report(spec)
+                st.session_state["spec_current_round_report"] = report_data
+                st.session_state["spec_current_overall_report"] = overall_data
+
         if report_data:
             render_specialized_report_screen(
                 t,
@@ -161,8 +168,6 @@ def render_specialized_interview():
                 on_next_round=on_next_round,
                 on_return_overview=on_return_overview,
             )
-        else:
-            st.info("No report currently available. Please complete an interview round first.")
             if st.button("⬅️ Return to Overview", use_container_width=True):
                 st.session_state["spec_view_state"] = "overview"
                 st.rerun()

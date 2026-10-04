@@ -65,17 +65,17 @@ LANGUAGE_OPTIONS: List[str] = ["English", "Hindi", "Hinglish"]
 INTERVIEWER_OPTIONS: Dict[str, Dict[str, str]] = {
     "male": {
         "id": "male",
-        "label": "Male Interviewer (Rohan / David)",
+        "label": "Male Interviewer",
         "voice_gender": "male",
-        "name": "David",
+        "name": "Interviewer",
         "role": "Lead Technical Evaluator",
         "avatar_icon": "👨‍💼",
     },
     "female": {
         "id": "female",
-        "label": "Female Interviewer (Priya / Sarah)",
+        "label": "Female Interviewer",
         "voice_gender": "female",
-        "name": "Sarah",
+        "name": "Interviewer",
         "role": "Lead Technical Evaluator",
         "avatar_icon": "👩‍💼",
     },

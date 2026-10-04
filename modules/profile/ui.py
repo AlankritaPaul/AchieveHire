@@ -218,6 +218,14 @@ def _render_profile_interview_history(t: dict, user_id: str):
                 st.session_state["ac_screen"] = "interview_specialized"
                 st.session_state["spec_view_state"] = "overview"
                 st.rerun()
+            st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+            if st.button("👑 Founder Privilege: Preview Sample Diagnostic Report Card", use_container_width=True, key="prof_btn_demo_report"):
+                from modules.interview.demo_report import get_sample_founder_report, get_sample_founder_overall_report
+                st.session_state["ac_screen"] = "interview_specialized"
+                st.session_state["spec_view_state"] = "report"
+                st.session_state["spec_current_round_report"] = get_sample_founder_report("Software Engineering & Architecture")
+                st.session_state["spec_current_overall_report"] = get_sample_founder_overall_report("Software Engineering & Architecture")
+                st.rerun()
         return
 
     for rec in interviews:

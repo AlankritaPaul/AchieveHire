@@ -216,3 +216,18 @@ function renderScorecard(reportData) {
     document.getElementById('rep-candidate').textContent = window.state.currentUser ? window.state.currentUser.name : 'Candidate';
     document.getElementById('rep-date').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 }
+
+// ── Founder Privilege Preview Report Listener ──
+document.addEventListener('DOMContentLoaded', () => {
+    const btnFounderPreview = document.getElementById('btn-founder-preview-report');
+    if (btnFounderPreview) {
+        btnFounderPreview.addEventListener('click', () => {
+            renderScorecard({
+                mode: 'Executive Technical Systems',
+                type: 'Specialized Architecture',
+                overallScore: 89,
+            });
+        });
+    }
+});
+
