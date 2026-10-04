@@ -98,12 +98,22 @@ body {
 }
 
 .ah-title-achieve {
-    color: var(--brand-achieve);
+    color: var(--text-primary);
 }
 
 .ah-title-hire {
+    color: var(--gold-luminous);
+    text-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
+/* ── Hero-only AchieveHire brand: blue + amber-gold dual-tone (Image 2) ── */
+.ah-welcome-title .ah-title-achieve {
+    color: var(--brand-achieve);
+}
+
+.ah-welcome-title .ah-title-hire {
     color: var(--brand-hire);
-    text-shadow: 0 0 16px rgba(245, 158, 11, 0.40);
+    text-shadow: 0 0 16px rgba(217, 119, 6, 0.40);
 }
 
 .ah-tagline-cursive {
