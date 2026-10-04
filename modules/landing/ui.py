@@ -245,6 +245,8 @@ def _inject_css(t: dict):
         background: {t["bg"]} !important;
         color: {t["text_primary"]} !important;
         font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
     }}
 
     /* Hide default Streamlit chrome on landing */
