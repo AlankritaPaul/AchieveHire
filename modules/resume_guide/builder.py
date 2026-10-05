@@ -819,25 +819,45 @@ class ResumeBuilderModel:
     @staticmethod
     def enhance_experience(raw_exp: str) -> str:
         """
-        Enhance experience bullets with powerful active verbs and professional phrasing
-        without altering authentic facts, companies, or dates.
+        Enhance experience bullets with powerful active verbs, correct common typos, 
+        and fix sentence structures automatically.
         """
         if not raw_exp or not raw_exp.strip():
             return ""
 
         lines = raw_exp.split("\n")
         upgraded_lines = []
+        
+        common_typos = {
+            "teh": "the", "reponsible": "responsible", "develped": "developed",
+            "managment": "management", "experince": "experience", "implmented": "implemented",
+            "maintaned": "maintained", "improoved": "improved", "optmized": "optimized",
+            "buid": "build", "manger": "manager", "profect": "project", "appliation": "application",
+            "enviroment": "environment", "perfomance": "performance", "succeful": "successful",
+            "knowlege": "knowledge", "recieve": "receive", "seperate": "separate",
+            "untill": "until", "acheive": "achieve"
+        }
 
         for line in lines:
             stripped = line.strip()
             if not stripped:
                 continue
 
+            # Fix spaces before punctuation
+            stripped = re.sub(r'\s+([.,;:!?])', r'\1', stripped)
+            # Fix multiple spaces
+            stripped = re.sub(r'\s+', ' ', stripped)
+
             if "|" in stripped and not stripped.startswith(("•", "-", "*")):
                 upgraded_lines.append(stripped)
                 continue
 
             clean_line = stripped.lstrip("•-* ").strip()
+            
+            # Correct common typos
+            for typo, correct in common_typos.items():
+                clean_line = re.sub(r"(?i)\b" + typo + r"\b", correct, clean_line)
+
             for weak_v, strong_options in WEAK_VERBS_MAP.items():
                 pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
                 if re.search(pattern, clean_line):
@@ -845,6 +865,7 @@ class ResumeBuilderModel:
                     clean_line = re.sub(pattern, strong_v, clean_line, count=1)
 
             if clean_line:
+                # Ensure sentence casing
                 clean_line = clean_line[0].upper() + clean_line[1:]
 
             upgraded_lines.append(f"• {clean_line}")
@@ -854,11 +875,20 @@ class ResumeBuilderModel:
     @staticmethod
     def enhance_experience_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Enhance structured work experience entries by upgrading passive verbs in descriptions
-        and responsibilities without altering authentic facts, companies, or dates.
-        Preserves user-entered custom experience types exactly as provided.
+        Enhance structured work experience entries by upgrading passive verbs,
+        fixing sentence casing, removing duplicate spaces, and correcting typos.
         """
         enhanced = []
+        common_typos = {
+            "teh": "the", "reponsible": "responsible", "develped": "developed",
+            "managment": "management", "experince": "experience", "implmented": "implemented",
+            "maintaned": "maintained", "improoved": "improved", "optmized": "optimized",
+            "buid": "build", "manger": "manager", "profect": "project", "appliation": "application",
+            "enviroment": "environment", "perfomance": "performance", "succeful": "successful",
+            "knowlege": "knowledge", "recieve": "receive", "seperate": "separate",
+            "untill": "until", "acheive": "achieve"
+        }
+
         for entry in entries:
             e = dict(entry)
             pos = e.get("position", "").strip()
@@ -866,7 +896,6 @@ class ResumeBuilderModel:
             desc = e.get("description", "").strip()
             resp = e.get("responsibilities", "").strip()
 
-            # Skip entries with no substantive user input
             if not any([pos, comp, desc, resp]):
                 continue
 
@@ -874,32 +903,51 @@ class ResumeBuilderModel:
                 e["position"] = pos[0].upper() + pos[1:] if len(pos) > 1 else pos.upper()
 
             if desc:
-                clean_desc = desc
+                # Basic fixes
+                desc = re.sub(r'\s+([.,;:!?])', r'\1', desc)
+                desc = re.sub(r'\s+', ' ', desc)
+                for typo, correct in common_typos.items():
+                    desc = re.sub(r"(?i)\b" + typo + r"\b", correct, desc)
+
                 for weak_v, strong_options in WEAK_VERBS_MAP.items():
                     pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
-                    if re.search(pattern, clean_desc):
-                        strong_v = strong_options[0].capitalize()
-                        clean_desc = re.sub(pattern, strong_v, clean_desc, count=1)
-                e["description"] = clean_desc
+                    if re.search(pattern, desc):
+                        strong_v = strong_options[0]
+                        desc = re.sub(pattern, strong_v, desc, count=1)
+                
+                if desc:
+                    desc = desc[0].upper() + desc[1:]
+                e["description"] = desc
 
             if resp:
-                enhanced_lines = []
+                resp_lines = []
                 for line in resp.split("\n"):
                     stripped = line.strip()
                     if not stripped:
                         continue
-                    clean_line = stripped.lstrip("•-* ").strip()
+                        
+                    stripped = re.sub(r'\s+([.,;:!?])', r'\1', stripped)
+                    stripped = re.sub(r'\s+', ' ', stripped)
+                    
+                    if "|" in stripped and not stripped.startswith(("•", "-", "*")):
+                        resp_lines.append(stripped)
+                        continue
+
+                    cl = stripped.lstrip("•-* ").strip()
+                    for typo, correct in common_typos.items():
+                        cl = re.sub(r"(?i)\b" + typo + r"\b", correct, cl)
+                        
                     for weak_v, strong_options in WEAK_VERBS_MAP.items():
                         pattern = r"(?i)\b" + re.escape(weak_v) + r"\b"
-                        if re.search(pattern, clean_line):
-                            strong_v = strong_options[0].capitalize()
-                            clean_line = re.sub(pattern, strong_v, clean_line, count=1)
-                    if clean_line:
-                        clean_line = clean_line[0].upper() + clean_line[1:]
-                    enhanced_lines.append(f"• {clean_line}")
-                e["responsibilities"] = "\n".join(enhanced_lines)
+                        if re.search(pattern, cl):
+                            cl = re.sub(pattern, strong_options[0].capitalize(), cl, count=1)
+                    if cl:
+                        cl = cl[0].upper() + cl[1:]
+                    resp_lines.append(f"• {cl}")
+                e["responsibilities"] = "\n".join(resp_lines)
 
             enhanced.append(e)
+
         return enhanced
 
     @staticmethod

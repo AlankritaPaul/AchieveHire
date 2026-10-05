@@ -90,8 +90,6 @@ function updateUserBadge() {
 function setupAuth() {
     const authModal = document.getElementById('modal-auth');
     const authForm = document.getElementById('form-register');
-    const guestBtn = document.getElementById('btn-quick-founder');
-
     if (authForm) {
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -104,23 +102,7 @@ function setupAuth() {
         });
     }
 
-    if (guestBtn) {
-        guestBtn.addEventListener('click', () => {
-            const founderUser = {
-                user_id: 'ACHIEVE_FOUNDER_001',
-                name: 'Alankrita Pal',
-                purpose: 'Both',
-                created_at: new Date().toISOString(),
-                headline: 'Platform Founder & Leader · Career Readiness',
-                resumes: [],
-                interview_attempts: []
-            };
-            window.state.saveUser(founderUser);
-            closeModal('modal-auth');
-            updateUserBadge();
-            navigateTo('view-landing');
-        });
-    }
+
 }
 
 function openAuthModal(noticeText = '') {
@@ -216,18 +198,4 @@ function renderScorecard(reportData) {
     document.getElementById('rep-candidate').textContent = window.state.currentUser ? window.state.currentUser.name : 'Candidate';
     document.getElementById('rep-date').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 }
-
-// ── Founder Privilege Preview Report Listener ──
-document.addEventListener('DOMContentLoaded', () => {
-    const btnFounderPreview = document.getElementById('btn-founder-preview-report');
-    if (btnFounderPreview) {
-        btnFounderPreview.addEventListener('click', () => {
-            renderScorecard({
-                mode: 'Executive Technical Systems',
-                type: 'Specialized Architecture',
-                overallScore: 89,
-            });
-        });
-    }
-});
 

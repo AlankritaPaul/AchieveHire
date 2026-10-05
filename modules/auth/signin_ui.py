@@ -92,15 +92,7 @@ def render_signin_flow():
 
             st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
-            is_founder = candidate_name and candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]
-
-            if is_founder:
-                btn_col1, btn_col2, btn_col3 = st.columns([40, 35, 25])
-            else:
-                btn_col1, btn_col3 = st.columns([65, 35])
-                btn_col2 = None
-                founder_clicked = False
-
+            btn_col1, btn_col3 = st.columns([65, 35])
             with btn_col1:
                 generate_clicked = st.button(
                     "🚀  Generate ID",
@@ -109,16 +101,8 @@ def render_signin_flow():
                     key="btn_generate_user_id"
                 )
             
-            if is_founder and btn_col2:
-                with btn_col2:
-                    founder_clicked = st.button(
-                        "👑 Direct Access",
-                        use_container_width=True,
-                        key="btn_founder_bypass"
-                    )
-            
             with btn_col3:
-                if st.button("← Back", use_container_width=True, key="btn_cancel_signin"):
+                if st.button("🔙 Back", use_container_width=True, key="btn_cancel_signin"):
                     st.session_state["ac_screen"] = "landing"
                     st.rerun()
 
@@ -133,16 +117,7 @@ def render_signin_flow():
                     st.session_state["just_generated_user"] = user_record
                     st.rerun()
                     
-            if founder_clicked:
-                if not candidate_name or len(candidate_name.strip()) < 2:
-                    st.error("Please enter your name first.")
-                elif candidate_name.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita"]:
-                    from modules.auth.user_service import ensure_founder_user_record
-                    user_record = ensure_founder_user_record(selected_purpose)
-                    st.session_state["just_generated_user"] = user_record
-                    st.rerun()
-                else:
-                    st.error("Access Denied: Only the Founder can open an account without generating a User ID. Please click 'Generate User ID' instead.")
+
 
     with tab_existing:
         with st.container(border=True):
@@ -169,11 +144,6 @@ def render_signin_flow():
                 if st.button("🔑  Load Workspace", type="primary", use_container_width=True, key="btn_login_existing_id"):
                     if not existing_id_input.strip():
                         st.error("Please enter your User ID.")
-                    elif existing_id_input.strip().lower() in ["founder alankrita pal", "founder alankrita paul", "founder alankrita", "alankrita-founder"]:
-                        from modules.auth.user_service import ensure_founder_user_record
-                        user_record = ensure_founder_user_record("Both")
-                        st.session_state["just_generated_user"] = user_record
-                        st.rerun()
                     else:
                         existing_user = get_user_by_id(existing_id_input.strip().upper())
                         if existing_user:
