@@ -184,7 +184,7 @@ def render_job_interview_setup(on_start_round_callback=None):
 
         st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-        if st.button("Save & Proceed 🎯", type="primary", use_container_width=True, key="btn_save_job_setup"):
+        if st.button("Save & Proceed →", type="primary", use_container_width=True, key="btn_save_job_setup"):
             if not effective_role:
                 st.error("Please specify a target Job Role.")
             elif not effective_company:
