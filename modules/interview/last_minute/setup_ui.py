@@ -249,21 +249,6 @@ def render_last_minute_setup():
 
             st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-            # 30-Minute Session Info Card
-            st.markdown(clean_html(f"""
-            <div style="background:#FFFBEB; border-left:4px solid #F59E0B; border-radius:10px; padding:16px 20px; margin-bottom:20px;">
-                <div style="font-weight:800; font-size:0.95rem; color:#92400E; margin-bottom:4px;">
-                    ⏱️ Fixed 30-Minute Rehearsal Rules
-                </div>
-                <div style="font-size:0.85rem; color:#78350F; line-height:1.55;">
-                    • <strong>Duration:</strong> Exactly 30 minutes. Non-extendable.<br>
-                    • <strong>Sequence:</strong> Starts strictly with <em>“Please introduce yourself.”</em> and advances rapidly: Easy → Moderate → Hard.<br>
-                    • <strong>Voice-Only Live Mode:</strong> Questions are asked verbally to simulate a real interview panel. Questions are not displayed on-screen until the report.<br>
-                    • <strong>Unlimited Rehearsals:</strong> Practise as many times as you like. Every completed session is preserved permanently.
-                </div>
-            </div>
-            """), unsafe_allow_html=True)
-
             if st.button("🚀  Start 30-Minute Intensive Preparation", type="primary", use_container_width=True, key="btn_start_lm_session"):
                 if not effective_topic:
                     st.error("Please specify your target topic, specialization, or job role.")
