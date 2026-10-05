@@ -16,10 +16,10 @@ def render_voice_synthesis_player(
     language: str = "English",
     interviewer_gender: str = "female",
     speech_rate: float = 0.95,
-    key: str = "job_tts_player",
+    key: str = "tts_player",
 ):
     """
-    Synthesizes the interviewer's question or reaction via browser Web Speech API.
+    Synthesizes the interviewer's question or reaction via top window Web Speech API.
     """
     escaped_text = json.dumps(text_to_speak)
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-US"
@@ -28,9 +28,14 @@ def render_voice_synthesis_player(
     components.html(f"""
     <script>
     (function runTTS() {{
-        if (!('speechSynthesis' in window)) return;
+        const pWin = window.parent;
+        const synth = pWin.speechSynthesis || window.speechSynthesis;
+        if (!synth) return;
 
-        window.speechSynthesis.cancel();
+        try {{
+            synth.cancel();
+            synth.resume();
+        }} catch(e) {{}}
 
         const text = {escaped_text};
         if (!text || text.trim() === '') return;
@@ -40,26 +45,46 @@ def render_voice_synthesis_player(
         utterance.pitch = {1.0 if gender_pref == 'male' else 1.15};
         utterance.lang = '{lang_code}';
 
-        const voices = window.speechSynthesis.getVoices();
-        let chosenVoice = null;
-        if (voices.length > 0) {{
-            chosenVoice = voices.find(v => v.lang.includes('{lang_code[:2]}') && v.name.toLowerCase().includes('{gender_pref}')) ||
-                          voices.find(v => v.lang.includes('{lang_code[:2]}')) ||
-                          voices[0];
-            if (chosenVoice) utterance.voice = chosenVoice;
+        function loadVoicesAndSpeak() {{
+            const voices = synth.getVoices();
+            if (voices.length > 0) {{
+                let chosenVoice = voices.find(v => v.lang.includes('{lang_code[:2]}') && v.name.toLowerCase().includes('{gender_pref}')) ||
+                              voices.find(v => v.lang.includes('{lang_code[:2]}')) ||
+                              voices[0];
+                if (chosenVoice) utterance.voice = chosenVoice;
+            }}
+
+            utterance.onstart = function() {{
+                try {{
+                    const pDoc = pWin.document;
+                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text');
+                    if (statusEl) statusEl.innerText = "🎙️ Interviewer Speaking... (Listen Carefully)";
+                }} catch(e) {{}}
+            }};
+
+            utterance.onend = function() {{
+                try {{
+                    const pDoc = pWin.document;
+                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text');
+                    if (statusEl) statusEl.innerText = "🎙️ Listening... Speak your answer.";
+                }} catch(e) {{}}
+            }};
+
+            const keepAlive = setInterval(() => {{
+                if (synth.speaking) {{
+                    synth.resume();
+                }} else {{
+                    clearInterval(keepAlive);
+                }}
+            }}, 200);
+
+            synth.speak(utterance);
         }}
 
-        utterance.onstart = function() {{
-            const statusEl = window.parent.document.getElementById('job-interviewer-status-text');
-            if (statusEl) statusEl.innerText = "🎙️ Interviewer is asking... (Listen Carefully)";
-        }};
-
-        utterance.onend = function() {{
-            const statusEl = window.parent.document.getElementById('job-interviewer-status-text');
-            if (statusEl) statusEl.innerText = "🎧 Listening... Click microphone or speak your answer.";
-        }};
-
-        window.speechSynthesis.speak(utterance);
+        if (synth.getVoices().length === 0) {{
+            synth.onvoiceschanged = loadVoicesAndSpeak;
+        }}
+        loadVoicesAndSpeak();
     }})();
     </script>
     """, height=0, scrolling=False)

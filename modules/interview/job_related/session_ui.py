@@ -244,8 +244,10 @@ def render_job_live_interview_session(round_num: int):
         candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
         submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
         
+        st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+        manual_submit = st.button("🚀 Submit Answer & Continue →", type="primary", use_container_width=True, key=f"btn_manual_sub_{curr_idx}")
 
-        if submit_clicked:
+        if submit_clicked or manual_submit:
             ans_to_evaluate = candidate_answer.strip() if (candidate_answer and candidate_answer.strip()) else "Candidate spoken response recorded."
             evaluated_q = evaluate_candidate_answer(current_q, ans_to_evaluate, lang, role, company)
             state.questions_list[curr_idx] = evaluated_q
