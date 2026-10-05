@@ -220,11 +220,15 @@ def render_last_minute_live_session():
         div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]),
         div[data-testid="stTextInput"]:has(input[aria-label="hidden_ans"]),
         div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]) + div[data-testid="stElementContainer"] {
-            display: none !important;
-            height: 0px !important;
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 1px !important;
+            height: 1px !important;
+            overflow: hidden !important;
+            pointer-events: auto !important;
+            z-index: -9999 !important;
             margin: 0px !important;
             padding: 0px !important;
-            visibility: hidden !important;
         }
         </style>
         """, unsafe_allow_html=True)
