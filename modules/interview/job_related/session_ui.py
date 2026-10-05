@@ -226,14 +226,14 @@ def render_job_live_interview_session(round_num: int):
         # Hidden UI for seamless auto-submit
         st.markdown("""
         <style>
-        div[data-testid="stTextInput"]:has(input[aria-label="hidden_ans"]),
         div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]),
-        div[data-testid="stButton"]:has(button:contains("hidden_submit")),
-        div[data-testid="stElementContainer"]:has(button:contains("hidden_submit")) {
+        div[data-testid="stTextInput"]:has(input[aria-label="hidden_ans"]),
+        div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]) + div[data-testid="stElementContainer"] {
             display: none !important;
             height: 0px !important;
             margin: 0px !important;
             padding: 0px !important;
+            visibility: hidden !important;
         }
         </style>
         """, unsafe_allow_html=True)
