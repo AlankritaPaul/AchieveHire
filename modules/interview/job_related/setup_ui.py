@@ -1,114 +1,60 @@
 # -*- coding: utf-8 -*-
 """
-AchieveHire — Job Related Interview Setup UI
-Handles:
-1. Job Role Selection (Searchable suggestions + Write Your Job Role)
-2. Company Selection (Searchable suggestions + Write Your Company)
-3. Interview Language (STRICTLY English, Hindi, Hinglish — NO manual language entry allowed)
-4. Resume Review ('Before we begin, please show me your resume.')
-5. Round Selection & Session Integrity Warning
+AchieveHire — Job Related Interview Setup Screen
+Converts setup into a clean 2-column layout (Role/Company/Language on left, Round selection on right)
+without tab switching bugs.
 """
 
 import streamlit as st
-from typing import Dict, Any, Optional
 from modules.landing.ui import THEMES, clean_html
 from modules.interview.job_related.models import (
+    JOB_ROUNDS_CONFIG,
     SUGGESTED_JOB_ROLES,
     SUGGESTED_COMPANIES,
     INTERVIEW_LANGUAGES,
-    JOB_ROUNDS_CONFIG,
 )
 from modules.interview.job_related.storage import (
     load_job_interview_session,
     initialize_job_interview_session,
     is_round_unlocked,
 )
-from modules.auth.user_service import get_current_user
-
-
-def get_candidate_stored_resume(user_id: str) -> Dict[str, Any]:
-    """Retrieves the candidate's actual stored resume data from AchieveHire without inventing facts."""
-    # 1. Check in session state ResumeBuilderModel
-    builder_model = st.session_state.get("resume_builder_model")
-    if builder_model and hasattr(builder_model, "data") and any(builder_model.data.values()):
-        return builder_model.data
-
-    # 2. Check in user record
-    current_user = get_current_user()
-    if current_user and current_user.get("resumes"):
-        latest = current_user["resumes"][-1]
-        if isinstance(latest, dict):
-            return latest
-
-    # 3. Fallback to basic candidate profile
-    if current_user:
-        return {
-            "full_name": current_user.get("name", "Candidate"),
-            "professional_headline": current_user.get("headline", ""),
-            "email": current_user.get("email", ""),
-            "location": current_user.get("location", ""),
-            "summary": current_user.get("bio", ""),
-            "skills": "",
-            "experience": "",
-            "projects": "",
-            "education": "",
-        }
-
-    return {}
+from modules.resume_guide.parser import get_candidate_stored_resume
 
 
 def render_job_interview_setup(on_start_round_callback=None):
-    """Renders the comprehensive, responsive setup and round selection interface."""
+    """Renders the clean Job Related Interview setup screen."""
     theme_key = st.session_state.get("ac_theme", "light")
     t = THEMES[theme_key]
-    user_id = st.session_state.get("user_id") or "GUEST"
+    user_id = st.session_state.get("user_id", "guest")
 
     session = load_job_interview_session(user_id)
     stored_resume = get_candidate_stored_resume(user_id)
 
     st.markdown(clean_html(f"""
-    <div style="max-width:960px; margin: 16px auto 20px; padding: 0 16px;">
+    <div style="max-width:980px; margin: 16px auto 20px; padding: 0 16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
             <div>
                 <div style="font-size:0.80rem; font-weight:700; color:{t['accent']}; text-transform:uppercase; letter-spacing:0.06em;">
-                    AchieveHire · Better Preparation. Stronger Presentation.
+                    AchieveHire — Better Preparation. Stronger Presentation.
                 </div>
                 <h2 style="font-size:1.8rem; font-weight:800; color:{t['text_primary']}; margin:4px 0 0;">
                     Job Related Interview Setup
                 </h2>
             </div>
-
         </div>
     </div>
     """), unsafe_allow_html=True)
 
-    tab_config, tab_rounds = st.tabs([
-        "✅ 1. Role, Company & Language",
-        "🎯 2. Select & Start Round",
-    ])
+    col_main, col_rounds = st.columns([52, 48], gap="large")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # TAB 1: Role, Company & Language
-    # ─────────────────────────────────────────────────────────────────────────
-    with tab_config:
-        st.markdown(clean_html(f"""
-        <div style="margin-bottom:16px;">
-            <p style="color:{t['text_secondary']}; font-size:0.95rem; margin:0;">
-                Select your intended position, target company, and spoken language. Your entries will directly
-                shape the interview panel's seniority, questioning themes, and evaluation standards.
-            </p>
-        </div>
-        """), unsafe_allow_html=True)
-
-        col_left, col_right = st.columns([1, 1], gap="large")
-
-        with col_left:
+    with col_main:
+        st.markdown(f"<h3 style='font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin-bottom:8px;'>1. Configure Target Position</h3>", unsafe_allow_html=True)
+        with st.container(border=True):
             # 1. Job Role Selection
-            st.markdown(f"<div style='font-weight:700; font-size:1.02rem; color:{t['text_primary']}; margin-bottom:6px;'>What job role are you applying for?</div>", unsafe_allow_html=True)
-            
+            st.markdown(f"<div style='font-weight:700; font-size:0.95rem; color:{t['text_primary']}; margin-bottom:4px;'>Target Job Role</div>", unsafe_allow_html=True)
             default_role = session.get("target_role", "Software Engineer") if session else "Software Engineer"
             role_options = ["Write Your Job Role"] + SUGGESTED_JOB_ROLES
-            
+
             selected_role_mode = st.selectbox(
                 "Select Suggested Role or Choose 'Write Your Job Role'",
                 options=role_options,
@@ -121,17 +67,16 @@ def render_job_interview_setup(on_start_round_callback=None):
                 effective_role = st.text_input(
                     "Write Your Job Role (verbatim):",
                     value=default_role if default_role not in SUGGESTED_JOB_ROLES else "",
-                    placeholder="e.g. Lead Staff Security Architect, Quantitative Trader, AI Research Scientist",
+                    placeholder="e.g. Lead Staff Security Architect, Quantitative Trader",
                     key="job_role_manual_input",
                 ).strip()
             else:
                 effective_role = selected_role_mode
 
-            st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
 
             # 2. Company Selection
-            st.markdown(f"<div style='font-weight:700; font-size:1.02rem; color:{t['text_primary']}; margin-bottom:6px;'>Which company are you applying for?</div>", unsafe_allow_html=True)
-            
+            st.markdown(f"<div style='font-weight:700; font-size:0.95rem; color:{t['text_primary']}; margin-bottom:4px;'>Target Organization / Company</div>", unsafe_allow_html=True)
             default_company = session.get("target_company", "Google") if session else "Google"
             company_options = ["Write Your Company"] + SUGGESTED_COMPANIES
 
@@ -147,17 +92,16 @@ def render_job_interview_setup(on_start_round_callback=None):
                 effective_company = st.text_input(
                     "Write Your Company (verbatim):",
                     value=default_company if default_company not in SUGGESTED_COMPANIES else "",
-                    placeholder="e.g. OpenAI, Stripe, Zerodha, Palantir, Razorpay",
+                    placeholder="e.g. OpenAI, Stripe, Zerodha, Palantir",
                     key="job_company_manual_input",
                 ).strip()
             else:
                 effective_company = selected_company_mode
 
-        with col_right:
-            # 3. Interview Language (STRICTLY 3 Options — NO manual entry)
-            st.markdown(f"<div style='font-weight:700; font-size:1.02rem; color:{t['text_primary']}; margin-bottom:6px;'>Choose Interview Language</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='font-size:0.84rem; color:{t['text_muted']}; margin-bottom:10px;'>Select your spoken language preference. Exactly three supported options are available:</div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
 
+            # 3. Interview Language
+            st.markdown(f"<div style='font-weight:700; font-size:0.95rem; color:{t['text_primary']}; margin-bottom:4px;'>Interview Spoken Language</div>", unsafe_allow_html=True)
             default_lang = session.get("language", "English") if session else "English"
             if default_lang not in INTERVIEW_LANGUAGES:
                 default_lang = "English"
@@ -168,52 +112,32 @@ def render_job_interview_setup(on_start_round_callback=None):
                 index=INTERVIEW_LANGUAGES.index(default_lang),
                 key="job_language_radio",
                 label_visibility="collapsed",
-                help="Only English, Hindi, and Hinglish are supported. User manual entry is strictly disabled.",
             )
 
+            st.session_state["job_effective_role"] = effective_role
+            st.session_state["job_effective_company"] = effective_company
+            st.session_state["job_effective_language"] = selected_language
+
             st.markdown(clean_html(f"""
-            <div style="background:{t['surface2']}; border:1px solid {t['border']}; border-radius:10px; padding:12px 16px; margin-top:14px; font-size:0.85rem; color:{t['text_secondary']}; line-height:1.5;">
-                <strong>Selected Language:</strong> <span style="color:{t['accent']}; font-weight:700;">{selected_language}</span><br>
-                <em>Note: Technical terminology will remain in English where appropriate. Your technical evaluation will never be penalized for selecting Hindi or Hinglish.</em>
+            <div style="background:{t['surface2']}; border:1px solid {t['border']}; border-radius:8px; padding:10px 14px; margin-top:10px; font-size:0.82rem; color:{t['text_secondary']};">
+                Selected Target: <strong>{effective_role}</strong> at <strong>{effective_company}</strong> ({selected_language})
             </div>
             """), unsafe_allow_html=True)
 
-        st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
-
-        if st.button("Save & Proceed →", type="primary", use_container_width=True, key="btn_save_job_setup"):
-            if not effective_role:
-                st.error("Please specify a target Job Role.")
-            elif not effective_company:
-                st.error("Please specify a target Company.")
-            else:
-                session = initialize_job_interview_session(
-                    user_id=user_id,
-                    target_role=effective_role,
-                    target_company=effective_company,
-                    language=selected_language,
-                    resume_snapshot=stored_resume,
-                )
-                st.session_state["job_effective_role"] = effective_role
-                st.session_state["job_effective_company"] = effective_company
-                st.session_state["job_effective_language"] = selected_language
-                st.success(f"✓ Configuration saved: {effective_role} at {effective_company} ({selected_language}).")
-                st.rerun()
-
-    # ----------------------------------------------------------------------------------------------------
-    # TAB 2: Select & Start Round (Enforcing Single-Session Rule & Locking)
-    # ─────────────────────────────────────────────────────────────────────────
-    with tab_rounds:
-        effective_role = session.get("target_role") if session else st.session_state.get("job_effective_role", "Software Engineer")
-        effective_company = session.get("target_company") if session else st.session_state.get("job_effective_company", "Google")
-        effective_lang = session.get("language") if session else st.session_state.get("job_effective_language", "English")
+    with col_rounds:
+        st.markdown(f"<h3 style='font-size:1.15rem; font-weight:700; color:{t['text_primary']}; margin-bottom:8px;'>2. Select &amp; Start Round</h3>", unsafe_allow_html=True)
+        
+        effective_role = st.session_state.get("job_effective_role", "Software Engineer")
+        effective_company = st.session_state.get("job_effective_company", "Google")
+        effective_lang = st.session_state.get("job_effective_language", "English")
 
         st.markdown(clean_html(f"""
-        <div style="background:{t['surface']}; border:1px solid {t['border']}; border-radius:12px; padding:16px 20px; margin-bottom:20px;">
-            <div style="font-weight:700; font-size:1.05rem; color:{t['text_primary']}; margin-bottom:4px;">
-                Target: <span style="color:{t['accent']};">{effective_role}</span> at <span style="color:{t['accent']};">{effective_company}</span> ({effective_lang})
+        <div style="background:{t['surface']}; border:1px solid {t['border']}; border-radius:10px; padding:12px 16px; margin-bottom:14px;">
+            <div style="font-weight:700; font-size:0.92rem; color:{t['text_primary']}; margin-bottom:2px;">
+                Active Target: <span style="color:{t['accent']};">{effective_role}</span> at <span style="color:{t['accent']};">{effective_company}</span>
             </div>
-            <div style="font-size:0.85rem; color:{t['text_secondary']};">
-                Each round simulates realistic interview panels with increasing seniority. Complete rounds sequentially to unlock advanced stages.
+            <div style="font-size:0.80rem; color:{t['text_secondary']};">
+                Language: {effective_lang} · Sequential unlocking enforced.
             </div>
         </div>
         """), unsafe_allow_html=True)
@@ -226,41 +150,38 @@ def render_job_interview_setup(on_start_round_callback=None):
             status_badge = ""
             if is_completed:
                 score = session["round_evaluations"].get(str(r_num), {}).get("overall_score", 0)
-                status_badge = f'<span style="background:#D1FAE5; color:#065F46; font-weight:700; font-size:0.78rem; padding:3px 10px; border-radius:50px;">✓ Completed ({score}/100)</span>'
+                status_badge = f'<span style="background:#D1FAE5; color:#065F46; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:50px;">✓ Completed ({score}/100)</span>'
             elif unlocked:
-                status_badge = f'<span style="background:{t["accent_soft"]}; color:{t["accent"]}; font-weight:700; font-size:0.78rem; padding:3px 10px; border-radius:50px;">● Available to Start</span>'
+                status_badge = f'<span style="background:{t["accent_soft"]}; color:{t["accent"]}; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:50px;">🟢 Unlocked</span>'
             else:
-                status_badge = f'<span style="background:#F3F4F6; color:#6B7280; font-weight:700; font-size:0.78rem; padding:3px 10px; border-radius:50px;">🔒 Locked (Complete Round {r_num-1} First)</span>'
+                status_badge = f'<span style="background:#F3F4F6; color:#6B7280; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:50px;">🔒 Locked</span>'
 
             with st.container(border=True):
-                col_info, col_action = st.columns([72, 28])
+                col_info, col_action = st.columns([65, 35])
                 with col_info:
                     st.markdown(clean_html(f"""
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                        <h4 style="font-size:1.1rem; font-weight:800; color:{t['text_primary']}; margin:0;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                        <h4 style="font-size:0.98rem; font-weight:800; color:{t['text_primary']}; margin:0;">
                             {r_cfg['name']}
                         </h4>
                         {status_badge}
                     </div>
-                    <div style="font-size:0.85rem; color:{t['text_secondary']}; line-height:1.5;">
-                        ⏱️ <strong>Duration:</strong> {r_cfg['duration_minutes']} Minutes &nbsp;·&nbsp;
-                        👥 <strong>Panel:</strong> {r_cfg['interviewer_count']} Interviewer(s) ({r_cfg['interviewer_seniority']})
-                    </div>
-                    <div style="font-size:0.82rem; color:{t['text_muted']}; margin-top:4px;">
-                        {r_cfg['description']}
+                    <div style="font-size:0.80rem; color:{t['text_secondary']};">
+                        ⏱️ {r_cfg['duration_minutes']} Mins · 👥 {r_cfg['interviewer_count']} Panelist(s) ({r_cfg['interviewer_seniority']})
                     </div>
                     """), unsafe_allow_html=True)
 
                 with col_action:
-                    st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
                     if is_completed:
-                        if st.button("📄  View Report", key=f"btn_view_report_r{r_num}", use_container_width=True):
+                        if st.button("📊 Report", key=f"btn_view_report_r{r_num}", use_container_width=True):
                             st.session_state["job_view_mode"] = "report"
                             st.session_state["job_report_round"] = r_num
                             st.rerun()
                     elif unlocked:
-                        if st.button(f"▶  Start Round {r_num}", key=f"btn_start_round_{r_num}", type="primary", use_container_width=True):
-                            if not session:
+                        if st.button(f"🚀 Start R{r_num}", key=f"btn_start_round_{r_num}", type="primary", use_container_width=True):
+                            if not effective_role or not effective_company:
+                                st.error("Please select both a Job Role and Company.")
+                            else:
                                 session = initialize_job_interview_session(
                                     user_id=user_id,
                                     target_role=effective_role,
@@ -268,26 +189,16 @@ def render_job_interview_setup(on_start_round_callback=None):
                                     language=effective_lang,
                                     resume_snapshot=stored_resume,
                                 )
-                            st.session_state["job_active_round_num"] = r_num
-                            st.session_state["job_view_mode"] = "live"
-                            st.rerun()
+                                st.session_state["job_active_round_num"] = r_num
+                                st.session_state["job_view_mode"] = "live"
+                                st.rerun()
                     else:
-                        st.button(f"🔒 Locked", key=f"btn_locked_r{r_num}", disabled=True, use_container_width=True)
+                        st.button("🔒 Locked", key=f"btn_locked_r{r_num}", disabled=True, use_container_width=True)
 
         if session and session.get("is_overall_completed"):
-            st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
             with st.container(border=True):
-                st.markdown(f"<h3 style='font-size:1.2rem; font-weight:800; color:{t['accent']}; margin-bottom:8px;'>🏆 All 6 Rounds Completed!</h3>", unsafe_allow_html=True)
-                st.markdown("Congratulations! You have completed all six rounds of the Job Related Interview panel. Your comprehensive Final Overall Report is available.")
-                if st.button("📈  View Final Overall Performance & Improvement Report", type="primary", use_container_width=True, key="btn_view_overall_final_rep"):
+                st.markdown(f"<h3 style='font-size:1.1rem; font-weight:800; color:{t['accent']}; margin-bottom:6px;'>🏆 All 6 Rounds Completed!</h3>", unsafe_allow_html=True)
+                if st.button(" View Final Report", type="primary", use_container_width=True, key="btn_view_overall_final_rep"):
                     st.session_state["job_view_mode"] = "overall_report"
                     st.rerun()
-
-        st.markdown("<hr style='margin:20px 0 16px;'/>", unsafe_allow_html=True)
-        with st.container(border=True):
-            st.markdown("**⚡ Last-Minute Prep for Job Related**")
-            st.caption("Need an intensive 30-minute rehearsal simulation with a company panel right before your interview?")
-            if st.button("⚡ Open Last-Minute Prep for Job Related", use_container_width=True, key="btn_jump_to_lm_job"):
-                st.session_state["lm_active_mode"] = "Last-Minute Prep for Job Related"
-                st.session_state["ac_screen"] = "interview_last_minute"
-                st.rerun()
