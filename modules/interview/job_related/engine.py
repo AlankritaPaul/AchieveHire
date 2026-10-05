@@ -34,9 +34,9 @@ REACTIONS_STRONG = {
         "That covers the core principles well. Let's continue.",
     ],
     "Hindi": [
-        "यह एक स्पष्ट और ठोस उत्तर है। चलिए अगले पहलू पर चलते हैं।",
-        "समझ गया। आपने मुख्य बिंदु को सही तरीके से समझाया है।",
-        "अच्छा दृष्टिकोण है। अब अगले सवाल की ओर बढ़ते हैं।",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
     ],
     "Hinglish": [
         "Kaafi clear aur structured answer hai. Let's move to the next question.",
@@ -53,9 +53,9 @@ REACTIONS_NEUTRAL = {
         "Noted. Moving forward.",
     ],
     "Hindi": [
-        "ठीक है, अगले प्रश्न की ओर बढ़ते हैं।",
-        "समझ गया, चलिए आगे चलते हैं।",
-        "नोट कर लिया गया है। अगला सवाल देखते हैं।",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
     ],
     "Hinglish": [
         "Theek hai, let's move to the next question.",
@@ -72,9 +72,9 @@ REACTIONS_DEEPEN = {
         "Let's look at that from a practical perspective.",
     ],
     "Hindi": [
-        "ठीक है, इसे थोड़ा और गहराई से समझते हैं।",
-        "क्या आप इसे व्यावहारिक उदाहरण के साथ स्पष्ट कर सकते हैं?",
-        "इस निर्णय के पीछे आपका मुख्य तर्क क्या था?",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
     ],
     "Hinglish": [
         "Okay. Let's go a little deeper into this.",
@@ -90,8 +90,8 @@ REACTIONS_REDIRECT = {
         "Understood, but make sure your answer directly addresses the specific problem asked.",
     ],
     "Hindi": [
-        "कृपया मूल प्रश्न पर केंद्रित रहें।",
-        "कोशिश करें कि उत्तर सीधे पूछे गए मुख्य बिंदु पर रहे।",
+        "Kripya is question ka clear aur structured javab dijiye.",
+        "Kripya is question ka clear aur structured javab dijiye.",
     ],
     "Hinglish": [
         "Please question ke core point par focus rakhein.",
@@ -202,7 +202,7 @@ def generate_round_questions(
         lead = _next_interviewer()
         intro_q = "Please introduce yourself."
         if lang == "Hindi":
-            intro_q = "कृपया अपना संक्षिप्त परिचय दीजिए।"
+            intro_q = "Kripya is question ka clear aur structured javab dijiye."
         elif lang == "Hinglish":
             intro_q = "Please introduce yourself aur apne academic tatha technical background ke baare mein brief bataiye."
 
@@ -222,7 +222,7 @@ def generate_round_questions(
         m2 = _next_interviewer()
         q2_text = f"What motivated you to apply specifically for the {clean_role} position at {clean_company}?"
         if lang == "Hindi":
-            q2_text = f"आपने {clean_company} में {clean_role} पद के लिए विशेष रूप से आवेदन करने का निर्णय क्यों लिया?"
+            q2_text = f"Kripya is question ka clear aur structured javab dijiye."
         elif lang == "Hinglish":
             q2_text = f"Aapko {clean_company} mein {clean_role} position ke liye apply karne ki main motivation kya thi?"
 
@@ -243,7 +243,7 @@ def generate_round_questions(
         highlight_skill = res_info["skills"][0] if res_info["skills"] else "core programming"
         q3_text = f"Looking at the requirements for a {clean_role}, how do you evaluate your proficiency with {highlight_skill} in practical implementations?"
         if lang == "Hindi":
-            q3_text = f"एक {clean_role} की आवश्यकताओं को देखते हुए, आप व्यावहारिक परियोजनाओं में {highlight_skill} में अपनी दक्षता का मूल्यांकन कैसे करते हैं?"
+            q3_text = f"Kripya is question ka clear aur structured javab dijiye."
         elif lang == "Hinglish":
             q3_text = f"{clean_role} role ke requirements ke hisaab se, {highlight_skill} mein aapki practical implementation capability kaisi rahi hai?"
 
@@ -264,7 +264,7 @@ def generate_round_questions(
         proj_name = res_info["projects"][0] if res_info["projects"] else "your primary technical project"
         q4_text = f"Could you walk me through {proj_name}? What was your specific individual contribution?"
         if lang == "Hindi":
-            q4_text = f"क्या आप मुझे {proj_name} के बारे में बता सकते हैं? इस परियोजना में आपका व्यक्तिगत योगदान क्या था?"
+            q4_text = f"Kripya is question ka clear aur structured javab dijiye."
         elif lang == "Hinglish":
             q4_text = f"Aap mujhe {proj_name} ke baare mein samjha sakte hain? Isme aapka individual contribution exact kya tha?"
 
@@ -284,7 +284,7 @@ def generate_round_questions(
         m5 = _next_interviewer()
         q5_text = f"As an early {clean_role}, when you encounter an unfamiliar technical problem or bug, what is your step-by-step troubleshooting methodology?"
         if lang == "Hindi":
-            q5_text = f"जब आप किसी नई तकनीकी समस्या या अनसुलझे बग का सामना करते हैं, तो आपकी चरण-दर-चरण समस्या निवारण पद्धति क्या होती है?"
+            q5_text = f"Kripya is question ka clear aur structured javab dijiye."
         elif lang == "Hinglish":
             q5_text = f"Jab aap kisi complex ya unfamiliar bug ka samna karte hain, toh aapka step-by-step troubleshooting approach kya rehta hai?"
 
@@ -315,7 +315,7 @@ def generate_round_questions(
                     f"In day-to-day operations as a {clean_role} at {clean_company}, how do you ensure the code and designs you produce maintain production quality?"
                     if lang == "English"
                     else (
-                        f"{clean_company} में {clean_role} के रूप में दैनिक कार्यों में, आप यह कैसे सुनिश्चित करते हैं कि आपके द्वारा लिखा गया कोड उत्पादन गुणवत्ता के मानकों को पूरा करता है?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{clean_company} mein {clean_role} ke daily workflow mein, aap production quality aur reliable standards kaise maintain karenge?"
                     )
@@ -332,7 +332,7 @@ def generate_round_questions(
                     f"When designing an asynchronous process or data workflow in a {clean_role} environment, how do you handle idempotency and state consistency?"
                     if lang == "English"
                     else (
-                        f"एक {clean_role} परिवेश में एसिंक्रोनस प्रक्रिया या डेटा वर्कफ़्लो को डिज़ाइन करते समय, आप स्टेट कंसिस्टेंसी और त्रुटि हैंडलिंग का प्रबंधन कैसे करते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Ek {clean_role} environment mein asynchronous workflow design karte time, aap data consistency aur error handling kaise ensure karte hain?"
                     )
@@ -349,7 +349,7 @@ def generate_round_questions(
                     f"Your resume mentions experience with {res_info['skills'][0] if res_info['skills'] else 'core architectures'}. What is a significant performance bottleneck you faced with it, and how did you resolve it?"
                     if lang == "English"
                     else (
-                        f"आपके रेज़्युमे में {res_info['skills'][0] if res_info['skills'] else 'मुख्य आर्किटेक्चर'} का उल्लेख है। आपने इसके साथ किस प्रकार की परफॉर्मेंस समस्या का सामना किया और इसे कैसे हल किया?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Aapke resume mein {res_info['skills'][0] if res_info['skills'] else 'technical skills'} mentioned hai. Usme aapne koi real performance issue ya bottleneck kaise identify aur resolve kiya?"
                     )
@@ -366,7 +366,7 @@ def generate_round_questions(
                     f"How do you distinguish between unit testing, integration testing, and contract testing when deploying services at {clean_company} scale?"
                     if lang == "English"
                     else (
-                        f"{clean_company} के स्तर पर सेवाओं को तैनात करते समय आप यूनिट परीक्षण, एकीकरण परीक्षण और अनुबंध परीक्षण में क्या अंतर करते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{clean_company} scale par services deploy karte waqt unit testing, integration testing aur end-to-end testing mein aap kya boundary rakhte hain?"
                     )
@@ -383,7 +383,7 @@ def generate_round_questions(
                     f"Suppose a team member submits a pull request that solves the issue but violates architectural conventions at {clean_company}. How do you provide feedback?"
                     if lang == "English"
                     else (
-                        f"मान लीजिए कि कोई सहकर्मी ऐसा समाधान प्रस्तुत करता है जो समस्या को हल तो करता है लेकिन टीम के आर्किटेक्चर नियमों का उल्लंघन करता है। आप इस पर कैसे प्रतिक्रिया देंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Agar team member ka PR kaam toh karta hai but architecture guidelines violate karta hai, toh aap constructive feedback kaise denge?"
                     )
@@ -400,7 +400,7 @@ def generate_round_questions(
                     f"When requirements shift mid-sprint, how do you manage technical debt versus speed of feature delivery?"
                     if lang == "English"
                     else (
-                        f"जब स्प्रिंट के बीच में आवश्यकताएं बदल जाती हैं, तो आप तकनीकी ऋण (Technical Debt) और डिलीवरी की गति के बीच संतुलन कैसे बनाते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Jab requirements achanak badal jati hain, toh technical debt aur feature delivery speed ke beech balance kaise banate hain?"
                     )
@@ -427,7 +427,7 @@ def generate_round_questions(
                     f"Let's dissect {primary_proj}. Walk us through the high-level architecture. Why did you choose that specific design over alternative patterns?"
                     if lang == "English"
                     else (
-                        f"चलिए {primary_proj} पर विस्तार से चर्चा करते हैं। इसका उच्च-स्तरीय आर्किटेक्चर क्या था और आपने वैकल्पिक डिज़ाइनों के बजाय इसे क्यों चुना?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{primary_proj} ka architectural layout detail mein bataiye. Dusre alternative patterns ki jagah aapne yahi approach kyun choose kiya?"
                     )
@@ -444,7 +444,7 @@ def generate_round_questions(
                     f"In {primary_proj}, what was the single most dangerous failure mode? If that component had crashed during peak traffic, how would the system behave?"
                     if lang == "English"
                     else (
-                        f"{primary_proj} में सबसे गंभीर विफलता बिंदु क्या था? यदि पीक ट्रैफ़िक के दौरान वह घटक क्रैश हो जाता, तो सिस्टम कैसे प्रतिक्रिया देता?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{primary_proj} mein sabse critical single point of failure kya tha? Peak traffic par crash hone par system graceful degradation kaise karta?"
                     )
@@ -461,7 +461,7 @@ def generate_round_questions(
                     f"Reflecting on {second_proj}, what technical decision did you make that you would implement differently today with your current experience?"
                     if lang == "English"
                     else (
-                        f"{second_proj} पर विचार करते हुए, ऐसा कौन सा तकनीकी निर्णय था जिसे आप आज अपने वर्तमान अनुभव के आधार पर अलग तरीके से करेंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{second_proj} ke dauran aisa kaunsa technical decision tha jisko aaj aap different approach se execute karenge?"
                     )
@@ -478,7 +478,7 @@ def generate_round_questions(
                     f"How did you monitor system health and detect anomalies in your projects? Which specific telemetry metrics did you track?"
                     if lang == "English"
                     else (
-                        f"आप अपने प्रोजेक्ट्स में सिस्टम स्वास्थ्य और असामान्यताओं की निगरानी कैसे करते थे? आपने किन विशिष्ट मेट्रिक्स को ट्रैक किया?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Aap apne projects mein telemetry aur error monitoring kaise karte the? Kaunse metrics sabse critical the?"
                     )
@@ -495,7 +495,7 @@ def generate_round_questions(
                     f"What specific security and access-control measures did you integrate into your applications to safeguard user credentials and data?"
                     if lang == "English"
                     else (
-                        f"उपयोगकर्ता डेटा और क्रेडेंशियल्स की सुरक्षा के लिए आपने अपने अनुप्रयोगों में कौन से सुरक्षा और एक्सेस-कंट्रोल उपाय लागू किए?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"User data aur security protection ke liye aapne apne application mein kaunse measures aur auth practices implement kiye the?"
                     )
@@ -512,7 +512,7 @@ def generate_round_questions(
                     f"If the data volume of your implementation increased by a factor of 100 tomorrow at {clean_company}, what would break first?"
                     if lang == "English"
                     else (
-                        f"यदि {clean_company} में कल आपके अनुप्रयोग का डेटा वॉल्यूम 100 गुना बढ़ जाए, तो सबसे पहले क्या विफल होगा और आप इसे कैसे संभालेंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Agar kal {clean_company} scale par data volume 100x increase ho jaye, toh sabse pehle kaunsa component break hoga aur aap kaise scale karenge?"
                     )
@@ -538,7 +538,7 @@ def generate_round_questions(
                     f"Design a distributed session management service for {clean_company} that serves 20 million daily active users across three geographic regions. Do you prioritize consistency or availability during a network partition?"
                     if lang == "English"
                     else (
-                        f"{clean_company} के लिए तीन भौगोलिक क्षेत्रों में 20 मिलियन दैनिक सक्रिय उपयोगकर्ताओं के लिए एक वितरित सत्र प्रबंधन सेवा डिज़ाइन करें। क्या आप नेटवर्क विभाजन के दौरान कंसिस्टेंसी या उपलब्धता को प्राथमिकता देंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{clean_company} ke liye multi-region distributed session service design kijiye. Network partition ke waqt aap Consistency aur Availability mein se kisko prioritize karenge aur kyun?"
                     )
@@ -555,7 +555,7 @@ def generate_round_questions(
                     f"How do you select a database partition / shard key for {clean_company}'s transactional workloads? What strategies mitigate hotspotting on celebrity or mega-enterprise accounts?"
                     if lang == "English"
                     else (
-                        f"{clean_company} के लेन-देन वर्कलोड के लिए आप डेटाबेस पार्टीशन कुंजी कैसे चुनते हैं? बड़े खातों के हॉटस्पॉट से बचने के लिए आपकी क्या रणनीति होगी?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Database sharding key choose karte waqt hotspotting avoid karne ke liye aapka kya approach hota hai, especially large tenant accounts ke liye?"
                     )
@@ -572,7 +572,7 @@ def generate_round_questions(
                     f"When upstream microservices start timing out under cascading failures, how do you prevent thundering herds and complete platform outages at {clean_company}?"
                     if lang == "English"
                     else (
-                        f"जब अपस्ट्रीम माइक्रो-सर्विसेज कैस्केडिंग विफलताओं के कारण समय समाप्त होने लगती हैं, तो आप थंडरिंग हर्ड और पूर्ण सिस्टम आउटेज को कैसे रोकते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Upstream service cascading failure ke dauran cascading timeouts aur thundering herd problem ko prevent karne ke liye aap kya design implement karenge?"
                     )
@@ -589,7 +589,7 @@ def generate_round_questions(
                     f"Compare optimistic concurrency control with pessimistic locking in high-throughput financial transactions at {clean_company}. When would you choose one over the other?"
                     if lang == "English"
                     else (
-                        f"{clean_company} में उच्च-थ्रूपुट वित्तीय लेनदेन में ऑप्टिमिस्टिक और पेसिमिस्टिक लॉकिंग की तुलना करें। आप कब किसे चुनेंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"High-throughput transactions ke liye Optimistic Locking aur Pessimistic Locking mein kya trade-off hota hai? Kis scenario mein kaunsa select karenge?"
                     )
@@ -606,7 +606,7 @@ def generate_round_questions(
                     f"Phil Karlton famously said cache invalidation is one of the hardest problems in Computer Science. How do you design cache-aside versus write-through caching, and how do you prevent stale cache reads?"
                     if lang == "English"
                     else (
-                        f"कैश अमान्यकरण (Cache Invalidation) कंप्यूटर विज्ञान की सबसे कठिन समस्याओं में से एक है। आप कैश-असाइड बनाम राइट-थ्रू को कैसे डिज़ाइन करते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Cache Invalidation problem ko tackle karne ke liye Cache-Aside aur Write-Through mein se kaunsa design kab use karte hain aur cache stampede kaise prevent karte hain?"
                     )
@@ -623,7 +623,7 @@ def generate_round_questions(
                     f"Tell me about a situation where you had a strong technical disagreement with another senior engineer on an architectural design. How did you resolve it?"
                     if lang == "English"
                     else (
-                        f"किसी ऐसी स्थिति का वर्णन करें जहाँ आपका किसी अन्य वरिष्ठ इंजीनियर के साथ आर्किटेक्चर डिज़ाइन पर गहरा तकनीकी मतभेद था। आपने इसे कैसे सुलझाया?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Jab aapka kisi senior engineer ke saath architecture design par disagreement hua ho, toh aapne technical consensus kaise build kiya?"
                     )
@@ -640,7 +640,7 @@ def generate_round_questions(
                     f"How do you execute zero-downtime database schema migrations on a table containing 500 million rows under active writes at {clean_company}?"
                     if lang == "English"
                     else (
-                        f"{clean_company} में सक्रिय राइट्स के दौरान 500 मिलियन पंक्तियों वाली तालिका पर बिना किसी डाउनटाइम के स्कीमा माइग्रेशन कैसे करते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Active high-write traffic table (500M+ rows) par zero-downtime schema migration kaise execute kiya jata hai?"
                     )
@@ -666,7 +666,7 @@ def generate_round_questions(
                     f"It is 2:00 AM on a major shopping holiday. {clean_company}'s checkout latency has spiked by 600%, and errors are at 18%. You are the Incident Commander. Walk me through your first 15 minutes."
                     if lang == "English"
                     else (
-                        f"त्यौहार के पीक समय में रात 2:00 बजे {clean_company} की चेकआउट लेटेंसी 600% बढ़ जाती है और एरर 18% हैं। आप इंसीडेंट कमांडर हैं। अपने पहले 15 मिनट बताएं।"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Peak festive sale ke time raat ke 2 baje {clean_company} par massive error spike hota hai. As Incident Commander, aapke first 15 minutes ka incident management plan kya hoga?"
                     )
@@ -683,7 +683,7 @@ def generate_round_questions(
                     f"How do you conduct a blameless post-mortem at {clean_company} after a severe customer-facing outage? What distinguishes an actionable preventative measure from a superficial fix?"
                     if lang == "English"
                     else (
-                        f"गंभीर ग्राहक आउटेज के बाद आप एक दोषरहित पोस्टमॉर्टम (Blameless Post-Mortem) कैसे संचालित करते हैं? सतही समाधान और वास्तविक सुधारात्मक कार्रवाई में क्या अंतर है?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Major outage ke baad Blameless Post-Mortem conduct karne ka structured process kya hota hai aur root cause analysis kaise ensure karte hain?"
                     )
@@ -700,7 +700,7 @@ def generate_round_questions(
                     f"The Product team at {clean_company} wants to launch a high-revenue feature in two weeks, but you know the backend needs another month of architectural hardening to be stable. How do you negotiate this?"
                     if lang == "English"
                     else (
-                        f"प्रोडक्ट टीम दो सप्ताह में एक महत्वपूर्ण फीचर लॉन्च करना चाहती है, लेकिन बैकएंड को स्थिर होने के लिए एक और महीने की आवश्यकता है। आप इस स्थिति में कैसे बातचीत करेंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Product team 2 weeks mein high-priority feature chahti hai lekin engineering ko 1 month stability work chahiye. Business aur tech ke beech trade-off kaise negotiate karenge?"
                     )
@@ -717,7 +717,7 @@ def generate_round_questions(
                     f"Define SLA, SLO, and SLI for a mission-critical service at {clean_company}. How do you use Error Budgets to determine whether a team can deploy new features or must focus on reliability?"
                     if lang == "English"
                     else (
-                        f"{clean_company} की सेवा के लिए SLA, SLO, और SLI को परिभाषित करें। आप नए फीचर्स को तैनात करने बनाम विश्वसनीयता पर काम करने के लिए एरर बजट का उपयोग कैसे करते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"SLA, SLO aur SLI mein kya difference hota hai aur Google SRE Error Budget philosophy ko team feature velocity decide karne ke liye kaise use kiya jata hai?"
                     )
@@ -734,7 +734,7 @@ def generate_round_questions(
                     f"Perform a rapid STRIDE threat analysis for a new public API endpoint being launched at {clean_company}. What are your top mitigation controls?"
                     if lang == "English"
                     else (
-                        f"{clean_company} पर लॉन्च किए जा रहे नए सार्वजनिक एपीआई के लिए त्वरित STRIDE खतरा विश्लेषण करें। आपके शीर्ष सुरक्षा नियंत्रण क्या होंगे?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"New public API ke liye STRIDE threat model analyze kijiye. Top security risks aur mitigations kya rahenge?"
                     )
@@ -751,7 +751,7 @@ def generate_round_questions(
                     f"As you step into a {clean_role} at {clean_company}, how do you lift the technical capabilities of junior engineers and foster psychological safety in code reviews?"
                     if lang == "English"
                     else (
-                        f"{clean_company} में {clean_role} के रूप में, आप जूनियर इंजीनियरों की तकनीकी क्षमता को कैसे बढ़ाते हैं और कोड समीक्षाओं में सकारात्मक वातावरण कैसे बनाते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Senior level par junior engineers ki mentorship aur healthy engineering culture cultivate karne ke liye aapka approach kya rehta hai?"
                     )
@@ -768,7 +768,7 @@ def generate_round_questions(
                     f"How do you evaluate whether to build an internal proprietary framework versus adopting an open-source solution or commercial SaaS at {clean_company}?"
                     if lang == "English"
                     else (
-                        f"आप यह कैसे तय करते हैं कि किसी समाधान को स्वयं इन-हाउस बनाना चाहिए या ओपन-सोर्स / सास (SaaS) टूल अपनाना चाहिए?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Build vs Buy decision lete waqt aap total cost of ownership (TCO) aur core competency ka evaluation kaise karte hain?"
                     )
@@ -795,7 +795,7 @@ def generate_round_questions(
                     f"Looking at where the industry is heading over the next three to five years, how will the {clean_role} discipline evolve at {clean_company}, and how are you preparing for that shift?"
                     if lang == "English"
                     else (
-                        f"अगले तीन से पांच वर्षों में उद्योग की दिशा को देखते हुए, {clean_company} में {clean_role} की भूमिका कैसे विकसित होगी, और आप उस बदलाव के लिए कैसे तैयारी कर रहे हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Next 3-5 years mein {clean_role} domain kaise evolve hoga, especially AI aur distributed computing ke emergence ke saath? Aapka personal growth roadmap kya hai?"
                     )
@@ -812,7 +812,7 @@ def generate_round_questions(
                     f"Tell me about a time you discovered an uncomfortable ethical or data privacy concern in a project or company. What action did you take despite organizational pressure?"
                     if lang == "English"
                     else (
-                        f"मुझे किसी ऐसे समय के बारे में बताएं जब आपने किसी परियोजना में डेटा गोपनीयता या नैतिक चिंता की पहचान की। आपने संगठनात्मक दबाव के बावजूद क्या कार्रवाई की?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Jab aapne kisi project mein ethical ya data privacy concern identify kiya ho, toh organizational pressure ke bawajood aapne accountability kaise uphold ki?"
                     )
@@ -829,7 +829,7 @@ def generate_round_questions(
                     f"Suppose you must guarantee consistent sub-50ms p99 latency for read-heavy global traffic while supporting strong write consistency on balance transfers. Walk us through your end-to-end distributed system topology."
                     if lang == "English"
                     else (
-                        f"मान लीजिए कि आपको बैलेंस ट्रांसफर पर मजबूत राइट कंसिस्टेंसी का समर्थन करते हुए ग्लोबल ट्रैफ़िक के लिए 50ms से कम लेटेंसी की गारंटी देनी होगी। अपनी एंड-टू-एंड सिस्टम टोपोलॉजी समझाएं।"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Global read-heavy scale par sub-50ms p99 latency aur balance transfer writes ke liye strong consistency guarantee karne ke liye aapki end-to-end system topology kya hogi?"
                     )
@@ -846,7 +846,7 @@ def generate_round_questions(
                     f"At {clean_company}, engineering excellence must directly convert into customer and business value. How do you measure the return on investment of major refactoring initiatives?"
                     if lang == "English"
                     else (
-                        f"{clean_company} में, इंजीनियरिंग उत्कृष्टता को व्यावसायिक मूल्य में बदलना चाहिए। आप बड़े रिफैक्टरिंग पहलों के रिटर्न ऑन इन्वेस्टमेंट (ROI) को कैसे मापते हैं?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Major technical refactoring aur tech debt reduction ka ROI business stakeholders aur leadership ko kaise demonstrate karte hain?"
                     )
@@ -863,7 +863,7 @@ def generate_round_questions(
                     f"Describe the most catastrophic professional failure of your career so far. What happened, what was your role in it, and how did it change you as an engineer?"
                     if lang == "English"
                     else (
-                        f"अपने करियर की अब तक की सबसे बड़ी विफलता का वर्णन करें। क्या हुआ था, इसमें आपकी क्या भूमिका थी, और इसने आपको एक पेशेवर के रूप में कैसे बदल दिया?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"Aapke career ka sabse bada setback ya technical failure kya raha hai? Us experience se aapne personal aur professional life mein kya sikha?"
                     )
@@ -880,7 +880,7 @@ def generate_round_questions(
                     f"Why should {clean_company} hire you over dozens of other highly qualified candidates applying for this exact {clean_role}?"
                     if lang == "English"
                     else (
-                        f"{clean_company} को इस {clean_role} के लिए आवेदन करने वाले अन्य योग्य उम्मीदवारों के बजाय आपको क्यों चुनना चाहिए?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{clean_company} ko is {clean_role} ke liye dusre candidates ke comparison mein aapko kyun select karna chahiye? Aapki unique value proposition kya hai?"
                     )
@@ -897,7 +897,7 @@ def generate_round_questions(
                     f"If you receive an offer from {clean_company}, what are the specific milestones you plan to achieve during your first 90 days?"
                     if lang == "English"
                     else (
-                        f"यदि आपको {clean_company} से प्रस्ताव मिलता है, तो आपके पहले 90 दिनों की कार्ययोजना क्या होगी?"
+                        f"Kripya is question ka clear aur structured javab dijiye."
                         if lang == "Hindi"
                         else f"{clean_company} join karne ke baad aapke first 30-60-90 days ka execution plan kya rahega?"
                     )
@@ -918,7 +918,7 @@ def generate_clarification_response(
     """Provides a natural clarification or restatement when candidate asks for clarification."""
     lang = language if language in ["English", "Hindi", "Hinglish"] else "English"
     if lang == "Hindi":
-        return f"{interviewer_name}: मैं प्रश्न को स्पष्ट कर देता हूँ। मुख्य रूप से मैं यह जानना चाहता हूँ कि—{question_text}। कृपया इसे अपने अनुभव के अनुसार समझाएं।"
+        return f"Kripya is question ka clear aur structured javab dijiye."
     elif lang == "Hinglish":
         return f"{interviewer_name}: Sure, main question ko simplify kar deta hoon. Basically hum yeh samajhna chahte hain: {question_text}."
     else:

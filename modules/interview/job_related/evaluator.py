@@ -87,7 +87,7 @@ def evaluate_candidate_answer(
         question_record.reaction = (
             "Understood. We will note that and proceed to the next area."
             if lang == "English"
-            else "समझ गया। हम इसे नोट करके अगले विषय पर बढ़ते हैं।"
+            else "Kripya is question ka clear aur structured javab dijiye."
             if lang == "Hindi"
             else "Understood. Isko note karke hum agle topic par badhte hain."
         )
@@ -113,7 +113,7 @@ def evaluate_candidate_answer(
         question_record.reaction = (
             "I see. That was quite brief. Let's move to the next question."
             if lang == "English"
-            else "यह उत्तर बहुत संक्षिप्त था। चलिए अगले प्रश्न पर चलते हैं।"
+            else "Kripya is question ka clear aur structured javab dijiye."
             if lang == "Hindi"
             else "Yeh kafi brief tha. Let's move to the next question."
         )
@@ -137,7 +137,7 @@ def evaluate_candidate_answer(
         question_record.reaction = (
             "Thank you. Try to keep your answers more concise and focused on the core point. Let's continue."
             if lang == "English"
-            else "धन्यवाद। कोशिश करें कि उत्तर अधिक संक्षिप्त और मुख्य बिंदु पर केंद्रित रहे। चलिए आगे बढ़ते हैं।"
+            else "Kripya is question ka clear aur structured javab dijiye."
             if lang == "Hindi"
             else "Thank you. Answers ko thoda crisp aur structured rakhein please. Let's continue."
         )
