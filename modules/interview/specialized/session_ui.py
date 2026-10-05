@@ -76,17 +76,41 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
     rem_min, rem_s = remaining_sec // 60, remaining_sec % 60
     time_str = f"{rem_min:02d}:{rem_s:02d}"
 
-    # Check for timer expiration
-    if remaining_sec <= 0 and q_idx < len(questions):
-        st.warning("⏱️ Round time limit reached! Concluding session safely...")
-        _finalize_round(specialization, language, gender, round_num, elapsed, on_complete_round)
-        st.rerun()
-        return
+    # Conclude session with Interviewer Thank You speech if round finished
+    if (remaining_sec <= 0 or q_idx >= len(questions)):
+        interviewer_name = "David" if gender == "male" else "Sarah"
+        interviewer_icon = "👨‍💼" if gender == "male" else "👩‍💼"
+        thank_text = "Aaj ke is technical interview round ke liye aapka bohot bohot dhanyawad. Hamare panel ne aapke saare javab evaluate kar liye hain, aur aapka performance report tayar hai." if "hindi" in language.lower() or "hinglish" in language.lower() else "Thank you so much for your time and participation in this technical interview today. That concludes our session. We have evaluated your responses, and your comprehensive performance report is now ready."
+        
+        st.markdown(clean_html(f"""
+        <div style="max-width:760px; margin: 30px auto; text-align:center; background:{t['surface']}; border:1.5px solid {t['accent']}; border-radius:18px; padding:32px; box-shadow:{t['card_shadow']};">
+            <div style="width:90px; height:90px; border-radius:50%; background:{t['surface2']}; border:3px solid {t['accent']}; display:flex; align-items:center; justify-content:center; font-size:3rem; margin:0 auto 16px;">
+                {interviewer_icon}
+            </div>
+            <h2 style="font-size:1.6rem; font-weight:800; color:{t['text_primary']}; margin:0 0 6px;">
+                Thank You from {interviewer_name} & Technical Panel
+            </h2>
+            <div style="font-size:0.95rem; font-weight:600; color:{t['accent']}; margin-bottom:16px;">
+                Lead Interviewer · {specialization}
+            </div>
+            <p style="font-size:1.05rem; color:{t['text_secondary']}; max-width:620px; margin:0 auto 24px; line-height:1.6; font-style:italic;">
+                "{thank_text}"
+            </p>
+        </div>
+        """), unsafe_allow_html=True)
 
-    # Check if all questions completed
-    if q_idx >= len(questions):
-        _finalize_round(specialization, language, gender, round_num, elapsed, on_complete_round)
-        st.rerun()
+        render_voice_synthesis_player(
+            text_to_speak=thank_text,
+            language=language,
+            interviewer_gender=gender,
+            key=f"tts_spec_thankyou_{round_num}",
+        )
+
+        st.markdown("<div style='max-width:400px; margin:0 auto;'>", unsafe_allow_html=True)
+        if st.button("📊  View Performance & Improvement Report →", type="primary", use_container_width=True, key="btn_view_spec_rep_thankyou"):
+            _finalize_round(specialization, language, gender, round_num, elapsed, on_complete_round)
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
         return
 
     current_q: QuestionItem = questions[q_idx]

@@ -81,11 +81,40 @@ def render_last_minute_live_session():
     secs_rem = remaining_sec % 60
     timer_color = "#DC2626" if remaining_sec < 180 else t["accent"]
 
-    # Conclude if timer expired or all questions completed
-    if (remaining_sec <= 0 or curr_idx >= len(questions)) and not st.session_state.get("lm_session_finalized", False):
-        st.session_state["lm_session_finalized"] = True
-        st.warning("⏱️ 30-Minute session concluded. Finalizing your comprehensive scorecard...")
-        _finalize_lm_session(mode, topic, company, lang, resume, questions, elapsed_sec, user_id)
+    # Conclude session with Interviewer Thank You speech if round finished
+    if (remaining_sec <= 0 or curr_idx >= len(questions)):
+        active_panelist = panel[0]
+        thank_text = "Aaj ke is 30-minute intensive rehearsal session ke liye aapka bohot dhanyawad. Hamare panel ne aapka scorecard tayar kar liya hai." if "hindi" in lang.lower() or "hinglish" in lang.lower() else "Thank you so much for your time in this 30-minute intensive rehearsal session today. That concludes our round. Our panel has evaluated your responses and your scorecard is ready."
+        
+        st.markdown(clean_html(f"""
+        <div style="max-width:760px; margin: 30px auto; text-align:center; background:{t['surface']}; border:1.5px solid {t['accent']}; border-radius:18px; padding:32px; box-shadow:{t['card_shadow']};">
+            <div style="width:90px; height:90px; border-radius:50%; background:{t['accent_soft']}; border:3px solid {t['accent']}; display:flex; align-items:center; justify-content:center; font-size:3rem; margin:0 auto 16px;">
+                {active_panelist.avatar_emoji}
+            </div>
+            <h2 style="font-size:1.6rem; font-weight:800; color:{t['text_primary']}; margin:0 0 6px;">
+                Thank You from {active_panelist.name} & Rehearsal Panel
+            </h2>
+            <div style="font-size:0.95rem; font-weight:600; color:{t['accent']}; margin-bottom:16px;">
+                Lead Panelist · {topic}
+            </div>
+            <p style="font-size:1.05rem; color:{t['text_secondary']}; max-width:620px; margin:0 auto 24px; line-height:1.6; font-style:italic;">
+                "{thank_text}"
+            </p>
+        </div>
+        """), unsafe_allow_html=True)
+
+        render_voice_synthesis_player(
+            text_to_speak=thank_text,
+            language=lang,
+            interviewer_gender=active_panelist.voice_gender,
+            key=f"tts_lm_thankyou_{curr_idx}",
+        )
+
+        st.markdown("<div style='max-width:400px; margin:0 auto;'>", unsafe_allow_html=True)
+        if st.button("📊  View 30-Minute Rehearsal Scorecard →", type="primary", use_container_width=True, key="btn_view_lm_rep_thankyou"):
+            _finalize_lm_session(mode, topic, company, lang, resume, questions, elapsed_sec, user_id)
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
         return
 
     current_q = questions[curr_idx]
