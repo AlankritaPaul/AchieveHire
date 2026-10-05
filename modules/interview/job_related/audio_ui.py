@@ -72,33 +72,41 @@ def render_voice_recognition_widget(
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-IN"
 
     components.html(f"""
-    <div style="display:flex; justify-content:center; margin: 10px 0;">
-        <div style="display:flex; align-items:center; gap:8px; background:#FEF2F2; border:1px solid #F87171; padding:8px 16px; border-radius:50px; color:#DC2626; font-weight:700; font-size:0.9rem;">
-            <span style="display:inline-block; width:10px; height:10px; background:#DC2626; border-radius:50%; animation:pulse 1.2s infinite;"></span>
-            Live Listening... Speak your answer.
+    <div id="stt-widget-box" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; margin: 6px 0; cursor:pointer;" onclick="forceStartMic()">
+        <div id="stt-status-pill" style="display:inline-flex; align-items:center; gap:8px; background:#FEF2F2; border:1px solid #F87171; padding:8px 20px; border-radius:50px; color:#DC2626; font-weight:700; font-size:0.92rem; box-shadow:0 2px 8px rgba(220,38,38,0.15); transition:all 0.3s ease;">
+            <span id="stt-dot" style="display:inline-block; width:10px; height:10px; background:#DC2626; border-radius:50%; animation:pulse 1.2s infinite;"></span>
+            <span id="stt-status-label">🔴 Listening... Speak your answer.</span>
+        </div>
+        <div id="stt-transcript-preview" style="font-size:0.82rem; color:#475569; font-style:italic; max-width:90%; text-align:center; min-height:18px;">
+            (Speak into your microphone. Answer auto-submits when you pause.)
         </div>
     </div>
     <style>
     @keyframes pulse {{
         0% {{ transform: scale(0.85); opacity: 0.5; }}
-        50% {{ transform: scale(1.2); opacity: 1; }}
+        50% {{ transform: scale(1.25); opacity: 1; }}
         100% {{ transform: scale(0.85); opacity: 0.5; }}
     }}
     </style>
 
     <script>
-    (function initSTT() {{
+    let recognition = null;
 
+    function forceStartMic() {{
+        if (recognition) {{
+            try {{ recognition.start(); }} catch(e) {{}}
+        }}
+    }}
+
+    (function initSTT() {{
         function startRealtimeCountdown() {{
             try {{
                 const pDoc = window.parent.document;
-                const timerEls = pDoc.querySelectorAll('[id*="timer-display"], [id*="countdown"], div');
-                btns = [];
                 let timerEl = pDoc.getElementById('job-live-timer-display') || pDoc.getElementById('spec-live-timer-display') || pDoc.getElementById('live-timer-display');
                 if (!timerEl) {{
                     const divs = pDoc.querySelectorAll('div');
                     for (let d of divs) {{
-                        if (d.innerText && /^\d{{2}}:\d{{2}}$/.test(d.innerText.trim()) && d.children.length === 0) {{
+                        if (d.innerText && /^[0-9]{{2}}:[0-9]{{2}}$/.test(d.innerText.trim()) && d.children.length === 0) {{
                             timerEl = d;
                             break;
                         }}
@@ -127,7 +135,6 @@ def render_voice_recognition_widget(
         startRealtimeCountdown();
         setInterval(startRealtimeCountdown, 500);
 
-
         function hideFields() {{
             try {{
                 const pDoc = window.parent.document;
@@ -149,31 +156,79 @@ def render_voice_recognition_widget(
         hideFields();
         setInterval(hideFields, 100);
 
-        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRec) return;
+        const label = document.getElementById('stt-status-label');
+        const preview = document.getElementById('stt-transcript-preview');
+        const pill = document.getElementById('stt-status-pill');
+        const dot = document.getElementById('stt-dot');
 
-        let recognition = new SpeechRec();
-        recognition.continuous = false;
-        recognition.interimResults = false;
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) {{
+            if (label) label.innerText = "❌ Speech API not supported in browser";
+            return;
+        }}
+
+        recognition = new SpeechRec();
+        recognition.continuous = true;
+        recognition.interimResults = true;
         recognition.lang = '{lang_code}';
 
+        let finalTranscript = "";
+
+        recognition.onstart = function() {{
+            if (label) label.innerText = "🔴 Listening... Speak your answer.";
+            if (pill) {{ pill.style.background = "#FEF2F2"; pill.style.borderColor = "#F87171"; pill.style.color = "#DC2626"; }}
+            if (dot) dot.style.background = "#DC2626";
+        }};
+
+        recognition.onerror = function(event) {{
+            console.warn("STT Error:", event.error);
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {{
+                if (label) label.innerText = "⚠️ Click to Enable Microphone";
+                if (preview) preview.innerText = "(Browser blocked microphone. Click this box to enable permissions.)";
+            }}
+        }};
+
         recognition.onend = function() {{
-            try {{ recognition.start(); }} catch(e) {{}}
+            if (finalTranscript.trim().length === 0) {{
+                try {{ recognition.start(); }} catch(e) {{}}
+            }}
         }};
 
         recognition.onresult = function(event) {{
-            let finalTranscript = event.results[0][0].transcript;
+            let interim = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {{
+                if (event.results[i].isFinal) {{
+                    finalTranscript += event.results[i][0].transcript + " ";
+                }} else {{
+                    interim += event.results[i][0].transcript;
+                }}
+            }}
+            const currentText = (finalTranscript + " " + interim).trim();
+            if (preview && currentText) {{
+                preview.innerText = '"' + currentText + '"';
+            }}
+
             if (finalTranscript.trim().length > 0) {{
                 recognition.onend = null;
-                const hiddenInput = window.parent.document.querySelector('input[aria-label="hidden_ans"]');
+                if (label) label.innerText = "🟢 Answer Captured! Submitting...";
+                if (pill) {{ pill.style.background = "#ECFDF5"; pill.style.borderColor = "#10B981"; pill.style.color = "#047857"; }}
+                if (dot) dot.style.background = "#10B981";
+
+                const pDoc = window.parent.document;
+                const hiddenInput = pDoc.querySelector('input[aria-label="hidden_ans"]');
                 if (hiddenInput) {{
                     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-                    nativeInputValueSetter.call(hiddenInput, finalTranscript);
+                    nativeInputValueSetter.call(hiddenInput, finalTranscript.trim());
                     hiddenInput.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                    
+                    hiddenInput.dispatchEvent(new Event('change', {{ bubbles: true }}));
+
                     setTimeout(() => {{
-                        const submitBtn = Array.from(window.parent.document.querySelectorAll('button')).find(btn => btn.innerText === 'hidden_submit');
-                        if (submitBtn) submitBtn.click();
+                        const btns = Array.from(pDoc.querySelectorAll('button'));
+                        const submitBtn = btns.find(b => b.textContent && b.textContent.includes('hidden_submit'));
+                        if (submitBtn) {{
+                            submitBtn.click();
+                            submitBtn.dispatchEvent(new MouseEvent('click', {{ bubbles: true, cancelable: true, view: window.parent }}));
+                        }}
                     }}, 200);
                 }}
             }}
@@ -182,4 +237,4 @@ def render_voice_recognition_widget(
         try {{ recognition.start(); }} catch(e) {{}}
     }})();
     </script>
-    """, height=60, scrolling=False)
+    """, height=70, scrolling=False)
