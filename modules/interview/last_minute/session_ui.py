@@ -186,10 +186,22 @@ def render_last_minute_live_session():
 
 
         # Hidden UI for seamless auto-submit
-        st.markdown('<div style="display:none;">', unsafe_allow_html=True)
+        st.markdown("""
+        <style>
+        div[data-testid="stTextInput"]:has(input[aria-label="hidden_ans"]),
+        div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]),
+        div[data-testid="stButton"]:has(button:contains("hidden_submit")),
+        div[data-testid="stElementContainer"]:has(button:contains("hidden_submit")) {
+            display: none !important;
+            height: 0px !important;
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
         submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
-        st.markdown('</div>', unsafe_allow_html=True)
+        
 
         if submit_clicked and candidate_answer:
             ans_to_eval = candidate_answer.strip() if candidate_answer.strip() else "Unanswered"

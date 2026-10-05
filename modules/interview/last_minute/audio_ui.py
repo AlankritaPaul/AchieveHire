@@ -83,6 +83,45 @@ def render_voice_recognition_widget(
 
     <script>
     (function initSTT() {{
+
+        function hideFields() {{
+            try {{
+                const pDoc = window.parent.document;
+                const inp = pDoc.querySelector('input[aria-label="hidden_ans"]');
+                if (inp) {{
+                    let el = inp;
+                    while (el && el !== pDoc.body) {{
+                        if (el.getAttribute('data-testid') === 'stElementContainer' || el.getAttribute('data-testid') === 'stTextInput' || el.classList.contains('stTextInput')) {{
+                            el.style.display = 'none';
+                            el.style.height = '0px';
+                            el.style.margin = '0px';
+                            el.style.padding = '0px';
+                            break;
+                        }}
+                        el = el.parentElement;
+                    }}
+                }}
+                const btns = pDoc.querySelectorAll('button');
+                btns.forEach(b => {{
+                    if (b.innerText && b.innerText.includes('hidden_submit')) {{
+                        let el = b;
+                        while (el && el !== pDoc.body) {{
+                            if (el.getAttribute('data-testid') === 'stElementContainer' || el.getAttribute('data-testid') === 'stButton' || el.classList.contains('stButton')) {{
+                                el.style.display = 'none';
+                                el.style.height = '0px';
+                                el.style.margin = '0px';
+                                el.style.padding = '0px';
+                                break;
+                            }}
+                            el = el.parentElement;
+                        }}
+                    }}
+                }});
+            }} catch(e) {{}}
+        }}
+        hideFields();
+        setInterval(hideFields, 200);
+
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRec) return;
 
