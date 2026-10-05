@@ -18,7 +18,36 @@ from modules.interview.job_related.storage import (
     initialize_job_interview_session,
     is_round_unlocked,
 )
-from modules.resume_guide.parser import get_candidate_stored_resume
+from typing import Dict, Any
+from modules.auth.user_service import get_current_user
+
+
+def get_candidate_stored_resume(user_id: str) -> Dict[str, Any]:
+    """Retrieves the candidate's actual stored resume data from AchieveHire without inventing facts."""
+    builder_model = st.session_state.get("resume_builder_model")
+    if builder_model and hasattr(builder_model, "data") and any(builder_model.data.values()):
+        return builder_model.data
+
+    current_user = get_current_user()
+    if current_user and current_user.get("resumes"):
+        latest = current_user["resumes"][-1]
+        if isinstance(latest, dict):
+            return latest
+
+    if current_user:
+        return {
+            "full_name": current_user.get("name", "Candidate"),
+            "professional_headline": current_user.get("headline", ""),
+            "email": current_user.get("email", ""),
+            "location": current_user.get("location", ""),
+            "summary": current_user.get("bio", ""),
+            "skills": "",
+            "experience": "",
+            "projects": "",
+            "education": "",
+        }
+
+    return {}
 
 
 def render_job_interview_setup(on_start_round_callback=None):
