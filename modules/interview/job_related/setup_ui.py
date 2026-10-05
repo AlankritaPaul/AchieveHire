@@ -86,10 +86,9 @@ def render_job_interview_setup(on_start_round_callback=None):
     </div>
     """), unsafe_allow_html=True)
 
-    tab_config, tab_resume, tab_rounds = st.tabs([
-        "🎯 1. Role, Company & Language",
-        "📄 2. Resume Inspection",
-        "🏁 3. Select & Start Round",
+    tab_config, tab_rounds = st.tabs([
+        "✅ 1. Role, Company & Language",
+        "🎯 2. Select & Start Round",
     ])
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -185,7 +184,7 @@ def render_job_interview_setup(on_start_round_callback=None):
 
         st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
-        if st.button("Save & Proceed to Resume Inspection ›", type="primary", use_container_width=True, key="btn_save_job_setup"):
+        if st.button("Save & Proceed 🎯", type="primary", use_container_width=True, key="btn_save_job_setup"):
             if not effective_role:
                 st.error("Please specify a target Job Role.")
             elif not effective_company:
@@ -204,77 +203,8 @@ def render_job_interview_setup(on_start_round_callback=None):
                 st.success(f"✓ Configuration saved: {effective_role} at {effective_company} ({selected_language}).")
                 st.rerun()
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # TAB 2: Resume Inspection
-    # ─────────────────────────────────────────────────────────────────────────
-    with tab_resume:
-        st.markdown(clean_html(f"""
-        <div style="background:{t['accent_soft']}; border:1px solid {t['accent']}; border-radius:12px; padding:16px 20px; margin-bottom:20px;">
-            <div style="font-weight:800; font-size:1.05rem; color:{t['accent']}; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
-                <span>🎙️</span>
-                <span>Interviewer Prompt</span>
-            </div>
-            <div style="font-size:1.02rem; font-style:italic; color:{t['text_primary']};">
-                “Before we begin, please show me your resume.”
-            </div>
-            <div style="font-size:0.84rem; color:{t['text_secondary']}; margin-top:6px;">
-                AchieveHire uses your real stored resume data. The interview engine analyses your genuine education, skills, projects, and work experience.
-            </div>
-        </div>
-        """), unsafe_allow_html=True)
-
-        col_r1, col_r2 = st.columns([1, 1], gap="large")
-
-        with col_r1:
-            st.markdown(f"<h4 style='font-size:1.05rem; font-weight:700; color:{t['text_primary']}; margin-bottom:8px;'>Candidate Profile &amp; Credentials</h4>", unsafe_allow_html=True)
-            with st.container(border=True):
-                st.markdown(f"**Full Name:** {stored_resume.get('full_name') or st.session_state.get('username', 'Candidate')}")
-                st.markdown(f"**Headline:** {stored_resume.get('professional_headline') or 'Candidate · Career Readiness'}")
-                st.markdown(f"**Email:** {stored_resume.get('email') or 'candidate@achievehire.ai'}")
-                st.markdown(f"**Location:** {stored_resume.get('location') or 'India'}")
-                summary_val = stored_resume.get('summary') or 'Focused on professional excellence and rigorous interview readiness.'
-                st.markdown(f"**Professional Summary:** {summary_val}")
-
-            st.markdown(f"<h4 style='font-size:1.05rem; font-weight:700; color:{t['text_primary']}; margin:16px 0 8px;'>Education &amp; Qualifications</h4>", unsafe_allow_html=True)
-            with st.container(border=True):
-                edu_entries = stored_resume.get("education_entries", [])
-                if edu_entries:
-                    for edu in edu_entries:
-                        st.markdown(f"- **{edu.get('degree', 'Degree')}** ({edu.get('field_of_study', '')}) — *{edu.get('institution', 'University')}*")
-                else:
-                    raw_edu = stored_resume.get("education", "")
-                    if raw_edu.strip():
-                        st.markdown(raw_edu)
-                    else:
-                        st.markdown("<em>No formal academic entries detected in profile.</em>", unsafe_allow_html=True)
-
-        with col_r2:
-            st.markdown(f"<h4 style='font-size:1.05rem; font-weight:700; color:{t['text_primary']}; margin-bottom:8px;'>Technical &amp; Domain Skills</h4>", unsafe_allow_html=True)
-            with st.container(border=True):
-                skills_val = stored_resume.get("skills") or stored_resume.get("tech_skills_raw", "")
-                if skills_val.strip():
-                    st.markdown(skills_val)
-                else:
-                    st.markdown("<em>Skills will be evaluated dynamically based on target role competencies.</em>", unsafe_allow_html=True)
-
-            st.markdown(f"<h4 style='font-size:1.05rem; font-weight:700; color:{t['text_primary']}; margin:16px 0 8px;'>Projects &amp; Work Experience</h4>", unsafe_allow_html=True)
-            with st.container(border=True):
-                proj_entries = stored_resume.get("project_entries", [])
-                if proj_entries:
-                    for p in proj_entries:
-                        st.markdown(f"- **{p.get('title', 'Project')}**: {p.get('description', '')[:120]}")
-                else:
-                    raw_proj = stored_resume.get("projects", "")
-                    if raw_proj.strip():
-                        st.markdown(raw_proj[:300] + ("..." if len(raw_proj) > 300 else ""))
-                    else:
-                        st.markdown("<em>No specific projects found. Questions will test core problem-solving scenarios.</em>", unsafe_allow_html=True)
-
-        st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
-        st.info("✓ Your actual resume has been verified and synchronized with the interview engine.")
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # TAB 3: Select & Start Round (Enforcing Single-Session Rule & Locking)
+    # ----------------------------------------------------------------------------------------------------
+    # TAB 2: Select & Start Round (Enforcing Single-Session Rule & Locking)
     # ─────────────────────────────────────────────────────────────────────────
     with tab_rounds:
         effective_role = session.get("target_role") if session else st.session_state.get("job_effective_role", "Software Engineer")
