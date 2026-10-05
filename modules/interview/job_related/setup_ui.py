@@ -77,11 +77,7 @@ def render_job_interview_setup(on_start_round_callback=None):
                     Job Related Interview Setup
                 </h2>
             </div>
-            <div>
-                <button onclick="window.location.reload()" style="background:{t['surface2']}; border:1px solid {t['border']}; color:{t['text_secondary']}; padding:6px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
-                    Overview Flow
-                </button>
-            </div>
+
         </div>
     </div>
     """), unsafe_allow_html=True)
