@@ -209,11 +209,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_3", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_3", use_container_width=True):
                 st.session_state["ac_screen"] = "landing"
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_3", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_3", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
 
@@ -297,11 +297,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_4", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_4", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_4", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_4", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
 
@@ -352,12 +352,12 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_5", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_5", use_container_width=True):
                 data["professional_headline"] = st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")).strip()
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_5", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_5", use_container_width=True):
                 data["professional_headline"] = st.session_state.get("builder_prof_headline_input", data.get("professional_headline", "")).strip()
                 st.session_state.builder_step = 2
                 st.rerun()
@@ -671,11 +671,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_6", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_6", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_6", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_6", use_container_width=True):
                 if data.get("education_entries"):
                     data["education_entries"] = ResumeBuilderModel.enhance_education_entries(data["education_entries"])
                 if data.get("qualification_entries"):
@@ -744,7 +744,7 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_7", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_7", use_container_width=True):
                 cur_tech = st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")).strip()
                 cur_non_tech = st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")).strip()
                 data["tech_skills_raw"] = cur_tech
@@ -754,7 +754,7 @@ def render_create_resume_flow():
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_7", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_7", use_container_width=True):
                 cur_tech = st.session_state.get("builder_tech_skills_input", data.get("tech_skills_raw", "")).strip()
                 cur_non_tech = st.session_state.get("builder_non_tech_skills_input", data.get("non_tech_skills_raw", "")).strip()
                 data["tech_skills_raw"] = cur_tech
@@ -1017,11 +1017,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_8", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_8", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_8", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_8", use_container_width=True):
                 valid_entries = [
                     e for e in data.get("experience_entries", [])
                     if any([
@@ -1167,11 +1167,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_9", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_9", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_9", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_9", use_container_width=True):
                 if data.get("skip_projects", False):
                     data["projects"] = ""
                     data["project_entries"] = []
@@ -1297,11 +1297,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_10", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_10", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_10", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_10", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
 
@@ -1426,11 +1426,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_11", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_11", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next →", type="primary", key="btn_bld_next_11", use_container_width=True):
+            if st.button("Next \\u2192", type="primary", key="btn_bld_next_11", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
 
@@ -1464,11 +1464,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_12", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_12", use_container_width=True):
                 st.session_state.builder_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next: Create & Preview Resume →", type="primary", key="btn_bld_next_12", use_container_width=True):
+            if st.button("Next: Create & Preview Resume \\u2192", type="primary", key="btn_bld_next_12", use_container_width=True):
                 tailored = ResumeBuilderModel.tailor_content(data)
                 st.session_state.builder_data.update(tailored)
                 st.session_state.builder_step = 1
@@ -1514,11 +1514,11 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back", key="btn_bld_back_13", use_container_width=True):
+            if st.button("\\u2190 Back", key="btn_bld_back_13", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next: Finalize & Download →", type="primary", key="btn_bld_next_13", use_container_width=True):
+            if st.button("Next: Finalize & Download \\u2192", type="primary", key="btn_bld_next_13", use_container_width=True):
                 st.session_state.builder_accepted = True
                 st.session_state.builder_step = 2
                 st.rerun()
@@ -1575,7 +1575,7 @@ def render_create_resume_flow():
         st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
         col_back, col_space, col_next = st.columns([1, 2, 1])
         with col_back:
-            if st.button("← Back to Edit", key="btn_bld_back_14", use_container_width=True):
+            if st.button("\\u2190 Back to Edit", key="btn_bld_back_14", use_container_width=True):
                 st.session_state.builder_step = 2
                 st.rerun()
         with col_next:
