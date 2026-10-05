@@ -36,38 +36,34 @@ def render_job_interview_overview(on_proceed_callback=None):
     </div>
     """), unsafe_allow_html=True)
 
-    # Simple Vertical Flow with Arrows
     flow_steps = [
         {"title": "Choose Job Role", "desc": "Select or write your target position", "icon": "🎯"},
         {"title": "Choose Company", "desc": "Select or write your target organization", "icon": "🏢"},
-        {"title": "Choose Interview Language", "desc": "English, Hindi, or natural Indian Hinglish", "icon": "🌐"},
+        {"title": "Choose Interview Language", "desc": "English, Hindi, or natural Indian Hinglish", "icon": "🗣️"},
         {"title": "Show / Analyse Resume", "desc": "Interviewer reviews your real AchieveHire resume", "icon": "📄"},
-        {"title": "Round 1 — Easy — 20 Minutes", "desc": "1 Interviewer · Starts strictly with 'Please introduce yourself'", "icon": "🟢"},
+        {"title": "Round 1 — Easy — 20 Minutes", "desc": "1 Interviewer — Starts strictly with 'Please introduce yourself'", "icon": "🟢"},
         {"title": "Performance & Improvement Report", "desc": "Question-by-question breakdown, criteria chart & recommendations", "icon": "📊"},
-        {"title": "Round 2 — Moderate — 25 Minutes", "desc": "2 Interviewers · Role competencies & workflow execution", "icon": "🟡"},
+        {"title": "Round 2 — Moderate — 25 Minutes", "desc": "2 Interviewers — Role competencies & workflow execution", "icon": "🟢"},
         {"title": "Performance & Improvement Report", "desc": "Question-by-question breakdown, criteria chart & recommendations", "icon": "📊"},
-        {"title": "Round 3 — Moderate — 30 Minutes", "desc": "2 Interviewers · Resume project dissection & root-cause reasoning", "icon": "🟡"},
+        {"title": "Round 3 — Moderate — 30 Minutes", "desc": "2 Interviewers — Resume project dissection & root-cause reasoning", "icon": "🟢"},
         {"title": "Performance & Improvement Report", "desc": "Question-by-question breakdown, criteria chart & recommendations", "icon": "📊"},
-        {"title": "Round 4 — Hard — 35 Minutes", "desc": "3 Interviewers · High-stakes architecture, constraints & trade-offs", "icon": "🔴"},
+        {"title": "Round 4 — Hard — 35 Minutes", "desc": "3 Interviewers — High-stakes architecture, constraints & trade-offs", "icon": "🟡"},
         {"title": "Performance & Improvement Report", "desc": "Question-by-question breakdown, criteria chart & recommendations", "icon": "📊"},
-        {"title": "Round 5 — Hard — 40 Minutes", "desc": "3 Interviewers · P0 incident leadership & operational excellence", "icon": "🔴"},
+        {"title": "Round 5 — Hard — 40 Minutes", "desc": "3 Interviewers — P0 incident leadership & operational excellence", "icon": "🟡"},
         {"title": "Performance & Improvement Report", "desc": "Question-by-question breakdown, criteria chart & recommendations", "icon": "📊"},
-        {"title": "Round 6 — Final — 45 Minutes", "desc": "4–5 Interviewers · Full Executive Panel + Closing Candidate Q&A", "icon": "🏆"},
-        {"title": "Overall Performance & Improvement Report", "desc": "Comprehensive 6-round growth trajectory, strengths & mastery audit", "icon": "📈"},
+        {"title": "Round 6 — Final — 45 Minutes", "desc": "4–5 Interviewers — Full Executive Panel + Closing Candidate Q&A", "icon": "🔴"},
+        {"title": "Overall Performance & Improvement Report", "desc": "Comprehensive 6-round growth trajectory, strengths & mastery audit", "icon": "🏆"},
     ]
 
-    st.markdown(clean_html(f"""
-    <div style="max-width:680px; margin: 0 auto 28px; padding: 0 16px;">
-        <div style="background:{t['surface']}; border:1px solid {t['border']}; border-radius:16px; padding:24px 28px; box-shadow:{t['card_shadow']};">
-    """), unsafe_allow_html=True)
-
+    # Build entire workflow card into a SINGLE HTML block
+    steps_html = []
     for i, step in enumerate(flow_steps):
         is_report = "Report" in step["title"]
         bg_color = t['surface2'] if not is_report else t['accent_soft']
         border_color = t['accent'] if is_report else t['border']
         text_color = t['accent'] if is_report else t['text_primary']
 
-        st.markdown(clean_html(f"""
+        item_html = f"""
         <div style="display:flex; align-items:center; gap:16px; padding:12px 16px; background:{bg_color}; border:1px solid {border_color}; border-radius:10px; margin-bottom:4px;">
             <div style="font-size:1.35rem; width:36px; text-align:center; flex-shrink:0;">
                 {step['icon']}
@@ -81,16 +77,25 @@ def render_job_interview_overview(on_proceed_callback=None):
                 </div>
             </div>
         </div>
-        """), unsafe_allow_html=True)
+        """
+        steps_html.append(item_html)
 
         if i < len(flow_steps) - 1:
-            st.markdown(f"""
+            steps_html.append(f"""
             <div style="text-align:center; color:{t['accent']}; font-weight:800; font-size:1.1rem; line-height:1; margin: 3px 0;">
                 ↓
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    full_workflow_html = f"""
+    <div style="max-width:680px; margin: 0 auto 28px; padding: 0 16px;">
+        <div style="background:{t['surface']}; border:1px solid {t['border']}; border-radius:16px; padding:24px 28px; box-shadow:{t['card_shadow']};">
+            {''.join(steps_html)}
+        </div>
+    </div>
+    """
+
+    st.markdown(clean_html(full_workflow_html), unsafe_allow_html=True)
 
     # Important Note & Single-Session Rule
     st.markdown(clean_html(f"""
@@ -112,12 +117,12 @@ def render_job_interview_overview(on_proceed_callback=None):
     </div>
     """), unsafe_allow_html=True)
 
-    # Proceed Button
-    st.markdown(f"<div style='max-width:680px; margin: 0 auto; padding: 0 16px;'>", unsafe_allow_html=True)
-    if st.button("Begin Setup & Role Selection ›", type="primary", use_container_width=True, key="job_overview_proceed_btn"):
-        if on_proceed_callback:
-            on_proceed_callback()
-        else:
-            st.session_state["job_view_mode"] = "setup"
-            st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Proceed Button with standard Streamlit layout columns
+    _, col_btn, _ = st.columns([1, 4, 1])
+    with col_btn:
+        if st.button("Begin Setup & Role Selection →", type="primary", use_container_width=True, key="job_overview_proceed_btn"):
+            if on_proceed_callback:
+                on_proceed_callback()
+            else:
+                st.session_state["job_view_mode"] = "setup"
+                st.rerun()
