@@ -60,7 +60,10 @@ def render_voice_synthesis_player(
     """, height=0, scrolling=False)
 
 
-def render_voice_recognition_widget(prompt_key: str = "lm_stt_box", language: str = "English"):
+def render_voice_recognition_widget(
+    prompt_key: str = "lm_stt_box",
+    language: str = "English",
+):
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-IN"
 
     components.html(f"""

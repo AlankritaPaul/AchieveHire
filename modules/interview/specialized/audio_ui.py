@@ -72,7 +72,10 @@ def render_voice_synthesis_player(
     """, height=0, scrolling=False)
 
 
-def render_voice_recognition_widget(prompt_key: str = "stt_box", language: str = "English", on_transcript_callback=None):
+def render_voice_recognition_widget(
+    prompt_key: str = "stt_box",
+    language: str = "English",
+):
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-IN"
 
     components.html(f"""
@@ -126,3 +129,23 @@ def render_voice_recognition_widget(prompt_key: str = "stt_box", language: str =
     }})();
     </script>
     """, height=60, scrolling=False)
+
+
+def render_audio_waveform_hud(t: dict, is_speaking: bool = False):
+    """Renders visual audio waveform animation during interview session."""
+    st.markdown(clean_html(f"""
+    <div style="display:flex; align-items:center; justify-content:center; gap:6px; height:48px; margin: 12px 0;">
+        <div class="ac-wave-bar" style="height:14px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.2s infinite ease-in-out;"></div>
+        <div class="ac-wave-bar" style="height:26px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 0.9s infinite ease-in-out 0.2s;"></div>
+        <div class="ac-wave-bar" style="height:38px; width:4px; background:{t['gold']}; border-radius:4px; animation: acWave 1.4s infinite ease-in-out 0.4s;"></div>
+        <div class="ac-wave-bar" style="height:22px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.0s infinite ease-in-out 0.1s;"></div>
+        <div class="ac-wave-bar" style="height:34px; width:4px; background:{t['gold']}; border-radius:4px; animation: acWave 1.3s infinite ease-in-out 0.3s;"></div>
+        <div class="ac-wave-bar" style="height:16px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.1s infinite ease-in-out 0.5s;"></div>
+    </div>
+    <style>
+    @keyframes acWave {{
+        0%, 100% {{ transform: scaleY(0.4); opacity: 0.6; }}
+        50% {{ transform: scaleY(1.0); opacity: 1.0; }}
+    }}
+    </style>
+    """), unsafe_allow_html=True)
