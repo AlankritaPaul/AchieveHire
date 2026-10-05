@@ -89,6 +89,45 @@ def render_voice_recognition_widget(
     <script>
     (function initSTT() {{
 
+        function startRealtimeCountdown() {{
+            try {{
+                const pDoc = window.parent.document;
+                const timerEls = pDoc.querySelectorAll('[id*="timer-display"], [id*="countdown"], div');
+                btns = [];
+                let timerEl = pDoc.getElementById('job-live-timer-display') || pDoc.getElementById('spec-live-timer-display') || pDoc.getElementById('live-timer-display');
+                if (!timerEl) {{
+                    const divs = pDoc.querySelectorAll('div');
+                    for (let d of divs) {{
+                        if (d.innerText && /^\d{{2}}:\d{{2}}$/.test(d.innerText.trim()) && d.children.length === 0) {{
+                            timerEl = d;
+                            break;
+                        }}
+                    }}
+                }}
+                if (timerEl && !timerEl.getAttribute('data-timer-running')) {{
+                    timerEl.setAttribute('data-timer-running', 'true');
+                    let text = timerEl.innerText.trim();
+                    let parts = text.split(':');
+                    if (parts.length === 2) {{
+                        let totalSec = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+                        if (!isNaN(totalSec) && totalSec > 0) {{
+                            setInterval(() => {{
+                                if (totalSec > 0) {{
+                                    totalSec--;
+                                    let m = Math.floor(totalSec / 60);
+                                    let s = totalSec % 60;
+                                    timerEl.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+                                }}
+                            }}, 1000);
+                        }}
+                    }}
+                }}
+            }} catch(e) {{}}
+        }}
+        startRealtimeCountdown();
+        setInterval(startRealtimeCountdown, 500);
+
+
         function hideFields() {{
             try {{
                 const pDoc = window.parent.document;

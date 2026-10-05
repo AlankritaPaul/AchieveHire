@@ -152,7 +152,7 @@ def render_job_live_interview_session(round_num: int):
                     <div style="font-size:0.75rem; color:{t['text_muted']}; font-weight:600; text-transform:uppercase;">
                         Time Remaining
                     </div>
-                    <div style="font-size:1.35rem; font-weight:900; color:{timer_color}; font-family:monospace;">
+                    <div id="job-live-timer-display" style="font-size:1.35rem; font-weight:900; color:{timer_color}; font-family:monospace;">
                         {mins_rem:02d}:{secs_rem:02d}
                     </div>
                 </div>
@@ -241,44 +241,14 @@ def render_job_live_interview_session(round_num: int):
         submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
         
 
-        if submit_clicked and candidate_answer:
-            eval_record = _process_answer(current_q, candidate_answer, lang)
-            evals.append(eval_record)
-            st.session_state["job_sess_evaluations"] = evals
-            st.session_state["job_sess_current_q_idx"] += 1
-            st.rerun()
-
-
-        with col_opt2:
-            if st.button("❓ Clarify Question", use_container_width=True, key=f"btn_clarify_q_{curr_idx}"):
-                clarification = generate_clarification_response(current_q.question_text, lang, active_panelist.name)
-                st.session_state["job_current_speech_text"] = clarification
-                st.session_state["job_is_clarifying"] = True
-                st.rerun()
-
-        with col_opt3:
-            if st.button("🤷 I Don't Know", use_container_width=True, key=f"btn_dont_know_{curr_idx}"):
-                # Mark honestly as unanswered
-                current_q = evaluate_candidate_answer(current_q, "I don't know", lang, role, company)
-                state.questions_list[curr_idx] = current_q
-                state.active_question_index += 1
-                if state.active_question_index < len(state.questions_list):
-                    next_q = state.questions_list[state.active_question_index]
-                    st.session_state["job_current_speech_text"] = next_q.question_text
-                st.rerun()
-
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
-
-        # Submit Answer Button
-        if st.button("Submit Answer & Next ›", type="primary", use_container_width=True, key=f"btn_submit_ans_{curr_idx}"):
-            ans_to_evaluate = user_response.strip() if user_response.strip() else "Unanswered"
+        if submit_clicked:
+            ans_to_evaluate = candidate_answer.strip() if (candidate_answer and candidate_answer.strip()) else "Candidate spoken response recorded."
             evaluated_q = evaluate_candidate_answer(current_q, ans_to_evaluate, lang, role, company)
             state.questions_list[curr_idx] = evaluated_q
             state.active_question_index += 1
 
             if state.active_question_index < len(state.questions_list):
                 next_q = state.questions_list[state.active_question_index]
-                # Prepend interviewer reaction to next question audio
                 combined_speech = f"{evaluated_q.reaction} ... {next_q.question_text}"
                 st.session_state["job_current_speech_text"] = combined_speech
             st.rerun()

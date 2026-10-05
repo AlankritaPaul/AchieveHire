@@ -203,8 +203,8 @@ def render_last_minute_live_session():
         submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
         
 
-        if submit_clicked and candidate_answer:
-            ans_to_eval = candidate_answer.strip() if candidate_answer.strip() else "Unanswered"
+        if submit_clicked:
+            ans_to_eval = candidate_answer.strip() if (candidate_answer and candidate_answer.strip()) else "Candidate spoken response recorded."
             evaluated_q = evaluate_last_minute_answer(current_q, ans_to_eval, topic)
             questions[curr_idx] = evaluated_q
             st.session_state["lm_active_q_idx"] += 1
