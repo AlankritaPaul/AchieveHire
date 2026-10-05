@@ -72,129 +72,57 @@ def render_voice_synthesis_player(
     """, height=0, scrolling=False)
 
 
-def render_voice_recognition_widget(
-    prompt_key: str = "stt_box",
-    language: str = "English",
-    on_transcript_callback=None,
-):
-    """
-    Renders browser speech recognition component via Web Speech API with live transcript capture.
-    """
+def render_voice_recognition_widget(prompt_key: str = "stt_box", language: str = "English", on_transcript_callback=None):
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-IN"
 
     components.html(f"""
-    <div id="ac-stt-container" style="display:flex; align-items:center; justify-content:center; gap:12px; margin: 10px 0;">
-        <button id="ac-mic-trigger-btn" style="
-            background: linear-gradient(135deg, #4F46E5, #6366F1);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 24px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
-            transition: transform 0.18s ease;
-        ">
-            <span id="ac-mic-icon">🎙️</span>
-            <span id="ac-mic-label">Start Speaking (Mic On)</span>
-        </button>
-        <span id="ac-mic-live-indicator" style="font-size:0.86rem; color:#6B7280; font-style:italic;"></span>
+    <div style="display:flex; justify-content:center; margin: 10px 0;">
+        <div style="display:flex; align-items:center; gap:8px; background:#FEF2F2; border:1px solid #F87171; padding:8px 16px; border-radius:50px; color:#DC2626; font-weight:700; font-size:0.9rem;">
+            <span style="display:inline-block; width:10px; height:10px; background:#DC2626; border-radius:50%; animation:pulse 1.2s infinite;"></span>
+            Live Listening... Speak your answer.
+        </div>
     </div>
+    <style>
+    @keyframes pulse {{
+        0% {{ transform: scale(0.85); opacity: 0.5; }}
+        50% {{ transform: scale(1.2); opacity: 1; }}
+        100% {{ transform: scale(0.85); opacity: 0.5; }}
+    }}
+    </style>
 
     <script>
     (function initSTT() {{
-        const btn = document.getElementById('ac-mic-trigger-btn');
-        const icon = document.getElementById('ac-mic-icon');
-        const label = document.getElementById('ac-mic-label');
-        const liveInd = document.getElementById('ac-mic-live-indicator');
-        if (!btn) return;
-
-        let recognition = null;
-        let isListening = false;
-
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRec) {{
-            label.innerText = "Speech Recognition not supported in this browser";
-            btn.disabled = true;
-            return;
-        }}
+        if (!SpeechRec) return;
 
-        recognition = new SpeechRec();
-        recognition.continuous = true;
-        recognition.interimResults = true;
+        let recognition = new SpeechRec();
+        recognition.continuous = false;
+        recognition.interimResults = false;
         recognition.lang = '{lang_code}';
 
-        btn.onclick = function() {{
-            if (!isListening) {{
-                try {{
-                    recognition.start();
-                    isListening = true;
-                    btn.style.background = "linear-gradient(135deg, #EF4444, #DC2626)";
-                    label.innerText = "Listening... Click to Stop & Submit";
-                    liveInd.innerText = "🔴 Recording your voice...";
-                }} catch (e) {{
-                    console.log(e);
-                }}
-            }} else {{
-                recognition.stop();
-                isListening = false;
-                btn.style.background = "linear-gradient(135deg, #4F46E5, #6366F1)";
-                label.innerText = "Start Speaking (Mic On)";
-                liveInd.innerText = "✅ Voice recorded.";
-            }}
+        recognition.onend = function() {{
+            try {{ recognition.start(); }} catch(e) {{}}
         }};
 
         recognition.onresult = function(event) {{
-            let finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {{
-                if (event.results[i].isFinal) {{
-                    finalTranscript += event.results[i][0].transcript;
-                }}
-            }}
+            let finalTranscript = event.results[0][0].transcript;
             if (finalTranscript.trim().length > 0) {{
-                // Populate parent Streamlit text input box if accessible
-                const parentInputs = window.parent.document.querySelectorAll('textarea, input[type="text"]');
-                for (let inp of parentInputs) {{
-                    if (inp.getAttribute('aria-label') && inp.getAttribute('aria-label').includes('Answer')) {{
-                        inp.value = (inp.value ? inp.value + ' ' : '') + finalTranscript;
-                        inp.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                        break;
-                    }}
+                recognition.onend = null;
+                const hiddenInput = window.parent.document.querySelector('input[aria-label="hidden_ans"]');
+                if (hiddenInput) {{
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                    nativeInputValueSetter.call(hiddenInput, finalTranscript);
+                    hiddenInput.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                    
+                    setTimeout(() => {{
+                        const submitBtn = Array.from(window.parent.document.querySelectorAll('button')).find(btn => btn.innerText === 'hidden_submit');
+                        if (submitBtn) submitBtn.click();
+                    }}, 200);
                 }}
             }}
         }};
 
-        recognition.onerror = function(event) {{
-            console.warn('Speech recognition error:', event.error);
-            isListening = false;
-            btn.style.background = "linear-gradient(135deg, #4F46E5, #6366F1)";
-            label.innerText = "Start Speaking (Mic On)";
-            liveInd.innerText = "⚠️ Voice captured or microphone released.";
-        }};
+        try {{ recognition.start(); }} catch(e) {{}}
     }})();
     </script>
-    """, height=65, scrolling=False)
-
-
-def render_audio_waveform_hud(t: dict, is_speaking: bool = False):
-    """Renders visual audio waveform animation during interview session."""
-    st.markdown(clean_html(f"""
-    <div style="display:flex; align-items:center; justify-content:center; gap:6px; height:48px; margin: 12px 0;">
-        <div class="ac-wave-bar" style="height:14px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.2s infinite ease-in-out;"></div>
-        <div class="ac-wave-bar" style="height:26px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 0.9s infinite ease-in-out 0.2s;"></div>
-        <div class="ac-wave-bar" style="height:38px; width:4px; background:{t['gold']}; border-radius:4px; animation: acWave 1.4s infinite ease-in-out 0.4s;"></div>
-        <div class="ac-wave-bar" style="height:22px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.0s infinite ease-in-out 0.1s;"></div>
-        <div class="ac-wave-bar" style="height:34px; width:4px; background:{t['gold']}; border-radius:4px; animation: acWave 1.3s infinite ease-in-out 0.3s;"></div>
-        <div class="ac-wave-bar" style="height:16px; width:4px; background:{t['accent']}; border-radius:4px; animation: acWave 1.1s infinite ease-in-out 0.5s;"></div>
-    </div>
-    <style>
-    @keyframes acWave {{
-        0%, 100% {{ transform: scaleY(0.4); opacity: 0.6; }}
-        50% {{ transform: scaleY(1.0); opacity: 1.0; }}
-    }}
-    </style>
-    """), unsafe_allow_html=True)
+    """, height=60, scrolling=False)

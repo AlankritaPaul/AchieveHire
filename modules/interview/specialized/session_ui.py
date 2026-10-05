@@ -182,33 +182,16 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
                 language=language,
             )
 
-            # Interactive chat input for answer
-            if user_response := st.chat_input('Type your Answer here and press Enter to submit...'):
-                _process_answer(current_q, user_response, language, round_num)
+            # Hidden UI for seamless auto-submit
+            st.markdown('<div style="display:none;">', unsafe_allow_html=True)
+            candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{q_idx}", label_visibility="collapsed")
+            submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{q_idx}")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            if submit_clicked and candidate_answer:
+                _process_answer(current_q, candidate_answer, language, round_num)
                 st.session_state["spec_sess_current_q_idx"] += 1
                 st.rerun()
-
-            st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
-
-            # Auxiliary action buttons
-            col_aux1, col_aux2 = st.columns(2)
-            with col_aux1:
-                if st.button("🔄 Repeat Question", use_container_width=True, key=f"btn_repeat_q_{q_idx}"):
-                    # Re-trigger speech synthesis
-                    render_voice_synthesis_player(
-                        text_to_speak=f"Sure, let me repeat that for you. {q_spoken_text}",
-                        language=language,
-                        interviewer_gender=gender,
-                        key=f"tts_repeat_{q_idx}_{int(time.time())}",
-                    )
-                    st.info("Repeating question audio...")
-
-            with col_aux2:
-                if st.button("❓ I Don't Know / Pass", use_container_width=True, key=f"btn_pass_q_{q_idx}"):
-                    _process_answer(current_q, "I do not know the answer to this question.", language, round_num)
-                    st.session_state["spec_sess_user_input"] = ""
-                    st.session_state["spec_sess_current_q_idx"] += 1
-                    st.rerun()
 
             st.markdown("<hr style='margin:12px 0;'/>", unsafe_allow_html=True)
 

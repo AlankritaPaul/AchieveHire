@@ -223,22 +223,19 @@ def render_job_live_interview_session(round_num: int):
         # Audio Recognition Widget
         render_voice_recognition_widget(prompt_key=f"stt_{curr_idx}", language=lang)
 
-        # Candidate Answer Capture Box
-        user_response = st.text_area(
-            "Candidate Answer",
-            value="",
-            placeholder="Your spoken words will appear here automatically via speech-to-text. You may also adjust or finalize your thoughts before submitting...",
-            height=130,
-            key=f"input_candidate_ans_{curr_idx}",
-            label_visibility="collapsed",
-        )
+        # Hidden UI for seamless auto-submit
+        st.markdown('<div style="display:none;">', unsafe_allow_html=True)
+        candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
+        submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        # Candidate Clarification & Option Buttons
-        col_opt1, col_opt2, col_opt3 = st.columns([1, 1, 1], gap="small")
-        with col_opt1:
-            if st.button("🔁 Repeat Question", use_container_width=True, key=f"btn_repeat_q_{curr_idx}"):
-                st.session_state["job_current_speech_text"] = current_q.question_text
-                st.rerun()
+        if submit_clicked and candidate_answer:
+            eval_record = _process_answer(current_q, candidate_answer, lang)
+            evals.append(eval_record)
+            st.session_state["job_sess_evaluations"] = evals
+            st.session_state["job_sess_current_q_idx"] += 1
+            st.rerun()
+
 
         with col_opt2:
             if st.button("❓ Clarify Question", use_container_width=True, key=f"btn_clarify_q_{curr_idx}"):

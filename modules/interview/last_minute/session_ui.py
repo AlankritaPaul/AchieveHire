@@ -163,7 +163,7 @@ def render_last_minute_live_session():
             key=f"tts_lm_{curr_idx}_{len(speech_text)}",
         )
 
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
+        
         with st.expander(f"👥 Active Panel Members ({len(panel)})", expanded=False):
             for pm in panel:
                 active_mark = " (Currently Speaking)" if pm.id == active_panelist.id else ""
@@ -185,32 +185,13 @@ def render_last_minute_live_session():
 
 
 
-        # Controls
-        col_c1, col_c2, col_c3 = st.columns([1, 1, 1], gap="small")
-        with col_c1:
-            if st.button("🔁 Repeat Question", use_container_width=True, key=f"btn_repeat_lm_{curr_idx}"):
-                st.session_state["lm_current_speech"] = current_q.question_text
-                st.rerun()
+        # Hidden UI for seamless auto-submit
+        st.markdown('<div style="display:none;">', unsafe_allow_html=True)
+        candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
+        submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        with col_c2:
-            if st.button("❓ Clarify Question", use_container_width=True, key=f"btn_clarify_lm_{curr_idx}"):
-                clarif = generate_last_minute_clarification(current_q.question_text, active_panelist.name)
-                st.session_state["lm_current_speech"] = clarif
-                st.rerun()
-
-        with col_c3:
-            if st.button("🤷 I Don't Know", use_container_width=True, key=f"btn_dont_know_lm_{curr_idx}"):
-                current_q = evaluate_last_minute_answer(current_q, "I don't know", topic)
-                questions[curr_idx] = current_q
-                st.session_state["lm_active_q_idx"] += 1
-                if st.session_state["lm_active_q_idx"] < len(questions):
-                    next_q = questions[st.session_state["lm_active_q_idx"]]
-                    st.session_state["lm_current_speech"] = next_q.question_text
-                st.rerun()
-
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
-
-        if candidate_answer := st.chat_input('Type your Answer here and press Enter to submit...'):
+        if submit_clicked and candidate_answer:
             ans_to_eval = candidate_answer.strip() if candidate_answer.strip() else "Unanswered"
             evaluated_q = evaluate_last_minute_answer(current_q, ans_to_eval, topic)
             questions[curr_idx] = evaluated_q
@@ -220,6 +201,8 @@ def render_last_minute_live_session():
                 next_q = questions[st.session_state["lm_active_q_idx"]]
                 st.session_state["lm_current_speech"] = f"{evaluated_q.reaction} ... {next_q.question_text}"
             st.rerun()
+
+
 
     # Cancel / Exit Control
     st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
