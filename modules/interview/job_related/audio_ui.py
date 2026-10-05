@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Interview Audio & Voice Component
 Enforces the core rule:

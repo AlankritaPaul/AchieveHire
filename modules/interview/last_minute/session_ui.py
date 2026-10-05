@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Live Room HUD
 Enforces:
@@ -182,14 +183,7 @@ def render_last_minute_live_session():
 
         render_voice_recognition_widget(prompt_key=f"lm_stt_{curr_idx}", language=lang)
 
-        candidate_answer = st.text_area(
-            "Candidate Answer",
-            value="",
-            placeholder="Your spoken words will appear here automatically via speech recognition. You may review and finalize your answer before submitting...",
-            height=130,
-            key=f"input_lm_ans_{curr_idx}",
-            label_visibility="collapsed",
-        )
+
 
         # Controls
         col_c1, col_c2, col_c3 = st.columns([1, 1, 1], gap="small")
@@ -216,7 +210,7 @@ def render_last_minute_live_session():
 
         st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
 
-        if st.button("Submit Answer & Next Question ›", type="primary", use_container_width=True, key=f"btn_submit_lm_{curr_idx}"):
+        if candidate_answer := st.chat_input('Type your Answer here and press Enter to submit...'):
             ans_to_eval = candidate_answer.strip() if candidate_answer.strip() else "Unanswered"
             evaluated_q = evaluate_last_minute_answer(current_q, ans_to_eval, topic)
             questions[curr_idx] = evaluated_q
@@ -230,7 +224,7 @@ def render_last_minute_live_session():
     # Cancel / Exit Control
     st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
     with st.expander("Session Controls", expanded=False):
-        if st.button("Cancel & Exit Session", key="btn_cancel_lm_live"):
+        if st.button("\u2190 Back", key="btn_cancel_lm_live"):
             _clean_lm_session_state()
             st.session_state["lm_view_mode"] = "setup"
             st.rerun()

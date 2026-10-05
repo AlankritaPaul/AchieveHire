@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Legal, Compliance & FAQ Modules
 """

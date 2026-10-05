@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Main Router & Hub
 Integrates the complete Specialized Interview experience:
@@ -163,6 +164,6 @@ def render_specialized_interview():
             )
         else:
             st.info("No report currently available. Please complete an interview round first.")
-            if st.button("?? Return to Overview", use_container_width=True):
+            if st.button("⬅️ Return to Overview", use_container_width=True):
                 st.session_state["spec_view_state"] = "overview"
                 st.rerun()

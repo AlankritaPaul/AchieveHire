@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Resume parsing utilities for extracting text and segmenting sections from PDF, DOCX, and TXT files.
 """

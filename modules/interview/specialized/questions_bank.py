@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Question Bank & Dynamic Generator
 Maintains curated technical question pools across standard specializations

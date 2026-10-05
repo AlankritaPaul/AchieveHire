@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Package
 Modular, realistic technical interview simulation ecosystem.

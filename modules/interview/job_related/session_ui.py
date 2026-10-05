@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Live Interview Session HUD
 Enforces all operational rules:

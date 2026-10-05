@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Frequently Asked Questions (FAQ) Section
 Provides clear, authoritative answers regarding platform workflow,

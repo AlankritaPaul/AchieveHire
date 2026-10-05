@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Report UI
 Renders interactive in-app diagnostic reports and provides PDF report downloads.

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire Landing Screen — Static Content
 Core Principle and Privacy & Trust information as finalized for AchieveHire.

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Dedicated Terms & Conditions Section
 Covers user rights, obligations, platform acceptable use, account suspension rules,

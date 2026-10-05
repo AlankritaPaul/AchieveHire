@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Constants, taxonomy, and suggested datasets for AchieveHire Resume Guide.
 """

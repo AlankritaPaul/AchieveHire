@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Voice Interview Main UI Router
 Manages the complete lifecycle of the Job Related Interview module:

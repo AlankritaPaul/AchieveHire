@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Resume Builder business logic and data model for 'Create Resume' flow.
 Strictly abides by the Accuracy Rule:

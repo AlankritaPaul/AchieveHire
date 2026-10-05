@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Voice Interview Module
 Independent 6-Round context-driven interview engine based on:

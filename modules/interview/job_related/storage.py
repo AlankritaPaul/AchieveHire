@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Interview Storage & Persistence
 Provides persistent, per-candidate storage for:

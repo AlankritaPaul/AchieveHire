@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Multiple Saved Resumes Management UI
 Allows candidates to:

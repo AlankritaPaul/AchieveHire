@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Report UI
 Interactive on-screen tabs for:

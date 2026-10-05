@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Interview Overview Page
 Displays the clean vertical progression flow, branding,

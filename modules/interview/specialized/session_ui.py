@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Live Session UI
 Conducts the live conversational technical interview session.
@@ -181,19 +182,9 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
                 language=language,
             )
 
-            # Interactive answer box
-            user_response = st.text_area(
-                "Verbal Answer Transcript",
-                value=st.session_state.get("spec_sess_user_input", ""),
-                height=110,
-                placeholder="Speak using the microphone above, or type your answer here if preferred...",
-                key=f"user_ans_input_{q_idx}",
-            )
-
-            # Submit Answer
-            if st.button("🚀  Submit Answer & Continue", type="primary", use_container_width=True, key=f"btn_submit_ans_{q_idx}"):
+            # Interactive chat input for answer
+            if user_response := st.chat_input('Type your Answer here and press Enter to submit...'):
                 _process_answer(current_q, user_response, language, round_num)
-                st.session_state["spec_sess_user_input"] = ""
                 st.session_state["spec_sess_current_q_idx"] += 1
                 st.rerun()
 
@@ -222,7 +213,7 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
             st.markdown("<hr style='margin:12px 0;'/>", unsafe_allow_html=True)
 
             # Safe cancellation
-            if st.button("⚠️ Cancel & Exit Round", use_container_width=True, key="btn_cancel_spec_round"):
+            if st.button("\u2190 Back", use_container_width=True, key="btn_cancel_spec_round"):
                 st.session_state["spec_confirm_cancel_modal"] = True
                 st.rerun()
 
@@ -230,7 +221,7 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
     if st.session_state.get("spec_confirm_cancel_modal"):
         st.markdown(clean_html(f"""
         <div style="background:{t['surface']}; border:2px solid #EF4444; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 8px 24px rgba(239,68,68,0.25);">
-            <h4 style="color:#EF4444; margin:0 0 8px; font-size:1.15rem; font-weight:800;">⚠️ Confirm Round Cancellation</h4>
+            <h4 style="color:#EF4444; margin:0 0 8px; font-size:1.15rem; font-weight:800;">⚠️ Warning: Progress Will Not Be Counted</h4>
             <p style="font-size:0.92rem; color:{t['text_secondary']}; line-height:1.55; margin:0 0 14px;">
                 Leaving midway will immediately cancel this round. <strong>No marks, scores, or performance report will be generated.</strong> Partial completion will not be recorded.
             </p>

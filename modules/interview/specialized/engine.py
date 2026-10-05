@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Intelligence Engine
 Evaluates candidate responses, classifies answer quality, generates natural interviewer reactions,

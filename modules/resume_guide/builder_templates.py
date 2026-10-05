@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Resume templates, visual previews, HTML rendering, and PDF generator for 'Create Resume' flow.
 Supports 10 distinct professional templates:

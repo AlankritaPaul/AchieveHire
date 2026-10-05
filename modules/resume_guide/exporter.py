@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Export utilities to generate downloadable PDF, DOCX, and TXT resumes from final compiled text.
 """

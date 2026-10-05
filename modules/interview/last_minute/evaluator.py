@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Evaluator
 Evaluates candidate answers across the 9 criteria, classifies responses,

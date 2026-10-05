@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Audio & Voice HUD
 Enforces the core rule:

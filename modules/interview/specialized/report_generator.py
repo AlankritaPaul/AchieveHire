@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Report Engine & PDF Generator
 Builds detailed post-round diagnostic reports, final 4-round overall reports

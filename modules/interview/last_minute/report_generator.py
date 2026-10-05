@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Report Generator & PDF Engine
 Generates publication-grade PDF reports for 30-minute intensive rehearsals.

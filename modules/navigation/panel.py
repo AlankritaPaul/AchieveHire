@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Main Navigation Drawer & Top Navigation Bar
 Clean, modern, professional, minimal navigation structure.

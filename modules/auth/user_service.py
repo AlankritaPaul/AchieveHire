@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Unique User Identity & Multi-User Isolation Service
 Ensures unique User ID generation based on candidate name + unique number,

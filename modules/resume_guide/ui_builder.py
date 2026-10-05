@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Page-wise UI flow for 'Create Resume' in AchieveHire Resume Guide.
 Each selection has its own dedicated page.

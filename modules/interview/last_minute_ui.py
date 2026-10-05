@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Interview Router
 Provides top-level navigation, theme styling, and routing across:

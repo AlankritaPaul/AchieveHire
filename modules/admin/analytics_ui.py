@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Founder Analytics Dashboard
 Provides high-level aggregated usage statistics exclusively for the founder.

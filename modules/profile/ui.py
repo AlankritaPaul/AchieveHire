@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Candidate Profile Page
 Clean, organized layout displaying candidate account, unique User ID,

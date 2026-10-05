@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Main Resume Guide router for AchieveHire.
 Presents a dedicated landing page where the user chooses between:

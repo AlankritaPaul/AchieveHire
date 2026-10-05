@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Setup Screen
 Allows candidate to configure technical specialization (with manual entry support),

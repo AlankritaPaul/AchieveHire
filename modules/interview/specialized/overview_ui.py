@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Overview Page
 Presents the clear, elegant vertical progression workflow, session rules,

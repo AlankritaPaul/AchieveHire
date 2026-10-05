@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Context-Driven Interview Engine
 Generates and manages dynamic questions, panel interactions, follow-ups,

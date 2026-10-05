@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Resume improvement optimizer for AchieveHire Resume Guide.
 Strictly adheres to the Accuracy Rule:

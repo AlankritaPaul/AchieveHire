@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Interview Report UI
 Interactive on-screen tabs for:

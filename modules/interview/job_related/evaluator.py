@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Interview Evaluator
 Evaluates candidate answers across 9 core competencies:

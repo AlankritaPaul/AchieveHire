@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Persistence & Storage Service
 Handles storage, retrieval, round progression state tracking,

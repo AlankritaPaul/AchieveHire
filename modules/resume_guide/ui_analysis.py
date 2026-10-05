@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Page-wise UI flow for Resume Analysis.
 Each selection has its own dedicated page.

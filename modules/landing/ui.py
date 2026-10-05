@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Landing Screen
 Polished opening screen with animated background, theme switching,

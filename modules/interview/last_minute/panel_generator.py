@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Panel Generator
 Generates multi-interviewer panels for both Specialized and Job Related modes.

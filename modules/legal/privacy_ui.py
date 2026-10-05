@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Dedicated Privacy Section
 Provides transparent, detailed explanation of personal information protection,

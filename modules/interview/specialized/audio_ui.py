@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Audio & Interactive HUD Component
 Integrates live voice synthesis (TTS), speech recognition (STT),

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Question Engine
 Generates dynamic questions for the 30-minute intensive session:

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Interviewer Panel Generator
 Generates realistic professional interview panels based on:

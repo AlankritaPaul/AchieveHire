@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Specialized Interview Data Models & Constants
 Defines round configurations, language mappings, interviewer profiles,

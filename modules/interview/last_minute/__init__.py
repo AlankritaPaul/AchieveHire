@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Last-Minute Preparation Interview Module
 Independent 30-minute intensive interview mode for immediate pre-interview rehearsal.

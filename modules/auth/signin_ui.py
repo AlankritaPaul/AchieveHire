@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 AchieveHire — Candidate Sign In & User ID Generation UI
 Flow: Sign In → Enter Name → Select Resume Preparation / Interview Preparation / Both → Generate Unique User ID.
