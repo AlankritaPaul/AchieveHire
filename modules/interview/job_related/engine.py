@@ -28,39 +28,36 @@ from modules.interview.job_related.panel_generator import generate_panel_for_rou
 # Natural interviewer acknowledgements and reactions
 REACTIONS_STRONG = {
     "English": [
-        "That is a clear explanation. Let's build on that.",
-        "Understood. That directly addresses the requirement.",
-        "Good reasoning. Let's look at the next dimension.",
-        "That covers the core principles well. Let's continue.",
+        "Good! That is a very clear explanation. Let's move to the next question.",
+        "Nice! You directly addressed the key requirement. Let's continue.",
+        "Great reasoning! That covers the core principles well.",
+        "Excellent point! Moving on to our next topic.",
     ],
     "Hindi": [
-        "Kripya is question ka clear aur structured javab dijiye.",
-        "Kripya is question ka clear aur structured javab dijiye.",
-        "Kripya is question ka clear aur structured javab dijiye.",
+        "Acha javab! Aapne clear explanation diya. Agla question dekhte hain.",
+        "Sahi javab! Aapne key points ache se cover kiye. Aage badhte hain.",
+        "Bohot badiya! Aapka reasoning strong hai. Let's continue.",
     ],
     "Hinglish": [
-        "Kaafi clear aur structured answer hai. Let's move to the next question.",
-        "Understood. Aapne key aspects ache se cover kiye hain.",
-        "Sahi point hai. Ab agla scenario dekhte hain.",
+        "Good! Kaafi clear aur structured answer hai. Let's move to the next question.",
+        "Nice! Understood, aapne key aspects ache se cover kiye hain.",
+        "Great! Sahi point hai, ab agla scenario dekhte hain.",
     ],
 }
 
 REACTIONS_NEUTRAL = {
     "English": [
-        "Alright, let's move to the next question.",
-        "Okay. Let's continue.",
-        "I see. Let's take the next question.",
-        "Noted. Moving forward.",
+        "Okay! Understood. Let's move to the next question.",
+        "Alright! Got it. Let's continue with the next area.",
+        "Okay, I see. Let's take our next question now.",
     ],
     "Hindi": [
-        "Kripya is question ka clear aur structured javab dijiye.",
-        "Kripya is question ka clear aur structured javab dijiye.",
-        "Kripya is question ka clear aur structured javab dijiye.",
+        "Okay! Samajh gaya. Ab agla question dekhte hain.",
+        "Thik hai! Isko note karke hum aage badhte hain.",
     ],
     "Hinglish": [
-        "Theek hai, let's move to the next question.",
-        "Noted. Agle question par chalte hain.",
-        "Okay, let's continue with the interview.",
+        "Okay! Understood, isko note karke next topic par badhte hain.",
+        "Alright! Got it, let's continue.",
     ],
 }
 
