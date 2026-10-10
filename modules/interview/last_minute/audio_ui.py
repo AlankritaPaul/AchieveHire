@@ -19,6 +19,7 @@ def render_voice_synthesis_player(
 ):
     """
     Synthesizes the interviewer's question or reaction via top window Web Speech API.
+    Guarantees single execution without Chrome duplicate-cancel bug.
     """
     escaped_text = json.dumps(text_to_speak)
     lang_code = "hi-IN" if "hindi" in language.lower() or "hinglish" in language.lower() else "en-US"
@@ -31,20 +32,24 @@ def render_voice_synthesis_player(
         const synth = pWin.speechSynthesis || window.speechSynthesis;
         if (!synth) return;
 
-        try {{
-            synth.cancel();
-            synth.resume();
-        }} catch(e) {{}}
-
         const text = {escaped_text};
         if (!text || text.trim() === '') return;
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = {speech_rate};
-        utterance.pitch = {1.0 if gender_pref == 'male' else 1.15};
-        utterance.lang = '{lang_code}';
+        let spoke = false;
+        function speakNow() {{
+            if (spoke) return;
+            spoke = true;
 
-        function loadVoicesAndSpeak() {{
+            try {{
+                synth.cancel();
+                synth.resume();
+            }} catch(e) {{}}
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = {speech_rate};
+            utterance.pitch = {1.0 if gender_pref == 'male' else 1.15};
+            utterance.lang = '{lang_code}';
+
             const voices = synth.getVoices();
             if (voices.length > 0) {{
                 let chosenVoice = voices.find(v => v.lang.includes('{lang_code[:2]}') && v.name.toLowerCase().includes('{gender_pref}')) ||
@@ -81,9 +86,11 @@ def render_voice_synthesis_player(
         }}
 
         if (synth.getVoices().length === 0) {{
-            synth.onvoiceschanged = loadVoicesAndSpeak;
+            synth.onvoiceschanged = speakNow;
+            setTimeout(speakNow, 250);
+        }} else {{
+            speakNow();
         }}
-        loadVoicesAndSpeak();
     }})();
     </script>
     """, height=0, scrolling=False)

@@ -184,12 +184,25 @@ def render_last_minute_live_session():
         """), unsafe_allow_html=True)
 
         # Trigger TTS Speech synthesis
-        speech_text = st.session_state.get("lm_current_speech", current_q.question_text)
+                speech_text = st.session_state.get("lm_current_speech", current_q.question_text)
+        
+        st.markdown(clean_html(f"""
+        <div style="background:{t['surface2']}; border:1.5px solid {t['accent']}; border-radius:12px; padding:14px 18px; margin-top:10px; text-align:left;">
+            <div style="font-weight:700; font-size:0.82rem; color:{t['accent']}; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">
+                🎙️ Live Interviewer Speech:
+            </div>
+            <div style="font-size:0.96rem; font-style:italic; color:{t['text_primary']}; line-height:1.5;">
+                "{speech_text}"
+            </div>
+        </div>
+        """), unsafe_allow_html=True)
+
         render_voice_synthesis_player(
             text_to_speak=speech_text,
             language=lang,
             interviewer_gender=active_panelist.voice_gender,
-            key=f"tts_lm_{curr_idx}_{len(speech_text)}",
+            key=f"lm_tts_{curr_idx}_{len(speech_text)}",
+        )}",
         )
 
         
