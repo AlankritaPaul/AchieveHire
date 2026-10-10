@@ -62,19 +62,37 @@ def render_voice_synthesis_player(
             }}
 
             utterance.onstart = function() {{
+                pWin._isInterviewerSpeaking = true;
+                if (pWin._activeSTT) {{
+                    try {{ pWin._activeSTT.stop(); }} catch(e) {{}}
+                }}
                 try {{
                     const pDoc = pWin.document;
-                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text');
+                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text') || pDoc.getElementById('ac-interviewer-status-text');
                     if (statusEl) statusEl.innerText = "🎙️ Interviewer Speaking... (Listen Carefully)";
                 }} catch(e) {{}}
             }};
 
             utterance.onend = function() {{
+                pWin._isInterviewerSpeaking = false;
                 try {{
                     const pDoc = pWin.document;
-                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text');
-                    if (statusEl) statusEl.innerText = "🎙️ Listening... Speak your answer.";
+                    const statusEl = pDoc.getElementById('job-interviewer-status-text') || pDoc.getElementById('spec-interviewer-status-text') || pDoc.getElementById('lm-interviewer-status-text') || pDoc.getElementById('ac-interviewer-status-text');
+                    if (statusEl) statusEl.innerText = "🔴 Listening... Speak your answer now.";
                 }} catch(e) {{}}
+
+                setTimeout(() => {{
+                    if (pWin._startSTTNow) {{
+                        pWin._startSTTNow();
+                    }}
+                }}, 400);
+            }};
+
+            utterance.onerror = function() {{
+                pWin._isInterviewerSpeaking = false;
+                if (pWin._startSTTNow) {{
+                    pWin._startSTTNow();
+                }}
             }};
 
             const keepAlive = setInterval(() => {{
@@ -128,6 +146,10 @@ def render_voice_recognition_widget(
         if (pWin._activeSTT) {{
             try {{ pWin._activeSTT.stop(); }} catch(e) {{}}
         }}
+        if (pWin._activeSTTTimer) {{
+            clearTimeout(pWin._activeSTTTimer);
+            pWin._activeSTTTimer = null;
+        }}
 
         const rec = new SpeechRec();
         pWin._activeSTT = rec;
@@ -137,11 +159,26 @@ def render_voice_recognition_widget(
         rec.lang = '{lang_code}';
 
         let finalTranscript = "";
-        let submitTimer = null;
+
+        function setReactValue(element, val) {{
+            if (!element) return;
+            try {{
+                const tracker = element._valueTracker;
+                if (tracker) tracker.setValue('');
+                const proto = element.tagName === 'TEXTAREA' ? pWin.HTMLTextAreaElement.prototype : pWin.HTMLInputElement.prototype;
+                const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+                setter.call(element, val);
+                element.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                element.dispatchEvent(new Event('change', {{ bubbles: true }}));
+                element.blur();
+            }} catch(e) {{
+                element.value = val;
+            }}
+        }}
 
         rec.onstart = function() {{
             const label = pDoc.getElementById('stt-status-label');
-            if (label) label.innerText = "🔴 Listening... Speak your answer.";
+            if (label) label.innerText = "🔴 Listening... Speak your answer now.";
         }};
 
         rec.onerror = function(event) {{
@@ -155,6 +192,11 @@ def render_voice_recognition_widget(
         }};
 
         rec.onresult = function(event) {{
+            if (pWin._isInterviewerSpeaking) {{
+                console.log("Interviewer is speaking, ignoring microphone audio...");
+                return;
+            }}
+
             let interim = "";
             for (let i = event.resultIndex; i < event.results.length; ++i) {{
                 if (event.results[i].isFinal) {{
@@ -170,42 +212,50 @@ def render_voice_recognition_widget(
                 preview.innerText = '"' + currentText + '"';
             }}
 
-            if (currentText.length > 0) {{
-                if (submitTimer) clearTimeout(submitTimer);
+            const visibleArea = pDoc.querySelector('textarea');
+            if (visibleArea && currentText) {{
+                setReactValue(visibleArea, currentText);
+            }}
 
-                // Wait 1.8 seconds of silence after user finishes speaking
-                submitTimer = setTimeout(() => {{
+            if (currentText.length > 3) {{
+                if (pWin._activeSTTTimer) clearTimeout(pWin._activeSTTTimer);
+
+                // Wait 1.4 seconds of silence after user finishes speaking
+                pWin._activeSTTTimer = setTimeout(() => {{
+                    if (pWin._isInterviewerSpeaking) return;
+
                     rec.onend = null;
                     try {{ rec.stop(); }} catch(e) {{}}
+                    pWin._activeSTT = null;
 
                     const label = pDoc.getElementById('stt-status-label');
                     if (label) label.innerText = "🟢 Answer Captured! Submitting...";
 
                     const hiddenInput = pDoc.querySelector('input[aria-label="hidden_ans"]');
                     if (hiddenInput) {{
-                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(pWin.HTMLInputElement.prototype, 'value').set;
-                        nativeInputValueSetter.call(hiddenInput, currentText);
-                        hiddenInput.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                        hiddenInput.dispatchEvent(new Event('change', {{ bubbles: true }}));
-
-                        setTimeout(() => {{
-                            const btns = Array.from(pDoc.querySelectorAll('button'));
-                            const submitBtn = btns.find(b => b.textContent && b.textContent.includes('hidden_submit'));
-                            if (submitBtn) {{
-                                submitBtn.click();
-                            }}
-                        }}, 150);
+                        setReactValue(hiddenInput, currentText);
                     }}
-                }}, 1200);
+
+                    setTimeout(() => {{
+                        const btns = Array.from(pDoc.querySelectorAll('button'));
+                        const submitBtn = btns.find(b => b.textContent && b.textContent.includes('hidden_submit'));
+                        if (submitBtn) {{
+                            submitBtn.click();
+                        }}
+                    }}, 150);
+                }}, 1400);
             }}
         }};
 
-        // Global manual click trigger for top window
-        pWin._forceStartSTT = function() {{
-            try {{ rec.start(); }} catch(e) {{}}
+        pWin._startSTTNow = function() {{
+            if (!pWin._isInterviewerSpeaking) {{
+                try {{ rec.start(); }} catch(e) {{}}
+            }}
         }};
 
-        try {{ rec.start(); }} catch(e) {{}}
+        if (!pWin._isInterviewerSpeaking) {{
+            try {{ rec.start(); }} catch(e) {{}}
+        }}
     }})();
     </script>
     """, height=0, scrolling=False)

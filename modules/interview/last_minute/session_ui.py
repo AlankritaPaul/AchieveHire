@@ -184,8 +184,8 @@ def render_last_minute_live_session():
         """), unsafe_allow_html=True)
 
         # Trigger TTS Speech synthesis
-                speech_text = st.session_state.get("lm_current_speech", current_q.question_text)
-        
+        speech_text = st.session_state.get("lm_current_speech", current_q.question_text)
+
         st.markdown(clean_html(f"""
         <div style="background:{t['surface2']}; border:1.5px solid {t['accent']}; border-radius:12px; padding:14px 18px; margin-top:10px; text-align:left;">
             <div style="font-weight:700; font-size:0.82rem; color:{t['accent']}; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">
@@ -202,10 +202,8 @@ def render_last_minute_live_session():
             language=lang,
             interviewer_gender=active_panelist.voice_gender,
             key=f"lm_tts_{curr_idx}_{len(speech_text)}",
-        )}",
         )
 
-        
         with st.expander(f"👥 Active Panel Members ({len(panel)})", expanded=False):
             for pm in panel:
                 active_mark = " (Currently Speaking)" if pm.id == active_panelist.id else ""
@@ -215,19 +213,18 @@ def render_last_minute_live_session():
         st.markdown(clean_html(f"""
         <div style="margin-bottom:10px;">
             <div style="font-weight:700; font-size:1.05rem; color:{t['text_primary']};">
-                Candidate Spoken Response
+                Your Spoken Answer &amp; Live Interaction
             </div>
             <div style="font-size:0.82rem; color:{t['text_muted']};">
-                Take reasonable thinking time. Speak clearly when you are ready.
+                Speak into your microphone or type your response. Answer auto-submits when you pause.
             </div>
         </div>
         """), unsafe_allow_html=True)
 
+        # Voice listener widget
         render_voice_recognition_widget(prompt_key=f"lm_stt_{curr_idx}", language=lang)
 
-
-
-        # Hidden UI for seamless auto-submit
+        # Hidden fields for JS voice auto-submit
         st.markdown("""
         <style>
         div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]),
@@ -247,16 +244,27 @@ def render_last_minute_live_session():
         """, unsafe_allow_html=True)
         candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
         submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
-        
-        if submit_clicked:
-            ans_to_eval = candidate_answer.strip() if (candidate_answer and candidate_answer.strip()) else "Candidate spoken response recorded."
-            evaluated_q = evaluate_last_minute_answer(current_q, ans_to_eval, topic)
+
+        # Visible text input for backup/manual entry
+        candidate_text_input = st.text_area(
+            "Or type your answer here:",
+            key=f"typed_ans_lm_{curr_idx}",
+            height=90,
+            placeholder="Type your answer here if preferred...",
+            label_visibility="collapsed",
+        )
+
+        manual_btn = st.button("🚀 Submit Answer & Next Question →", type="primary", use_container_width=True, key=f"btn_manual_sub_lm_{curr_idx}")
+
+        if submit_clicked or manual_btn:
+            ans_val = candidate_answer.strip() if candidate_answer.strip() else (candidate_text_input.strip() if candidate_text_input.strip() else "Candidate spoken response recorded.")
+            evaluated_q = evaluate_last_minute_answer(current_q, ans_val, topic)
             questions[curr_idx] = evaluated_q
             st.session_state["lm_active_q_idx"] += 1
-
             if st.session_state["lm_active_q_idx"] < len(questions):
                 next_q = questions[st.session_state["lm_active_q_idx"]]
-                st.session_state["lm_current_speech"] = f"{evaluated_q.reaction} ... {next_q.question_text}"
+                reaction = evaluated_q.reaction or "Good! Understood."
+                st.session_state["lm_current_speech"] = f"{reaction} ... {next_q.question_text}"
             st.rerun()
 
 

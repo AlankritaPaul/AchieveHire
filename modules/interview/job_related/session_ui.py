@@ -1,15 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 AchieveHire — Job Related Live Interview Session HUD
-Enforces all operational rules:
-1. QUESTIONS ARE NOT DISPLAYED AS READABLE TEXT ON SCREEN DURING LIVE SESSIONS.
-2. Interviewer asks questions exclusively through voice.
-3. Multi-interviewer rotation with distinct personas & titles.
-4. Thinking time without penalties.
-5. Clarification requests ('Could you repeat the question?', 'Could you clarify that?').
-6. Honest 'I don't know' handling without fake answers.
-7. Round 6 closing stage: 'Do you have any questions for us?'
-8. Single continuous session requirement.
+Features a 100% transparent, responsive Live Conversation Chat & Dual Input (Voice + Text + Submit Button).
 """
 
 import streamlit as st
@@ -72,12 +64,10 @@ def _init_live_round_state(round_num: int, user_id: str) -> None:
     st.session_state["job_round_start_time"] = time.time()
     st.session_state["job_current_speech_text"] = questions[0].question_text if questions else ""
     st.session_state["job_interviewer_reaction"] = ""
-    st.session_state["job_is_clarifying"] = False
-    st.session_state["job_round_6_in_closing"] = False
 
 
 def render_job_live_interview_session(round_num: int):
-    """Renders the realistic voice-first live interview room."""
+    """Renders the realistic, transparent live interview room."""
     theme_key = st.session_state.get("ac_theme", "light")
     t = THEMES[theme_key]
     user_id = st.session_state.get("user_id") or "GUEST"
@@ -87,49 +77,68 @@ def render_job_live_interview_session(round_num: int):
     company = session.get("target_company", "Google")
     lang = session.get("language", "English")
 
-    cfg = JOB_ROUNDS_CONFIG.get(round_num, JOB_ROUNDS_CONFIG[1])
-    max_duration_sec = cfg.get("duration_seconds", 20 * 60)
-
-    # Initialize state if starting new round
-    if "job_live_state" not in st.session_state or st.session_state["job_live_state"].round_num != round_num:
+    if "job_live_state" not in st.session_state or st.session_state.get("job_active_round_num") != round_num:
         _init_live_round_state(round_num, user_id)
+        st.session_state["job_active_round_num"] = round_num
 
     state: JobInterviewRoundState = st.session_state["job_live_state"]
+    cfg = JOB_ROUNDS_CONFIG.get(round_num, JOB_ROUNDS_CONFIG[1])
 
-    # Calculate elapsed and remaining time
-    current_time = time.time()
-    elapsed_sec = int(current_time - st.session_state.get("job_round_start_time", current_time))
-    remaining_sec = max(0, max_duration_sec - elapsed_sec)
+    # Timer Calculation
+    start_t = st.session_state.get("job_round_start_time", time.time())
+    elapsed_sec = int(time.time() - start_t)
+    time_allowed = cfg["duration_minutes"] * 60
+    remaining_sec = max(0, time_allowed - elapsed_sec)
 
     mins_rem = remaining_sec // 60
     secs_rem = remaining_sec % 60
     timer_color = "#DC2626" if remaining_sec < 180 else t["accent"]
 
-    # Auto-conclude if timer hits zero
-    if remaining_sec <= 0 and not state.is_completed:
-        st.warning("⏱️ Round duration completed. Processing your Performance & Improvement Report...")
-        _finalize_round(round_num, user_id, elapsed_sec, role, company, lang)
-        return
-
-    # Check if all questions are finished
     total_q = len(state.questions_list)
     curr_idx = state.active_question_index
 
-    # ── ROUND 6 CLOSING STAGE: 'Do you have any questions for us?' ───────────
-    if round_num == 6 and curr_idx >= total_q and not state.candidate_asked_closing_question:
-        _render_round_6_closing_stage(state, t, role, company, lang, user_id, elapsed_sec)
-        return
-
-    if curr_idx >= total_q:
-        _finalize_round(round_num, user_id, elapsed_sec, role, company, lang)
+    # Check for session completion or thank you stage
+    if remaining_sec <= 0 or curr_idx >= total_q:
+        active_panelist = state.panel_members[0]
+        thank_text = "Aaj ke is interview round ke liye aapka bohot bohot dhanyawad. Hamare panel ne aapke javab evaluate kar liye hain, aur aapka performance report tayar hai." if "hindi" in lang.lower() or "hinglish" in lang.lower() else "Thank you so much for your time and participation today. That concludes our interview round. We have evaluated your responses and your performance report is now ready."
+        
+        st.markdown(clean_html(f"""
+        <div style="max-width:760px; margin: 30px auto; text-align:center; background:{t['surface']}; border:1.5px solid {t['accent']}; border-radius:18px; padding:32px; box-shadow:{t['card_shadow']};">
+            <div style="width:90px; height:90px; border-radius:50%; background:{t['accent_soft']}; border:3px solid {t['accent']}; display:flex; align-items:center; justify-content:center; font-size:3rem; margin:0 auto 16px;">
+                {active_panelist.avatar_emoji}
+            </div>
+            <h2 style="font-size:1.6rem; font-weight:800; color:{t['text_primary']}; margin:0 0 6px;">
+                Thank You from {active_panelist.name} & Panel
+            </h2>
+            <div style="font-size:0.95rem; font-weight:600; color:{t['accent']}; margin-bottom:16px;">
+                {active_panelist.title} · {company}
+            </div>
+            <p style="font-size:1.05rem; color:{t['text_secondary']}; max-width:620px; margin:0 auto 24px; line-height:1.6; font-style:italic;">
+                "{thank_text}"
+            </p>
+        </div>
+        """), unsafe_allow_html=True)
+        
+        render_voice_synthesis_player(
+            text_to_speak=thank_text,
+            language=lang,
+            interviewer_gender=active_panelist.voice_gender,
+            key=f"tts_job_thankyou_{round_num}",
+        )
+        
+        st.markdown("<div style='max-width:400px; margin:0 auto;'>", unsafe_allow_html=True)
+        if st.button("📊  View Performance & Improvement Report →", type="primary", use_container_width=True, key="btn_view_job_rep_thankyou"):
+            _finalize_round(round_num, user_id, elapsed_sec, role, company, lang)
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
         return
 
     current_q: JobQuestionRecord = state.questions_list[curr_idx]
     active_panelist = next((p for p in state.panel_members if p.id == current_q.interviewer_id), state.panel_members[0])
 
-    # ── Top HUD: Navigation, Role & Timer ─────────────────────────────────────
+    # Top HUD
     st.markdown(clean_html(f"""
-    <div style="max-width:940px; margin: 12px auto 16px; padding: 0 16px;">
+    <div style="max-width:960px; margin: 12px auto 16px; padding: 0 16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:{t['surface']}; border:1px solid {t['border']}; border-radius:14px; padding:14px 20px; box-shadow:{t['card_shadow']};">
             <div>
                 <div style="font-size:0.78rem; font-weight:700; color:{t['accent']}; text-transform:uppercase; letter-spacing:0.06em;">
@@ -161,7 +170,7 @@ def render_job_live_interview_session(round_num: int):
     </div>
     """), unsafe_allow_html=True)
 
-    # ── Core Live Room Canvas (Audio synthesis + Interviewer Voice Indicator) ─
+    # Main Canvas: Left Panel (Interviewer & Speech), Right Panel (Transcript & Answer)
     col_panel, col_candidate = st.columns([45, 55], gap="large")
 
     with col_panel:
@@ -174,31 +183,23 @@ def render_job_live_interview_session(round_num: int):
                 {active_panelist.name}
             </h3>
             <div style="font-size:0.86rem; font-weight:600; color:{t['accent']}; margin-bottom:6px;">
-                {active_panelist.title}
-            </div>
-            <div style="font-size:0.78rem; color:{t['text_muted']}; margin-bottom:16px;">
-                Department: {active_panelist.department}
+                {active_panelist.title} · {company}
             </div>
             
             <div id="job-interviewer-status-text" style="background:{t['surface2']}; border:1px solid {t['border']}; border-radius:30px; padding:8px 16px; font-size:0.88rem; font-weight:700; color:{t['accent']}; display:inline-block; margin-bottom:12px;">
                 🎙️ Interviewer Speaking... (Listen Carefully)
             </div>
-
-            <div style="background:#F8FAFC; border:1px dashed {t['border']}; border-radius:10px; padding:12px 14px; font-size:0.80rem; color:{t['text_secondary']}; text-align:left; line-height:1.45;">
-                🔒 <strong>Voice-Only Mode Active:</strong> Questions are asked verbally to simulate realistic interviews. Questions will not be displayed on-screen until the post-round report.
-            </div>
         </div>
         """), unsafe_allow_html=True)
 
-        # Trigger TTS Speech synthesis via components.html
         speech_text = st.session_state.get("job_current_speech_text", current_q.question_text)
-        
+
         st.markdown(clean_html(f"""
         <div style="background:{t['surface2']}; border:1.5px solid {t['accent']}; border-radius:12px; padding:14px 18px; margin-top:10px; text-align:left;">
             <div style="font-weight:700; font-size:0.82rem; color:{t['accent']}; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">
-                🎙️ Live Interviewer Speech:
+                🎙️ Live Interviewer Question &amp; Reaction:
             </div>
-            <div style="font-size:0.96rem; font-style:italic; color:{t['text_primary']}; line-height:1.5;">
+            <div style="font-size:0.98rem; font-style:italic; color:{t['text_primary']}; line-height:1.5;">
                 "{speech_text}"
             </div>
         </div>
@@ -211,31 +212,22 @@ def render_job_live_interview_session(round_num: int):
             key=f"tts_q_{curr_idx}_{len(speech_text)}",
         )
 
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
-
-        # Panel Member Roster
-        with st.expander(f"👥 Panel Members in this Round ({len(state.panel_members)})", expanded=False):
-            for pm in state.panel_members:
-                active_mark = " (Currently Speaking)" if pm.id == active_panelist.id else ""
-                st.markdown(f"- **{pm.avatar_emoji} {pm.name}**: {pm.title}{active_mark}")
-
-    # ── Candidate Interaction Side (Microphone + Response Submission) ─────────
     with col_candidate:
         st.markdown(clean_html(f"""
         <div style="margin-bottom:10px;">
             <div style="font-weight:700; font-size:1.05rem; color:{t['text_primary']};">
-                Your Spoken Response
+                Your Spoken Answer &amp; Live Transcript
             </div>
             <div style="font-size:0.82rem; color:{t['text_muted']};">
-                Take your time to think. Speak clearly into your microphone when ready.
+                Speak into your microphone or type below. Answer auto-submits when you finish speaking.
             </div>
         </div>
         """), unsafe_allow_html=True)
 
-        # Audio Recognition Widget
+        # Voice listener
         render_voice_recognition_widget(prompt_key=f"stt_{curr_idx}", language=lang)
 
-        # Hidden UI for seamless auto-submit
+        # Hidden fields for JS voice auto-submit
         st.markdown("""
         <style>
         div[data-testid="stElementContainer"]:has(input[aria-label="hidden_ans"]),
@@ -253,105 +245,40 @@ def render_job_live_interview_session(round_num: int):
         }
         </style>
         """, unsafe_allow_html=True)
-        candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
-        submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
-        
-        if submit_clicked:
-            ans_to_evaluate = candidate_answer.strip() if (candidate_answer and candidate_answer.strip()) else "Candidate spoken response recorded."
-            evaluated_q = evaluate_candidate_answer(current_q, ans_to_evaluate, lang, role, company)
+        hidden_ans = st.text_input("hidden_ans", key=f"hidden_ans_{curr_idx}", label_visibility="collapsed")
+        hidden_submit = st.button("hidden_submit", key=f"hidden_sub_{curr_idx}")
+
+        # Transparent visible Text Input & Submit Button
+        candidate_input = st.text_area(
+            "Your Answer (Auto-populates from Microphone):",
+            key=f"ans_input_{curr_idx}",
+            height=110,
+            placeholder="Speak into your microphone or type your response here...",
+            label_visibility="collapsed",
+        )
+
+        submit_btn = st.button("🚀 Submit Answer & Next Question →", type="primary", use_container_width=True, key=f"btn_sub_{curr_idx}")
+
+        if submit_btn or hidden_submit:
+            ans_val = hidden_ans.strip() if hidden_ans.strip() else (candidate_input.strip() if candidate_input.strip() else "Candidate spoken response recorded.")
+            evaluated_q = evaluate_candidate_answer(current_q, ans_val, lang, role, company)
             state.questions_list[curr_idx] = evaluated_q
             state.active_question_index += 1
 
             if state.active_question_index < len(state.questions_list):
                 next_q = state.questions_list[state.active_question_index]
-                combined_speech = f"{evaluated_q.reaction} ... {next_q.question_text}"
+                reaction = evaluated_q.reaction or "Good! Understood."
+                combined_speech = f"{reaction} ... {next_q.question_text}"
                 st.session_state["job_current_speech_text"] = combined_speech
             st.rerun()
 
-    # ── Bottom Safety Exit & Cancel Warning ──────────────────────────────────
-    st.markdown("<div style='height:24px;'></div>", unsafe_allow_html=True)
-    with st.expander("⚠️ Session Controls & Emergency Exit", expanded=False):
-        st.markdown(
-            "**Important Rule:** Once started, a round must be completed in the same continuous session. "
-            "If you leave or stop midway, that round will be cancelled and no marks will be calculated."
-        )
-        if st.button("Cancel & Exit This Round", key="btn_cancel_round_action"):
+    # Session Exit Option
+    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
+    with st.expander("⚠️ Session Emergency Exit", expanded=False):
+        if st.button("Exit Interview Round", key="btn_exit_session_round"):
             del st.session_state["job_live_state"]
             st.session_state["job_view_mode"] = "setup"
             st.rerun()
-
-
-def _render_round_6_closing_stage(state, t, role, company, lang, user_id, elapsed_sec):
-    """Handles the realistic Round 6 closing stage: 'Do you have any questions for us?'."""
-    lead_panelist = state.panel_members[0]
-
-    st.markdown(clean_html(f"""
-    <div style="max-width:820px; margin: 20px auto; padding: 0 16px;">
-        <div style="background:{t['surface']}; border:2px solid {t['accent']}; border-radius:16px; padding:28px; box-shadow:{t['card_shadow']}; text-align:center;">
-            <div style="font-size:3rem; margin-bottom:8px;">
-                🤝
-            </div>
-            <div style="font-size:0.85rem; font-weight:700; color:{t['accent']}; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;">
-                Round 6 Final Stage · Executive Closing
-            </div>
-            <h2 style="font-size:1.75rem; font-weight:800; color:{t['text_primary']}; margin:0 0 10px;">
-                “Do you have any questions for us?”
-            </h2>
-            <p style="font-size:0.98rem; color:{t['text_secondary']}; max-width:640px; margin: 0 auto 20px; line-height:1.6;">
-                In executive interviews at {company}, asking thoughtful questions about team culture, technical vision,
-                or operational priorities demonstrates your strategic preparation and engagement.
-            </p>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
-    # Audio synthesis prompt
-    closing_prompt = "Do you have any questions for us?" if lang == "English" else ("क्या आपके पास हमारे लिए कोई प्रश्न हैं?" if lang == "Hindi" else "Do you have any questions for us?")
-    render_voice_synthesis_player(text_to_speak=closing_prompt, language=lang, key="r6_closing_prompt")
-
-    st.markdown("<div style='max-width:820px; margin: 0 auto; padding: 0 16px;'>", unsafe_allow_html=True)
-    candidate_q = st.text_input(
-        "Ask the Executive Panel a Question:",
-        placeholder="e.g. How does the engineering team at Google balance rapid feature releases with architectural stability?",
-        key="r6_closing_cand_question",
-    )
-
-    col_ask, col_conclude = st.columns([1, 1], gap="medium")
-    with col_ask:
-        if st.button("Ask Panel & Hear Response", type="primary", use_container_width=True, key="btn_ask_panel_r6"):
-            if candidate_q.strip():
-                resp = generate_closing_qa_response(candidate_q, company, role, lang, lead_panelist)
-                state.candidate_asked_closing_question = True
-                state.closing_candidate_question = candidate_q
-                state.closing_panel_response = resp
-                st.session_state["job_current_speech_text"] = resp
-                st.rerun()
-            else:
-                st.warning("Please type or speak a question to ask the panel.")
-
-    with col_conclude:
-        if st.button("Formally Conclude Interview & View Report ›", use_container_width=True, key="btn_conclude_r6"):
-            state.candidate_asked_closing_question = True
-            _finalize_round(6, user_id, elapsed_sec, role, company, lang)
-            return
-
-    if state.candidate_asked_closing_question and state.closing_panel_response:
-        st.markdown(clean_html(f"""
-        <div style="background:{t['surface2']}; border:1px solid {t['accent']}; border-radius:12px; padding:18px 22px; margin-top:20px;">
-            <div style="font-weight:700; color:{t['accent']}; font-size:0.95rem; margin-bottom:6px;">
-                Executive Panel Response:
-            </div>
-            <div style="font-size:0.95rem; color:{t['text_primary']}; line-height:1.6;">
-                {state.closing_panel_response}
-            </div>
-        </div>
-        """), unsafe_allow_html=True)
-
-        if st.button("Proceed to Overall Performance & Improvement Report ›", type="primary", use_container_width=True, key="btn_finish_r6_overall"):
-            _finalize_round(6, user_id, elapsed_sec, role, company, lang)
-            return
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def _finalize_round(round_num: int, user_id: str, elapsed_sec: int, role: str, company: str, lang: str):
@@ -371,8 +298,8 @@ def _finalize_round(round_num: int, user_id: str, elapsed_sec: int, role: str, c
 
     save_round_evaluation(user_id, round_num, evaluation)
 
-    # Clean up live state
-    del st.session_state["job_live_state"]
+    if "job_live_state" in st.session_state:
+        del st.session_state["job_live_state"]
+
     st.session_state["job_view_mode"] = "report"
     st.session_state["job_report_round"] = round_num
-    st.rerun()

@@ -225,11 +225,21 @@ def render_specialized_session(t: dict, on_complete_round, on_cancel_session):
         </style>
         """, unsafe_allow_html=True)
             candidate_answer = st.text_input("hidden_ans", key=f"hidden_ans_{q_idx}", label_visibility="collapsed")
-            submit_clicked = st.button("hidden_submit", key=f"hidden_sub_{q_idx}")
-            
+            hidden_submit = st.button("hidden_submit", key=f"hidden_sub_{q_idx}")
 
-            if submit_clicked and candidate_answer:
-                _process_answer(current_q, candidate_answer, language, round_num)
+            candidate_input = st.text_area(
+                "Your Answer (Auto-populates from Microphone):",
+                key=f"ans_input_spec_{q_idx}",
+                height=110,
+                placeholder="Speak into your microphone or type your response here...",
+                label_visibility="collapsed",
+            )
+
+            submit_btn = st.button("🚀 Submit Answer & Next Question →", type="primary", use_container_width=True, key=f"btn_sub_spec_{q_idx}")
+
+            if hidden_submit or submit_btn:
+                ans_val = candidate_answer.strip() if candidate_answer.strip() else (candidate_input.strip() if candidate_input.strip() else "Candidate spoken technical response recorded.")
+                _process_answer(current_q, ans_val, language, round_num)
                 st.session_state["spec_sess_current_q_idx"] += 1
                 st.rerun()
 
