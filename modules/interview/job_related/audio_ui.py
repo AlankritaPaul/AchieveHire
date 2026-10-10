@@ -187,7 +187,7 @@ def render_voice_recognition_widget(
                             }}
                         }}, 150);
                     }}
-                }}, 1800);
+                }}, 1200);
             }}
         }};
 
