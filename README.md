@@ -14,15 +14,6 @@
     <em>A comprehensive, AI-powered interview preparation and career-readiness platform with multi-persona panels, real-time voice-to-voice interaction, and deep role/company tailoring.</em>
   </p>
 
-  <p align="center">
-    <a href="#-key-features">Key Features</a> •
-    <a href="#1-resume-analysis--optimization">Resume Analysis</a> •
-    <a href="#2-resume-builder--generation">Resume Builder</a> •
-    <a href="#3-realistic-voice-to-voice-interview-environment">Voice AI</a> •
-    <a href="#4-interview-panels--specialized-modes">Interview Panels</a> •
-    <a href="#5-6-stage-progressive-ladder">Progressive Ladder</a> •
-    <a href="#-tech-stack">Tech Stack</a>
-  </p>
 
 </div>
 
